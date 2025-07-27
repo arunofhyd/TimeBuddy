@@ -495,7 +495,7 @@
         // Formats a date string (YYYY-MM-DD) for display
         function formatDateForDisplay(dateString) {
             const date = new Date(dateString + 'T00:00:00'); // Add T00:00:00 to avoid timezone issues
-            return date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            return date.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' });
         }
 
         // Helper to parse date string like "Thursday, July 25, 2025" back to YYYY-MM-DD
