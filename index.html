@@ -665,7 +665,7 @@
 
         function showNativeNotification() {
             if (!("Notification" in window)) return console.warn("Notifications not supported.");
-            } else if (Notification.permission === "granted") {
+            if (Notification.permission === "granted") {
                 new Notification("TimeBuddy - Log Activity!", {
                     body: `What did you do in the last hour?`,
                     requireInteraction: true
