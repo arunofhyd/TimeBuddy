@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TimeBuddy</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts - Inter for a modern look -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         /* Custom styles for Inter font and general body */
@@ -222,40 +220,32 @@
             </h1>
         </div>
 
-        <!-- Message Display -->
         <div id="message-display" class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded-lg shadow-md" role="alert">
             <span id="message-text" class="block sm:inline font-medium"></span>
         </div>
 
-        <!-- Navigation Section -->
         <div class="flex flex-col space-y-4 mb-8 w-full">
-            <!-- View Toggles Row -->
             <div class="flex space-x-4 w-full">
-                <!-- Month View Button -->
                 <button id="month-view-btn" class="w-1/2 px-5 py-3 text-base font-semibold btn-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                     Month View
                 </button>
 
-                <!-- Day View Button -->
                 <button id="day-view-btn" class="w-1/2 px-5 py-3 text-base font-semibold btn-secondary rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                     Day View
                 </button>
             </div>
 
-            <!-- Period Navigation (Prev/Next/Display) -->
             <div class="flex items-center justify-between w-full">
                 <button id="prev-btn" class="btn-primary rounded-full flex items-center justify-center w-12 h-12 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
                 </button>
                 <h2 id="current-period-display" class="text-xl font-bold text-gray-800 text-center mx-2 cursor-pointer hover:text-blue-600 transition-colors duration-200">
-                    <!-- JS will insert: July 2025 -->
-                </h2>
+                    </h2>
                 <button id="next-btn" class="btn-primary rounded-full flex items-center justify-center w-12 h-12 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
                 </button>
             </div>
 
-            <!-- Today Button -->
             <button id="today-btn" class="w-full px-5 py-3 text-base font-bold text-gray-700 bg-white border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 hover:bg-gray-50">
                 Today
             </button>
@@ -264,22 +254,17 @@
         </div>
 
 
-        <!-- Main Content Area -->
         <div id="main-content-area" class="w-full">
-            <!-- Calendar View -->
             <div id="calendar-view" class="grid grid-cols-7 gap-3">
-                <!-- Day names header -->
                 <div class="py-3 text-center text-sm font-semibold text-red-500 bg-gray-100 border border-gray-200 rounded-lg">Sun</div>
-                <div class="py-3 text-center text-sm font-semibold text-gray-700 bg-gray-100 border-gray-200 rounded-lg">Mon</div>
-                <div class="py-3 text-center text-sm font-semibold text-gray-700 bg-gray-100 border-gray-200 rounded-lg">Tue</div>
-                <div class="py-3 text-center text-sm font-semibold text-gray-700 bg-gray-100 border-gray-200 rounded-lg">Wed</div>
-                <div class="py-3 text-center text-sm font-semibold text-gray-700 bg-gray-100 border-gray-200 rounded-lg">Thu</div>
-                <div class="py-3 text-center text-sm font-semibold text-gray-700 bg-gray-100 border-gray-200 rounded-lg">Fri</div>
-                <div class="py-3 text-center text-sm font-semibold text-gray-700 bg-gray-100 border-gray-200 rounded-lg">Sat</div>
-                <!-- Calendar days will be generated here by JS -->
-            </div>
+                <div class="py-3 text-center text-sm font-semibold text-gray-700 bg-gray-100 border border-gray-200 rounded-lg">Mon</div>
+                <div class="py-3 text-center text-sm font-semibold text-gray-700 bg-gray-100 border border-gray-200 rounded-lg">Tue</div>
+                <div class="py-3 text-center text-sm font-semibold text-gray-700 bg-gray-100 border border-gray-200 rounded-lg">Wed</div>
+                <div class="py-3 text-center text-sm font-semibold text-gray-700 bg-gray-100 border border-gray-200 rounded-lg">Thu</div>
+                <div class="py-3 text-center text-sm font-semibold text-gray-700 bg-gray-100 border border-gray-200 rounded-lg">Fri</div>
+                <div class="py-3 text-center text-sm font-semibold text-gray-700 bg-gray-100 border border-gray-200 rounded-lg">Sat</div>
+                </div>
 
-            <!-- Daily View -->
             <div id="daily-view" class="hidden">
                 <button id="add-new-slot-btn" class="px-6 py-3 mb-6 btn-primary rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                     Add New Slot
@@ -294,13 +279,11 @@
                         </tr>
                     </thead>
                     <tbody id="daily-activity-table-body" class="divide-y divide-gray-200">
-                        <!-- Daily activities will be inserted here by JS -->
-                    </tbody>
+                        </tbody>
                 </table>
                 <p id="no-daily-activities-message" class="text-center text-gray-500 italic mt-6 hidden">No activities recorded for this day.</p>
             </div>
 
-            <!-- Data Actions Section -->
             <div class="mt-8 pt-6 border-t border-gray-200 flex flex-col md:flex-row gap-4">
                 <button id="upload-csv-btn" class="w-full md:w-1/2 px-5 py-3 text-base font-semibold btn-secondary rounded-lg flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0l-4 4m4-4v12"></path></svg>
@@ -314,7 +297,6 @@
         </div>
     </div>
 
-    <!-- Hourly Prompt Modal (Used only for hourly prompt) -->
     <div id="hourly-prompt-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 modal-backdrop">
         <div class="bg-white rounded-xl border border-gray-200 shadow-2xl p-6 md:p-8 w-full max-w-md transform transition-all duration-300 scale-100">
             <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">
@@ -335,7 +317,6 @@
         </div>
     </div>
 
-    <!-- Month Picker Modal -->
     <div id="month-picker-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 modal-backdrop">
         <div class="bg-white rounded-xl border border-gray-200 shadow-2xl p-6 md:p-8 w-full max-w-md transform transition-all duration-300 scale-100">
             <div class="flex justify-between items-center mb-6">
@@ -348,8 +329,7 @@
                 </button>
             </div>
             <div id="month-grid" class="grid grid-cols-3 gap-3">
-                <!-- Month buttons will be generated here -->
-            </div>
+                </div>
             <div class="flex justify-end mt-6">
                 <button id="close-month-picker-btn" class="px-5 py-2 btn-secondary rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                     Close
@@ -358,7 +338,6 @@
         </div>
     </div>
 
-    <!-- Footer Attribution -->
     <div class="mt-10 text-center text-gray-500 text-xs opacity-80">
         Made with ❤️ by Arun Thomas
     </div>
@@ -1012,7 +991,8 @@
                 console.warn("This browser does not support desktop notification");
             } else if (Notification.permission === "granted") {
                 new Notification("TimeBuddy - Log Activity!", {
-                    body: `What did you do in the last hour?`, 
+                    body: `What did you do in the last hour?`,
+                    requireInteraction: true // Make the notification persistent until interacted with
                     silent: true // No sound
                 });
             } else if (Notification.permission !== "denied") {
@@ -1020,6 +1000,7 @@
                     if (permission === "granted") {
                         new Notification("TimeBuddy - Log Activity!", {
                             body: `What did you do in the last hour?`,
+                            requireInteraction: true // Make the notification persistent until interacted with
                             silent: true // No sound
                         });
                     }
@@ -1198,15 +1179,11 @@
             const monthlyActivities = Object.keys(allStoredData)
                 .filter(dateKey => dateKey.startsWith(yearMonth));
 
-            if (monthlyActivities.length === 0) {
-                showMessage("No activities to export for this month.", 'info');
-                return;
-            }
-
             let activitiesToExport = [];
             monthlyActivities.forEach(dateKey => {
                 const dailyEntries = Object.keys(allStoredData[dateKey])
-                    .filter(timeKey => timeKey !== '_userCleared') // Filter out the flag
+                    // Filter out the internal flag and any entries that don't have text
+                    .filter(timeKey => timeKey !== '_userCleared' && allStoredData[dateKey][timeKey].text && allStoredData[dateKey][timeKey].text.trim() !== '')
                     .map(timeKey => ({
                         date: dateKey,
                         time: timeKey,
@@ -1215,6 +1192,12 @@
                     }));
                 activitiesToExport = activitiesToExport.concat(dailyEntries);
             });
+            
+            // Check if there are any actual activities to export after filtering
+            if (activitiesToExport.length === 0) {
+                showMessage("No activities to export for this month.", 'info');
+                return;
+            }
 
             // Sort by date, then by order
             activitiesToExport.sort((a, b) => {
@@ -1222,7 +1205,6 @@
                 if (dateComparison !== 0) return dateComparison;
                 return a.order - b.order;
             });
-
 
             activitiesToExport.forEach(entry => {
                 // Escape double quotes by replacing each with two double quotes
@@ -1534,6 +1516,11 @@
 
         // --- Initialization ---
         window.onload = function() {
+            // Request notification permission on load if not already decided.
+            if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
+                Notification.requestPermission();
+            }
+
             // Set selectedDate to today's date initially for day view
             selectedDate = new Date();
             // Start with month view by default
