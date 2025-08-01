@@ -344,16 +344,14 @@
 
     <script>
         // Global state variables
-        let currentMonth = new Date(); // Tracks the month being viewed in calendar
-        let selectedDate = new Date(); // Tracks the currently selected day for daily view
-        let currentPromptHour = ''; // The hour for the current prompt (e.g., "08:00")
-        let lastPromptedHour = null; // To prevent multiple prompts in the same hour
-        let lastPromptedDate = null; // To reset prompted hour daily
-        let currentView = 'month'; // 'month' or 'day'
-        let editingInlineTimeKey = null; // Stores the time key of the entry being edited inline
-        let draggedItem = null; // Stores the row being dragged
-
-        // Month Picker Modal specific state
+        let currentMonth = new Date();
+        let selectedDate = new Date();
+        let currentPromptHour = '';
+        let lastPromptedHour = null;
+        let lastPromptedDate = null;
+        let currentView = 'month';
+        let editingInlineTimeKey = null;
+        let draggedItem = null;
         let pickerYear = new Date().getFullYear();
 
         // DOM Elements
@@ -384,22 +382,19 @@
         const monthGrid = document.getElementById('month-grid');
         const closeMonthPickerBtn = document.getElementById('close-month-picker-btn');
 
-
         // --- Helper Functions ---
 
         function showMessage(msg, type = 'info') {
             messageText.textContent = msg;
-            messageDisplay.classList.remove('bg-blue-100', 'border-blue-400', 'text-blue-700', 'bg-red-100', 'border-red-400', 'text-red-700');
+            messageDisplay.className = 'fixed bottom-5 right-5 z-50 px-4 py-3 rounded-lg shadow-md transition-opacity duration-300';
             if (type === 'error') {
-                messageDisplay.classList.add('bg-red-100', 'border-red-400', 'text-red-700');
+                messageDisplay.classList.add('bg-red-100', 'border', 'border-red-400', 'text-red-700');
             } else {
-                messageDisplay.classList.add('bg-blue-100', 'border-blue-400', 'text-blue-700');
+                messageDisplay.classList.add('bg-blue-100', 'border', 'border-blue-400', 'text-blue-700');
             }
             messageDisplay.classList.add('show');
             clearTimeout(messageDisplay.dataset.timeoutId);
-            const timeoutId = setTimeout(() => {
-                messageDisplay.classList.remove('show');
-            }, 2000);
+            const timeoutId = setTimeout(() => messageDisplay.classList.remove('show'), 2000);
             messageDisplay.dataset.timeoutId = timeoutId;
         }
 
@@ -407,35 +402,22 @@
             try {
                 const storedData = localStorage.getItem('activityTrackerData');
                 const parsedData = storedData ? JSON.parse(storedData) : {};
-
                 for (const dateKey in parsedData) {
-                    // Robustness check for malformed data
-                    if (typeof parsedData[dateKey] !== 'object' || parsedData[dateKey] === null) {
-                        continue;
-                    }
-
+                    if (typeof parsedData[dateKey] !== 'object' || parsedData[dateKey] === null) continue;
                     for (const timeKey in parsedData[dateKey]) {
-                        // BUG FIX: Skip the internal _userCleared flag to prevent script crash
-                        if (timeKey === '_userCleared') {
-                            continue;
-                        }
-
+                        if (timeKey === '_userCleared') continue;
                         if (typeof parsedData[dateKey][timeKey] === 'string') {
-                            parsedData[dateKey][timeKey] = {
-                                text: parsedData[dateKey][timeKey],
-                                order: 0
-                            };
+                            parsedData[dateKey][timeKey] = { text: parsedData[dateKey][timeKey], order: 0 };
                         }
                         if (parsedData[dateKey][timeKey].order === undefined) {
-                             parsedData[dateKey][timeKey].order = 0;
+                            parsedData[dateKey][timeKey].order = 0;
                         }
                     }
                 }
                 return parsedData;
-            }
-            catch (error) {
+            } catch (error) {
                 console.error("Error loading data from local storage:", error);
-                showMessage("Error: Could not load data from local storage.", 'error');
+                showMessage("Error: Could not load data.", 'error');
                 return {};
             }
         }
@@ -443,18 +425,14 @@
         function saveActivityDataToLocalStorage(data) {
             try {
                 localStorage.setItem('activityTrackerData', JSON.stringify(data));
-            }
-            catch (error) {
+            } catch (error) {
                 console.error("Error saving data to local storage:", error);
-                showMessage("Error: Could not save data to local storage.", 'error');
+                showMessage("Error: Could not save data.", 'error');
             }
         }
 
         function getYYYYMMDD(date) {
-            const year = date.getFullYear();
-            const month = (date.getMonth() + 1).toString().padStart(2, '0');
-            const day = date.getDate().toString().padStart(2, '0');
-            return `${year}-${month}-${day}`;
+            return date.toISOString().split('T')[0];
         }
 
         function formatDateForDisplay(dateString) {
@@ -465,59 +443,42 @@
         function parseDisplayDateToYYYYMMDD(displayDateStr) {
             const parts = displayDateStr.split(', ');
             if (parts.length < 3) return null;
-            const monthDayYear = `${parts[1]} ${parts[2]}`;
-            const date = new Date(monthDayYear);
-            if (isNaN(date.getTime())) return null;
-            return getYYYYMMDD(date);
+            const date = new Date(`${parts[1]} ${parts[2]}`);
+            return isNaN(date.getTime()) ? null : getYYYYMMDD(date);
         }
 
-        // --- Calendar View Functions ---
+        // --- View Rendering ---
 
         function renderCalendar() {
-            while (calendarView.children.length > 7) {
-                calendarView.removeChild(calendarView.lastChild);
-            }
+            while (calendarView.children.length > 7) calendarView.removeChild(calendarView.lastChild);
             const year = currentMonth.getFullYear();
             const month = currentMonth.getMonth();
             const firstDayOfMonth = new Date(year, month, 1);
             const lastDayOfMonth = new Date(year, month + 1, 0);
-            const numDaysInMonth = lastDayOfMonth.getDate();
-            const firstDayOfWeek = firstDayOfMonth.getDay();
             const allStoredData = loadActivityDataFromLocalStorage();
             const today = new Date();
-
-            for (let i = 0; i < firstDayOfWeek; i++) {
+            
+            for (let i = 0; i < firstDayOfMonth.getDay(); i++) {
                 const emptyCell = document.createElement('div');
-                emptyCell.classList.add('calendar-day-cell', 'other-month');
+                emptyCell.className = 'calendar-day-cell other-month';
                 calendarView.appendChild(emptyCell);
             }
 
-            for (let day = 1; day <= numDaysInMonth; day++) {
+            for (let day = 1; day <= lastDayOfMonth.getDate(); day++) {
                 const date = new Date(year, month, day);
                 const dateKey = getYYYYMMDD(date);
                 let hasActivity = false;
                 if (allStoredData[dateKey]) {
-                    const actualActivities = Object.keys(allStoredData[dateKey]).filter(key => key !== '_userCleared');
-                    for (const timeKey of actualActivities) {
-                        if (allStoredData[dateKey][timeKey].text && allStoredData[dateKey][timeKey].text.trim() !== '') {
-                            hasActivity = true;
-                            break;
-                        }
-                    }
+                    hasActivity = Object.keys(allStoredData[dateKey])
+                        .some(key => key !== '_userCleared' && allStoredData[dateKey][key].text?.trim());
                 }
                 const dayCell = document.createElement('div');
-                dayCell.classList.add('calendar-day-cell', 'current-month');
+                dayCell.className = 'calendar-day-cell current-month';
                 if (date.getDay() === 0) dayCell.classList.add('is-sunday');
                 if (hasActivity) dayCell.classList.add('has-activity');
                 if (getYYYYMMDD(date) === getYYYYMMDD(selectedDate) && currentView === 'day') dayCell.classList.add('selected-day');
                 if (getYYYYMMDD(date) === getYYYYMMDD(today)) dayCell.classList.add('is-today');
-                
-                const dayNumberSpan = document.createElement('div');
-                dayNumberSpan.classList.add('day-number');
-                dayNumberSpan.textContent = day;
-                dayCell.appendChild(dayNumberSpan);
-                if (hasActivity) dayCell.innerHTML += `<div class="activity-indicator"></div>`;
-                
+                dayCell.innerHTML = `<div class="day-number">${day}</div>${hasActivity ? '<div class="activity-indicator"></div>' : ''}`;
                 dayCell.dataset.date = dateKey;
                 dayCell.addEventListener('click', () => {
                     selectedDate = date;
@@ -527,16 +488,13 @@
                 calendarView.appendChild(dayCell);
             }
 
-            const totalCells = firstDayOfWeek + numDaysInMonth;
-            const remainingCells = (7 - (totalCells % 7)) % 7;
-            for (let i = 0; i < remainingCells; i++) {
+            const totalCells = firstDayOfMonth.getDay() + lastDayOfMonth.getDate();
+            for (let i = 0; i < (7 - (totalCells % 7)) % 7; i++) {
                 const emptyCell = document.createElement('div');
-                emptyCell.classList.add('calendar-day-cell', 'other-month');
+                emptyCell.className = 'calendar-day-cell other-month';
                 calendarView.appendChild(emptyCell);
             }
         }
-
-        // --- Daily View Functions ---
 
         function renderDailyActivities() {
             dailyActivityTableBody.innerHTML = '';
@@ -552,94 +510,57 @@
             if (hasStoredActivities) {
                 dailyActivitiesArray = Object.keys(dailyActivitiesMap)
                     .filter(timeKey => timeKey !== '_userCleared')
-                    .map(timeKey => ({
-                        time: timeKey,
-                        text: dailyActivitiesMap[timeKey].text,
-                        order: dailyActivitiesMap[timeKey].order
-                    }))
+                    .map(timeKey => ({ time: timeKey, ...dailyActivitiesMap[timeKey] }))
                     .sort((a, b) => a.order - b.order);
             } else if (!isUserCleared && !isSunday) {
-                // LOGIC FIX: Show default slots but do not save them automatically
                 for (let h = 8; h <= 17; h++) {
-                    const timeKey = `${h.toString().padStart(2, '0')}:00-${(h + 1).toString().padStart(2, '0')}:00`;
+                    const timeKey = `${String(h).padStart(2, '0')}:00-${String(h + 1).padStart(2, '0')}:00`;
                     dailyActivitiesArray.push({ time: timeKey, text: "", order: h - 8 });
                 }
             }
-
-            // Reset inline editing state when re-rendering
-            editingInlineTimeKey = null;
-
+            
+            noDailyActivitiesMessage.classList.toggle('hidden', dailyActivitiesArray.length > 0);
             if (dailyActivitiesArray.length > 0) {
-                noDailyActivitiesMessage.classList.add('hidden');
                 dailyActivitiesArray.forEach(activity => {
-                    const { time: timeKey, text } = activity;
                     const row = document.createElement('tr');
-                    row.classList.add('hover:bg-gray-100', 'transition-colors', 'duration-150');
-                    row.setAttribute('draggable', 'true');
-                    row.dataset.time = timeKey;
-
-                    const timeCell = document.createElement('td');
-                    timeCell.className = 'py-3 px-4 whitespace-nowrap text-sm text-gray-900 border-b border-gray-100 cursor-text time-editable';
-                    timeCell.textContent = timeKey;
-                    timeCell.dataset.time = timeKey;
-                    timeCell.contentEditable = "true";
-
-                    const activityTextCell = document.createElement('td');
-                    activityTextCell.className = 'py-3 px-4 text-sm text-gray-900 border-b border-gray-100';
-                    const activityTextDiv = document.createElement('div');
-                    activityTextDiv.className = 'activity-text-editable';
-                    activityTextDiv.textContent = text;
-                    activityTextDiv.dataset.time = timeKey;
-                    activityTextDiv.contentEditable = "true";
-                    activityTextCell.appendChild(activityTextDiv);
-
-                    const actionsCell = document.createElement('td');
-                    actionsCell.className = 'py-3 px-4 text-sm border-b border-gray-100 flex space-x-1 justify-center items-center';
-                    actionsCell.dataset.time = timeKey;
-                    actionsCell.innerHTML = `
-                        <button class="icon-btn edit-btn" aria-label="Edit" data-time="${timeKey}"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
-                        <button class="icon-btn delete-btn" aria-label="Delete" data-time="${timeKey}"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>`;
-                    
-                    row.append(timeCell, activityTextCell, actionsCell);
+                    row.className = 'hover:bg-gray-100 transition-colors duration-150';
+                    row.draggable = true;
+                    row.dataset.time = activity.time;
+                    row.innerHTML = `
+                        <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-900 border-b border-gray-100 cursor-text time-editable" data-time="${activity.time}" contenteditable="true">${activity.time}</td>
+                        <td class="py-3 px-4 text-sm text-gray-900 border-b border-gray-100">
+                            <div class="activity-text-editable" data-time="${activity.time}" contenteditable="true">${activity.text}</div>
+                        </td>
+                        <td class="py-3 px-4 text-sm border-b border-gray-100 flex space-x-1 justify-center items-center" data-time="${activity.time}">
+                            <button class="icon-btn edit-btn" aria-label="Edit" data-time="${activity.time}"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
+                            <button class="icon-btn delete-btn" aria-label="Delete" data-time="${activity.time}"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+                        </td>`;
                     dailyActivityTableBody.appendChild(row);
                 });
-
                 attachDailyActivityEventListeners();
                 attachDragAndDropListeners();
-            } else {
-                noDailyActivitiesMessage.classList.remove('hidden');
             }
         }
 
-        // --- Event Listeners & Action Handlers ---
+        // --- Event Handling & Actions ---
 
         function attachDailyActivityEventListeners() {
-            document.querySelectorAll('.activity-text-editable, .time-editable').forEach(element => {
-                element.removeEventListener('click', handleInlineEditClick);
-                element.addEventListener('click', handleInlineEditClick);
-                element.removeEventListener('blur', handleInlineEditBlur);
-                element.addEventListener('blur', handleInlineEditBlur);
-                element.removeEventListener('keydown', handleInlineEditKeydown);
-                element.addEventListener('keydown', handleInlineEditKeydown);
+            dailyActivityTableBody.querySelectorAll('.activity-text-editable, .time-editable').forEach(el => {
+                el.addEventListener('click', handleInlineEditClick);
+                el.addEventListener('blur', handleInlineEditBlur);
+                el.addEventListener('keydown', handleInlineEditKeydown);
             });
-            document.querySelectorAll('.edit-btn').forEach(button => {
-                button.removeEventListener('click', handleEditButtonClick);
-                button.addEventListener('click', handleEditButtonClick);
-            });
-            document.querySelectorAll('.delete-btn').forEach(button => {
-                button.removeEventListener('click', handleDeleteButtonClick);
-                button.addEventListener('click', handleDeleteButtonClick);
-            });
+            dailyActivityTableBody.querySelectorAll('.edit-btn').forEach(btn => btn.addEventListener('click', handleEditButtonClick));
+            dailyActivityTableBody.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', handleDeleteButtonClick));
         }
 
         function handleInlineEditClick(event) {
             const targetElement = event.currentTarget;
             const time = targetElement.dataset.time;
             if (editingInlineTimeKey && editingInlineTimeKey !== time) {
-                const previousEditableElement = document.querySelector(`[data-time="${editingInlineTimeKey}"].activity-text-editable, [data-time="${editingInlineTimeKey}"].time-editable`);
-                if (previousEditableElement) previousEditableElement.blur();
+                const prevEl = dailyActivityTableBody.querySelector(`[data-time="${editingInlineTimeKey}"]`);
+                prevEl?.blur();
             }
-            targetElement.focus();
             targetElement.classList.add('editing');
             editingInlineTimeKey = time;
             const actionsCell = targetElement.closest('tr').querySelector('td:last-child');
@@ -651,12 +572,11 @@
 
         function handleInlineEditBlur(event) {
             const targetElement = event.currentTarget;
-            const time = targetElement.dataset.time;
-            if (editingInlineTimeKey === time) {
+            if (editingInlineTimeKey === targetElement.dataset.time) {
                 if (targetElement.classList.contains('time-editable')) {
-                    saveInlineTime(time, targetElement.textContent.trim());
+                    saveInlineTime(targetElement.dataset.time, targetElement.textContent.trim());
                 } else {
-                    saveInlineActivityText(time, targetElement.textContent.trim());
+                    saveInlineActivityText(targetElement.dataset.time, targetElement.textContent.trim());
                 }
             }
             targetElement.classList.remove('editing');
@@ -670,84 +590,25 @@
         }
 
         function handleEditButtonClick(event) {
-            const time = event.currentTarget.dataset.time;
-            const activityDiv = document.querySelector(`.activity-text-editable[data-time="${time}"]`);
-            if (activityDiv) activityDiv.click();
+            event.currentTarget.closest('tr').querySelector('.activity-text-editable')?.click();
         }
 
         function handleDeleteButtonClick(event) {
-            const time = event.currentTarget.dataset.time;
-            deleteActivity(getYYYYMMDD(selectedDate), time);
+            deleteActivity(getYYYYMMDD(selectedDate), event.currentTarget.dataset.time);
         }
 
         function attachInlineActionListeners(timeKey) {
-            const actionsCell = document.querySelector(`td[data-time="${timeKey}"]`);
-            if (!actionsCell) return;
-            actionsCell.querySelector('.save-btn').addEventListener('click', (e) => {
+            const actionsCell = dailyActivityTableBody.querySelector(`td[data-time="${timeKey}"]`);
+            actionsCell?.querySelector('.save-btn')?.addEventListener('click', (e) => {
                 const time = e.currentTarget.dataset.time;
-                document.querySelector(`.activity-text-editable[data-time="${time}"]`)?.blur();
-                document.querySelector(`.time-editable[data-time="${time}"]`)?.blur();
+                dailyActivityTableBody.querySelector(`.activity-text-editable[data-time="${time}"]`)?.blur();
+                dailyActivityTableBody.querySelector(`.time-editable[data-time="${time}"]`)?.blur();
             });
-            actionsCell.querySelector('.delete-btn').addEventListener('click', (e) => {
+            actionsCell?.querySelector('.delete-btn')?.addEventListener('click', (e) => {
                 deleteActivity(getYYYYMMDD(selectedDate), e.currentTarget.dataset.time);
             });
         }
-
-        // --- Drag and Drop Functions ---
-        function attachDragAndDropListeners() { /* ... unchanged ... */ }
-        function handleDragStart(e) { /* ... unchanged ... */ }
-        function handleDragOver(e) { /* ... unchanged ... */ }
-        function handleDragLeave(e) { /* ... unchanged ... */ }
-        function handleDrop(e) { /* ... unchanged ... */ }
-        function handleDragEnd(e) { /* ... unchanged ... */ }
-        // The D&D handlers above are unchanged, so they are omitted for brevity in this thought process, but included in the final code.
-        // Attaching the full, correct handlers from the previous step.
-        function attachDragAndDropListeners() {
-            const rows = dailyActivityTableBody.querySelectorAll('tr');
-            rows.forEach(row => {
-                row.removeEventListener('dragstart', handleDragStart); row.addEventListener('dragstart', handleDragStart);
-                row.removeEventListener('dragover', handleDragOver); row.addEventListener('dragover', handleDragOver);
-                row.removeEventListener('dragleave', handleDragLeave); row.addEventListener('dragleave', handleDragLeave);
-                row.removeEventListener('drop', handleDrop); row.addEventListener('drop', handleDrop);
-                row.removeEventListener('dragend', handleDragEnd); row.addEventListener('dragend', handleDragEnd);
-            });
-        }
-        function handleDragStart(e) {
-            draggedItem = e.target.closest('tr');
-            e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/plain', draggedItem.dataset.time);
-            draggedItem.classList.add('dragging');
-        }
-        function handleDragOver(e) {
-            e.preventDefault();
-            const targetRow = e.target.closest('tr');
-            if (targetRow && targetRow !== draggedItem) {
-                dailyActivityTableBody.querySelectorAll('.drag-over-top, .drag-over-bottom').forEach(row => row.classList.remove('drag-over-top', 'drag-over-bottom'));
-                const rect = targetRow.getBoundingClientRect();
-                const offsetY = e.clientY - rect.top;
-                targetRow.classList.add(offsetY < rect.height / 2 ? 'drag-over-top' : 'drag-over-bottom');
-            }
-        }
-        function handleDragLeave(e) { e.target.closest('tr').classList.remove('drag-over-top', 'drag-over-bottom'); }
-        function handleDrop(e) {
-            e.preventDefault();
-            const targetRow = e.target.closest('tr');
-            if (!targetRow || targetRow === draggedItem) return;
-            const rect = targetRow.getBoundingClientRect();
-            const offsetY = e.clientY - rect.top;
-            dailyActivityTableBody.querySelectorAll('.drag-over-top, .drag-over-bottom').forEach(row => row.classList.remove('drag-over-top', 'drag-over-bottom'));
-            if (offsetY < rect.height / 2) {
-                dailyActivityTableBody.insertBefore(draggedItem, targetRow);
-            } else {
-                dailyActivityTableBody.insertBefore(draggedItem, targetRow.nextSibling);
-            }
-            updateActivityOrderInLocalStorage();
-        }
-        function handleDragEnd(e) {
-            draggedItem.classList.remove('dragging');
-            draggedItem = null;
-            dailyActivityTableBody.querySelectorAll('.drag-over-top, .drag-over-bottom').forEach(row => row.classList.remove('drag-over-top', 'drag-over-bottom'));
-        }
+        
         function updateActivityOrderInLocalStorage() {
             const dateKey = getYYYYMMDD(selectedDate);
             const allStoredData = loadActivityDataFromLocalStorage();
@@ -762,60 +623,53 @@
             if (dailyActivitiesMap._userCleared) newDailyActivitiesMap._userCleared = true;
             allStoredData[dateKey] = newDailyActivitiesMap;
             saveActivityDataToLocalStorage(allStoredData);
-            showMessage("Activities reordered successfully!", 'success');
+            showMessage("Activities reordered!", 'success');
             renderDailyActivities();
         }
 
         // --- Core Logic & Data Manipulation ---
         
         function updateView() {
-            if (currentView === 'month') {
-                monthViewBtn.className = 'w-1/2 px-5 py-3 text-base font-semibold btn-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2';
-                dayViewBtn.className = 'w-1/2 px-5 py-3 text-base font-semibold btn-secondary rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2';
-                calendarView.classList.remove('hidden');
-                dailyView.classList.add('hidden');
+            const isMonthView = currentView === 'month';
+            monthViewBtn.classList.toggle('btn-primary', isMonthView);
+            monthViewBtn.classList.toggle('btn-secondary', !isMonthView);
+            dayViewBtn.classList.toggle('btn-primary', !isMonthView);
+            dayViewBtn.classList.toggle('btn-secondary', isMonthView);
+            calendarView.classList.toggle('hidden', !isMonthView);
+            dailyView.classList.toggle('hidden', isMonthView);
+            currentPeriodDisplay.classList.toggle('cursor-pointer', isMonthView);
+
+            if (isMonthView) {
                 currentPeriodDisplay.textContent = currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-                currentPeriodDisplay.classList.add('cursor-pointer');
                 renderCalendar();
-            } else { // day view
-                dayViewBtn.className = 'w-1/2 px-5 py-3 text-base font-semibold btn-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2';
-                monthViewBtn.className = 'w-1/2 px-5 py-3 text-base font-semibold btn-secondary rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2';
-                dailyView.classList.remove('hidden');
-                calendarView.classList.add('hidden');
+            } else {
                 currentPeriodDisplay.textContent = formatDateForDisplay(getYYYYMMDD(selectedDate));
-                currentPeriodDisplay.classList.remove('cursor-pointer');
                 renderDailyActivities();
             }
         }
 
         function checkTimeAndPrompt() {
             const now = new Date();
-            const dayOfWeek = now.getDay();
-            const hour = now.getHours();
-            const minutes = now.getMinutes();
-            const currentDateStr = getYYYYMMDD(now);
-            if (lastPromptedDate !== currentDateStr) {
+            if (lastPromptedDate !== getYYYYMMDD(now)) {
                 lastPromptedHour = null;
-                lastPromptedDate = currentDateStr;
+                lastPromptedDate = getYYYYMMDD(now);
             }
-            if (dayOfWeek >= 1 && dayOfWeek <= 5 && hour >= 8 && hour <= 18 && minutes === 0) {
-                if (lastPromptedHour !== hour) {
-                    currentPromptHour = `${hour.toString().padStart(2, '0')}:00`;
-                    showNativeNotification(currentPromptHour);
-                    hourlyActivityInput.value = '';
-                    hourlyPromptModal.classList.remove('hidden');
-                    lastPromptedHour = hour;
-                }
+            if (now.getDay() >= 1 && now.getDay() <= 5 && now.getHours() >= 8 && now.getHours() <= 18 && now.getMinutes() === 0 && lastPromptedHour !== now.getHours()) {
+                currentPromptHour = `${String(now.getHours()).padStart(2, '0')}:00`;
+                showNativeNotification();
+                hourlyActivityInput.value = '';
+                hourlyPromptModal.classList.remove('hidden');
+                lastPromptedHour = now.getHours();
             }
         }
 
         function showNativeNotification() {
-            if (!("Notification" in window)) {
-                console.warn("This browser does not support desktop notification");
+            if (!("Notification" in window)) return console.warn("Notifications not supported.");
             } else if (Notification.permission === "granted") {
                 new Notification("TimeBuddy - Log Activity!", {
                     body: `What did you do in the last hour?`,
                     requireInteraction: true
+                    silent: true
                 });
             } else if (Notification.permission !== "denied") {
                 Notification.requestPermission().then(permission => {
@@ -832,27 +686,27 @@
         function saveHourlyActivity() {
             const dateKey = getYYYYMMDD(new Date());
             const activityText = hourlyActivityInput.value.trim();
-            if (!activityText) {
-                showMessage("Activity cannot be empty.", 'error');
-                return;
-            }
+            if (!activityText) return showMessage("Activity cannot be empty.", 'error');
+
             const allStoredData = loadActivityDataFromLocalStorage();
             if (!allStoredData[dateKey]) allStoredData[dateKey] = {};
-            const promptEndHourInt = parseInt(currentPromptHour.split(':')[0]);
-            const activityStartHourInt = promptEndHourInt - 1;
-            const targetTimeRangeKey = `${activityStartHourInt.toString().padStart(2, '0')}:00-${promptEndHourInt.toString().padStart(2, '0')}:00`;
-            if (allStoredData[dateKey][targetTimeRangeKey]) {
-                allStoredData[dateKey][targetTimeRangeKey].text = activityText;
+            
+            const promptEndHour = parseInt(currentPromptHour.split(':')[0]);
+            const targetTimeKey = `${String(promptEndHour - 1).padStart(2, '0')}:00-${String(promptEndHour).padStart(2, '0')}:00`;
+            const existingEntry = allStoredData[dateKey][targetTimeKey];
+
+            if (existingEntry) {
+                const existingText = existingEntry.text.trim();
+                existingEntry.text = existingText ? `${existingText} ${activityText}` : activityText;
             } else {
-                let maxOrder = -1;
-                if (Object.keys(allStoredData[dateKey]).length > 0) {
-                    maxOrder = Math.max(...Object.values(allStoredData[dateKey]).map(item => item.order));
-                }
-                allStoredData[dateKey][targetTimeRangeKey] = { text: activityText, order: maxOrder + 1 };
+                const existingKeys = Object.keys(allStoredData[dateKey]).filter(k => k !== '_userCleared');
+                const maxOrder = existingKeys.length > 0 ? Math.max(...existingKeys.map(k => allStoredData[dateKey][k].order)) : -1;
+                allStoredData[dateKey][targetTimeKey] = { text: activityText, order: maxOrder + 1 };
             }
-            if (allStoredData[dateKey]._userCleared) delete allStoredData[dateKey]._userCleared;
+            
+            delete allStoredData[dateKey]._userCleared;
             saveActivityDataToLocalStorage(allStoredData);
-            showMessage("Activity saved successfully!", 'success');
+            showMessage("Activity saved!", 'success');
             hourlyPromptModal.classList.add('hidden');
             if (dateKey === getYYYYMMDD(selectedDate)) updateView();
         }
@@ -864,97 +718,80 @@
             if (allStoredData[dateKey][timeKey]) {
                 allStoredData[dateKey][timeKey].text = newActivityText;
             } else {
-                let maxOrder = -1;
                 const existingKeys = Object.keys(allStoredData[dateKey]).filter(k => k !== '_userCleared');
-                if (existingKeys.length > 0) {
-                    maxOrder = Math.max(...Object.values(allStoredData[dateKey]).filter(item => typeof item === 'object').map(item => item.order));
-                }
+                const maxOrder = existingKeys.length > 0 ? Math.max(...existingKeys.map(k => allStoredData[dateKey][k].order)) : -1;
                 allStoredData[dateKey][timeKey] = { text: newActivityText, order: maxOrder + 1 };
             }
-            if (allStoredData[dateKey]._userCleared) delete allStoredData[dateKey]._userCleared;
+            delete allStoredData[dateKey]._userCleared;
             saveActivityDataToLocalStorage(allStoredData);
-            showMessage("Activity updated successfully!", 'success');
+            showMessage("Activity updated!", 'success');
             editingInlineTimeKey = null;
             updateView();
         }
 
-        function saveInlineTime(oldTimeKey, newTimeKey) { /* ... unchanged ... */ }
-        function deleteActivity(dateKey, timeKey) { /* ... unchanged ... */ }
-        function downloadCSV() { /* ... unchanged ... */ }
-        function handleFileUpload(event) { /* ... unchanged ... */ }
-        function parseAndImportCSV(csvContent) { /* ... unchanged ... */ }
-        function parseCsvLine(line) { /* ... unchanged ... */ }
-        // Full implementation of unchanged functions
         function saveInlineTime(oldTimeKey, newTimeKey) {
             const dateKey = getYYYYMMDD(selectedDate);
             const allStoredData = loadActivityDataFromLocalStorage();
-            if (newTimeKey.trim() === '') {
-                showMessage("Time cannot be empty.", 'error');
-                updateView();
-                return;
-            }
+            if (!newTimeKey) return showMessage("Time cannot be empty.", 'error');
             if (!allStoredData[dateKey]) allStoredData[dateKey] = {};
             if (allStoredData[dateKey][newTimeKey] && oldTimeKey !== newTimeKey) {
-                showMessage(`An activity already exists with the time "${newTimeKey}".`, 'error');
-                updateView();
-                return;
+                showMessage(`Time "${newTimeKey}" already exists.`, 'error');
+                return updateView();
             }
-            const activityEntry = allStoredData[dateKey][oldTimeKey];
-            if (activityEntry) {
+            const entry = allStoredData[dateKey][oldTimeKey];
+            if (entry) {
                 delete allStoredData[dateKey][oldTimeKey];
-                allStoredData[dateKey][newTimeKey] = activityEntry;
+                allStoredData[dateKey][newTimeKey] = entry;
             }
-            if (allStoredData[dateKey]._userCleared) delete allStoredData[dateKey]._userCleared;
             saveActivityDataToLocalStorage(allStoredData);
-            showMessage("Time updated successfully!", 'success');
+            showMessage("Time updated!", 'success');
             editingInlineTimeKey = null;
             updateView();
         }
+
         function deleteActivity(dateKey, timeKey) {
             const allStoredData = loadActivityDataFromLocalStorage();
-            if (allStoredData[dateKey] && allStoredData[dateKey][timeKey]) {
+            if (allStoredData[dateKey]?.[timeKey]) {
                 delete allStoredData[dateKey][timeKey];
-                const hasActualActivities = Object.keys(allStoredData[dateKey]).filter(key => key !== '_userCleared').length > 0;
-                if (!hasActualActivities) allStoredData[dateKey] = { _userCleared: true };
+                if (Object.keys(allStoredData[dateKey]).filter(k => k !== '_userCleared').length === 0) {
+                    allStoredData[dateKey] = { _userCleared: true };
+                }
                 saveActivityDataToLocalStorage(allStoredData);
-                showMessage("Activity deleted successfully!", 'success');
+                showMessage("Activity deleted.", 'success');
                 updateView();
             }
         }
+        
         function downloadCSV() {
             const allStoredData = loadActivityDataFromLocalStorage();
-            const yearMonth = `${currentMonth.getFullYear()}-${(currentMonth.getMonth() + 1).toString().padStart(2, '0')}`;
-            let csvContent = "data:text/csv;charset=utf-8,Date,Time,Activity\n";
-            const monthlyActivities = Object.keys(allStoredData).filter(dateKey => dateKey.startsWith(yearMonth));
+            const yearMonth = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}`;
             let activitiesToExport = [];
-            monthlyActivities.forEach(dateKey => {
-                const dailyEntries = Object.keys(allStoredData[dateKey])
-                    .filter(timeKey => timeKey !== '_userCleared' && allStoredData[dateKey][timeKey].text && allStoredData[dateKey][timeKey].text.trim() !== '')
-                    .map(timeKey => ({
-                        date: dateKey,
-                        time: timeKey,
-                        text: allStoredData[dateKey][timeKey].text,
-                        order: allStoredData[dateKey][timeKey].order
-                    }));
-                activitiesToExport = activitiesToExport.concat(dailyEntries);
-            });
-            if (activitiesToExport.length === 0) {
-                showMessage("No activities to export for this month.", 'info');
-                return;
-            }
+            Object.keys(allStoredData)
+                .filter(dateKey => dateKey.startsWith(yearMonth))
+                .forEach(dateKey => {
+                    const dailyEntries = Object.keys(allStoredData[dateKey])
+                        .filter(timeKey => timeKey !== '_userCleared' && allStoredData[dateKey][timeKey].text?.trim())
+                        .map(timeKey => ({ date: dateKey, ...allStoredData[dateKey][timeKey] }));
+                    activitiesToExport.push(...dailyEntries);
+                });
+
+            if (activitiesToExport.length === 0) return showMessage("No activities to export for this month.", 'info');
+
             activitiesToExport.sort((a, b) => a.date.localeCompare(b.date) || a.order - b.order);
-            activitiesToExport.forEach(entry => {
-                const activity = entry.text.replace(/"/g, '""');
-                csvContent += `"${formatDateForDisplay(entry.date)}","${entry.time}","${activity}"\n`;
-            });
+            let csvContent = "data:text/csv;charset=utf-8,Date,Time,Activity\n";
+            csvContent += activitiesToExport.map(entry => {
+                const activity = `"${entry.text.replace(/"/g, '""')}"`;
+                return `"${formatDateForDisplay(entry.date)}","${entry.time}",${activity}`;
+            }).join("\n");
+            
             const link = document.createElement("a");
-            link.setAttribute("href", encodeURI(csvContent));
-            link.setAttribute("download", `TimeBuddy_${yearMonth}.csv`);
+            link.href = encodeURI(csvContent);
+            link.download = `TimeBuddy_${yearMonth}.csv`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            showMessage(`Exported activities for ${yearMonth} to CSV!`, 'success');
         }
+
         function handleFileUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -963,51 +800,121 @@
             reader.onerror = () => showMessage("Error reading file.", 'error');
             reader.readAsText(file);
         }
+
         function parseAndImportCSV(csvContent) {
-            const lines = csvContent.split('\n').filter(line => line.trim() !== '');
-            if (lines.length === 0) { showMessage("CSV file is empty.", 'error'); return; }
-            const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
-            if (headers[0] !== "Date" || headers[1] !== "Time" || headers[2] !== "Activity") { showMessage("Invalid CSV format. Expected headers: Date,Time,Activity", 'error'); return; }
+            const lines = csvContent.split('\n').filter(line => line.trim());
+            if (lines.length <= 1) return showMessage("CSV file is empty or has no data.", 'error');
+            
+            const allExistingData = loadActivityDataFromLocalStorage();
             const importedData = {};
-            for (let i = 1; i < lines.length; i++) {
-                const row = parseCsvLine(lines[i]);
-                if (row.length < 3) continue;
+
+            lines.slice(1).forEach(line => {
+                const row = parseCsvLine(line);
+                if (row.length < 3) return;
                 const [displayDateStr, time, activityText] = row;
                 const dateKey = parseDisplayDateToYYYYMMDD(displayDateStr);
-                if (!dateKey) { console.warn(`Skipping row due to invalid date format: ${displayDateStr}`); continue; }
+                if (!dateKey) return console.warn(`Skipping row with invalid date: ${displayDateStr}`);
                 if (!importedData[dateKey]) importedData[dateKey] = {};
-                const orderToAssign = importedData[dateKey][time] ? importedData[dateKey][time].order : Object.keys(importedData[dateKey]).length;
-                importedData[dateKey][time] = { text: activityText, order: orderToAssign };
-            }
-            const allExistingData = loadActivityDataFromLocalStorage();
-            const mergedData = { ...allExistingData };
+                const order = Object.keys(importedData[dateKey]).length;
+                importedData[dateKey][time] = { text: activityText, order };
+            });
+
             for (const dateKey in importedData) {
-                if (!mergedData[dateKey]) mergedData[dateKey] = {};
-                for (const timeKey in importedData[dateKey]) {
-                    mergedData[dateKey][timeKey] = importedData[dateKey][timeKey];
+                if (!allExistingData[dateKey]) {
+                    allExistingData[dateKey] = importedData[dateKey];
+                } else {
+                    for (const timeKey in importedData[dateKey]) {
+                        const importedEntry = importedData[dateKey][timeKey];
+                        const existingEntry = allExistingData[dateKey][timeKey];
+                        if (existingEntry) {
+                            const existingText = existingEntry.text.trim();
+                            const importedText = importedEntry.text.trim();
+                            if (existingText && importedText) {
+                                existingEntry.text = `${existingText} ${importedText}`;
+                            } else if (importedText) {
+                                existingEntry.text = importedText;
+                            }
+                        } else {
+                            allExistingData[dateKey][timeKey] = importedEntry;
+                        }
+                    }
                 }
-                let dayActivitiesArray = Object.keys(mergedData[dateKey]).filter(key => key !== '_userCleared').map(timeKey => ({ time: timeKey, ...mergedData[dateKey][timeKey] })).sort((a, b) => a.order - b.order);
-                let reorderedDayMap = {};
-                dayActivitiesArray.forEach((activity, index) => { reorderedDayMap[activity.time] = { text: activity.text, order: index }; });
-                if (mergedData[dateKey]._userCleared) reorderedDayMap._userCleared = true;
-                mergedData[dateKey] = reorderedDayMap;
             }
-            saveActivityDataToLocalStorage(mergedData);
-            showMessage("CSV data imported successfully!", 'success');
+            
+            for (const dateKey in importedData) {
+                if (allExistingData[dateKey]) {
+                    let dayArray = Object.keys(allExistingData[dateKey])
+                        .filter(key => key !== '_userCleared')
+                        .map(timeKey => ({ time: timeKey, ...allExistingData[dateKey][timeKey] }))
+                        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+                    let reorderedMap = {};
+                    dayArray.forEach((activity, index) => {
+                        reorderedMap[activity.time] = { text: activity.text, order: index };
+                    });
+                    if (allExistingData[dateKey]._userCleared) reorderedMap._userCleared = true;
+                    allExistingData[dateKey] = reorderedMap;
+                }
+            }
+
+            saveActivityDataToLocalStorage(allExistingData);
+            showMessage("CSV data imported and merged successfully!", 'success');
             updateView();
         }
+
         function parseCsvLine(line) {
             const result = [];
-            let inQuote = false;
-            let currentField = '';
+            let inQuote = false, field = '';
             for (let i = 0; i < line.length; i++) {
                 const char = line[i];
-                if (char === '"') { inQuote = !inQuote; if (inQuote && line[i + 1] === '"') { currentField += '"'; i++; } }
-                else if (char === ',' && !inQuote) { result.push(currentField.trim()); currentField = ''; }
-                else { currentField += char; }
+                if (char === '"') {
+                    if (inQuote && line[i + 1] === '"') { field += '"'; i++; } else { inQuote = !inQuote; }
+                } else if (char === ',' && !inQuote) {
+                    result.push(field); field = '';
+                } else {
+                    field += char;
+                }
             }
-            result.push(currentField.trim());
-            return result.map(field => field.replace(/^"|"$/g, ''));
+            result.push(field);
+            return result.map(f => f.trim().replace(/^"|"$/g, ''));
+        }
+        
+        // Drag and Drop implementation (unchanged)
+        function attachDragAndDropListeners() {
+            dailyActivityTableBody.querySelectorAll('tr').forEach(row => {
+                row.addEventListener('dragstart', handleDragStart); row.addEventListener('dragover', handleDragOver);
+                row.addEventListener('dragleave', handleDragLeave); row.addEventListener('drop', handleDrop);
+                row.addEventListener('dragend', handleDragEnd);
+            });
+        }
+        function handleDragStart(e) {
+            draggedItem = e.target.closest('tr');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', draggedItem.dataset.time);
+            draggedItem.classList.add('dragging');
+        }
+        function handleDragOver(e) {
+            e.preventDefault();
+            const targetRow = e.target.closest('tr');
+            if (targetRow && targetRow !== draggedItem) {
+                dailyActivityTableBody.querySelectorAll('.drag-over-top, .drag-over-bottom').forEach(row => row.classList.remove('drag-over-top', 'drag-over-bottom'));
+                const rect = targetRow.getBoundingClientRect();
+                targetRow.classList.add(e.clientY - rect.top < rect.height / 2 ? 'drag-over-top' : 'drag-over-bottom');
+            }
+        }
+        function handleDragLeave(e) { e.target.closest('tr')?.classList.remove('drag-over-top', 'drag-over-bottom'); }
+        function handleDrop(e) {
+            e.preventDefault();
+            const targetRow = e.target.closest('tr');
+            if (!targetRow || targetRow === draggedItem) return;
+            const rect = targetRow.getBoundingClientRect();
+            dailyActivityTableBody.querySelectorAll('.drag-over-top, .drag-over-bottom').forEach(row => row.classList.remove('drag-over-top', 'drag-over-bottom'));
+            dailyActivityTableBody.insertBefore(draggedItem, e.clientY - rect.top < rect.height / 2 ? targetRow : targetRow.nextSibling);
+            updateActivityOrderInLocalStorage();
+        }
+        function handleDragEnd() {
+            draggedItem?.classList.remove('dragging');
+            draggedItem = null;
+            dailyActivityTableBody.querySelectorAll('.drag-over-top, .drag-over-bottom').forEach(row => row.classList.remove('drag-over-top', 'drag-over-bottom'));
         }
 
         // --- Event Listeners & Initialization ---
@@ -1015,20 +922,20 @@
         monthViewBtn.addEventListener('click', () => { currentView = 'month'; updateView(); });
         dayViewBtn.addEventListener('click', () => { currentView = 'day'; updateView(); });
         prevBtn.addEventListener('click', () => {
-            if (currentView === 'month') { currentMonth.setMonth(currentMonth.getMonth() - 1); }
-            else { selectedDate.setDate(selectedDate.getDate() - 1); }
+            if (currentView === 'month') currentMonth.setMonth(currentMonth.getMonth() - 1);
+            else selectedDate.setDate(selectedDate.getDate() - 1);
             updateView();
         });
         nextBtn.addEventListener('click', () => {
-            if (currentView === 'month') { currentMonth.setMonth(currentMonth.getMonth() + 1); }
-            else { selectedDate.setDate(selectedDate.getDate() + 1); }
+            if (currentView === 'month') currentMonth.setMonth(currentMonth.getMonth() + 1);
+            else selectedDate.setDate(selectedDate.getDate() + 1);
             updateView();
         });
         todayBtn.addEventListener('click', () => {
             const today = new Date();
             selectedDate = today;
             currentMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-            currentView = 'month';
+            // This now respects the current view instead of forcing a switch
             updateView();
         });
         currentPeriodDisplay.addEventListener('click', () => {
@@ -1041,19 +948,16 @@
         addNewSlotBtn.addEventListener('click', () => {
             const dateKey = getYYYYMMDD(selectedDate);
             const allStoredData = loadActivityDataFromLocalStorage();
-            let newTimeKey = "00:00", counter = 0;
             if (!allStoredData[dateKey]) allStoredData[dateKey] = {};
+            let newTimeKey = "00:00", counter = 0;
             while (allStoredData[dateKey][newTimeKey]) newTimeKey = `00:00-${++counter}`;
-            let maxOrder = -1;
             const existingKeys = Object.keys(allStoredData[dateKey]).filter(k => k !== '_userCleared');
-            if (existingKeys.length > 0) {
-                maxOrder = Math.max(...Object.values(allStoredData[dateKey]).filter(item => typeof item === 'object').map(item => item.order));
-            }
+            const maxOrder = existingKeys.length > 0 ? Math.max(...existingKeys.map(k => allStoredData[dateKey][k].order)) : -1;
             allStoredData[dateKey][newTimeKey] = { text: "", order: maxOrder + 1 };
-            if (allStoredData[dateKey]._userCleared) delete allStoredData[dateKey]._userCleared;
+            delete allStoredData[dateKey]._userCleared;
             saveActivityDataToLocalStorage(allStoredData);
             updateView();
-            setTimeout(() => document.querySelector(`.activity-text-editable[data-time="${newTimeKey}"]`)?.click(), 0);
+            setTimeout(() => dailyActivityTableBody.querySelector(`.activity-text-editable[data-time="${newTimeKey}"]`)?.click(), 0);
         });
         saveHourlyActivityBtn.addEventListener('click', saveHourlyActivity);
         closeHourlyPromptModalBtn.addEventListener('click', () => hourlyPromptModal.classList.add('hidden'));
@@ -1069,21 +973,21 @@
             pickerYearDisplay.textContent = pickerYear;
             const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             monthNames.forEach((name, index) => {
-                const monthButton = document.createElement('button');
-                monthButton.className = 'px-4 py-3 rounded-lg font-medium text-gray-800 bg-gray-100 hover:bg-blue-100 hover:text-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2';
-                monthButton.textContent = name;
+                const button = document.createElement('button');
+                button.className = 'px-4 py-3 rounded-lg font-medium text-gray-800 bg-gray-100 hover:bg-blue-100 hover:text-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500';
+                button.textContent = name;
                 if (pickerYear === currentMonth.getFullYear() && index === currentMonth.getMonth()) {
-                    monthButton.classList.remove('bg-gray-100', 'text-gray-800');
-                    monthButton.classList.add('bg-blue-500', 'text-white');
+                    button.classList.add('bg-blue-500', 'text-white');
+                    button.classList.remove('bg-gray-100', 'text-gray-800');
                 }
-                monthButton.addEventListener('click', () => {
+                button.addEventListener('click', () => {
                     currentMonth = new Date(pickerYear, index, 1);
                     selectedDate = new Date(pickerYear, index, 1);
                     currentView = 'month';
                     updateView();
                     monthPickerModal.classList.add('hidden');
                 });
-                monthGrid.appendChild(monthButton);
+                monthGrid.appendChild(button);
             });
         }
 
