@@ -220,7 +220,7 @@
             </h1>
         </div>
 
-        <div id="message-display" class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded-lg shadow-md" role="alert">
+        <div id="message-display" role="alert">
             <span id="message-text" class="block sm:inline font-medium"></span>
         </div>
 
@@ -229,7 +229,6 @@
                 <button id="month-view-btn" class="w-1/2 px-5 py-3 text-base font-semibold btn-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                     Month View
                 </button>
-
                 <button id="day-view-btn" class="w-1/2 px-5 py-3 text-base font-semibold btn-secondary rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                     Day View
                 </button>
@@ -240,7 +239,7 @@
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
                 </button>
                 <h2 id="current-period-display" class="text-xl font-bold text-gray-800 text-center mx-2 cursor-pointer hover:text-blue-600 transition-colors duration-200">
-                    </h2>
+                </h2>
                 <button id="next-btn" class="btn-primary rounded-full flex items-center justify-center w-12 h-12 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
                 </button>
@@ -263,7 +262,7 @@
                 <div class="py-3 text-center text-sm font-semibold text-gray-700 bg-gray-100 border border-gray-200 rounded-lg">Thu</div>
                 <div class="py-3 text-center text-sm font-semibold text-gray-700 bg-gray-100 border border-gray-200 rounded-lg">Fri</div>
                 <div class="py-3 text-center text-sm font-semibold text-gray-700 bg-gray-100 border border-gray-200 rounded-lg">Sat</div>
-                </div>
+            </div>
 
             <div id="daily-view" class="hidden">
                 <button id="add-new-slot-btn" class="px-6 py-3 mb-6 btn-primary rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
@@ -279,7 +278,7 @@
                         </tr>
                     </thead>
                     <tbody id="daily-activity-table-body" class="divide-y divide-gray-200">
-                        </tbody>
+                    </tbody>
                 </table>
                 <p id="no-daily-activities-message" class="text-center text-gray-500 italic mt-6 hidden">No activities recorded for this day.</p>
             </div>
@@ -299,20 +298,12 @@
 
     <div id="hourly-prompt-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 modal-backdrop">
         <div class="bg-white rounded-xl border border-gray-200 shadow-2xl p-6 md:p-8 w-full max-w-md transform transition-all duration-300 scale-100">
-            <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">
-                Time to Log Activity!
-            </h2>
-            <p class="text-lg text-gray-700 mb-4 text-center">
-                What did you do in the last hour?
-            </p>
+            <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Time to Log Activity!</h2>
+            <p class="text-lg text-gray-700 mb-4 text-center">What did you do in the last hour?</p>
             <textarea id="hourly-activity-input" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-y min-h-[100px]"></textarea>
             <div class="flex justify-end mt-6 space-x-3">
-                <button id="close-hourly-prompt-modal-btn" class="px-5 py-2 btn-secondary rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                    Close
-                </button>
-                <button id="save-hourly-activity-btn" class="px-5 py-2 btn-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                    Save
-                </button>
+                <button id="close-hourly-prompt-modal-btn" class="px-5 py-2 btn-secondary rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Close</button>
+                <button id="save-hourly-activity-btn" class="px-5 py-2 btn-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Save</button>
             </div>
         </div>
     </div>
@@ -328,12 +319,9 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M6 5l7 7-7 7"></path></svg>
                 </button>
             </div>
-            <div id="month-grid" class="grid grid-cols-3 gap-3">
-                </div>
+            <div id="month-grid" class="grid grid-cols-3 gap-3"></div>
             <div class="flex justify-end mt-6">
-                <button id="close-month-picker-btn" class="px-5 py-2 btn-secondary rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                    Close
-                </button>
+                <button id="close-month-picker-btn" class="px-5 py-2 btn-secondary rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Close</button>
             </div>
         </div>
     </div>
@@ -616,9 +604,9 @@
             const orderedTimeKeys = Array.from(dailyActivityTableBody.children).map(row => row.dataset.time);
             let newDailyActivitiesMap = {};
             orderedTimeKeys.forEach((timeKey, index) => {
-                if (dailyActivitiesMap[timeKey]) {
-                    newDailyActivitiesMap[timeKey] = { text: dailyActivitiesMap[timeKey].text, order: index };
-                }
+                // Ensure the entry exists before trying to access properties
+                const originalEntry = dailyActivitiesMap[timeKey] || { text: dailyActivityTableBody.querySelector(`[data-time="${timeKey}"] .activity-text-editable`).textContent };
+                newDailyActivitiesMap[timeKey] = { text: originalEntry.text, order: index };
             });
             if (dailyActivitiesMap._userCleared) newDailyActivitiesMap._userCleared = true;
             allStoredData[dateKey] = newDailyActivitiesMap;
@@ -665,18 +653,20 @@
 
         function showNativeNotification() {
             if (!("Notification" in window)) return console.warn("Notifications not supported.");
+            
             if (Notification.permission === "granted") {
                 new Notification("TimeBuddy - Log Activity!", {
                     body: `What did you do in the last hour?`,
-                    requireInteraction: true
-                    silent: true
+                    requireInteraction: true,
+                    silent: true 
                 });
             } else if (Notification.permission !== "denied") {
                 Notification.requestPermission().then(permission => {
                     if (permission === "granted") {
                         new Notification("TimeBuddy - Log Activity!", {
                             body: `What did you do in the last hour?`,
-                            requireInteraction: true
+                            requireInteraction: true,
+                            silent: true
                         });
                     }
                 });
@@ -715,6 +705,7 @@
             const dateKey = getYYYYMMDD(selectedDate);
             const allStoredData = loadActivityDataFromLocalStorage();
             if (!allStoredData[dateKey]) allStoredData[dateKey] = {};
+
             if (allStoredData[dateKey][timeKey]) {
                 allStoredData[dateKey][timeKey].text = newActivityText;
             } else {
@@ -732,7 +723,10 @@
         function saveInlineTime(oldTimeKey, newTimeKey) {
             const dateKey = getYYYYMMDD(selectedDate);
             const allStoredData = loadActivityDataFromLocalStorage();
-            if (!newTimeKey) return showMessage("Time cannot be empty.", 'error');
+            if (!newTimeKey) {
+                showMessage("Time cannot be empty.", 'error');
+                return updateView(); // Re-render to revert the change in the UI
+            }
             if (!allStoredData[dateKey]) allStoredData[dateKey] = {};
             if (allStoredData[dateKey][newTimeKey] && oldTimeKey !== newTimeKey) {
                 showMessage(`Time "${newTimeKey}" already exists.`, 'error');
@@ -771,7 +765,7 @@
                 .forEach(dateKey => {
                     const dailyEntries = Object.keys(allStoredData[dateKey])
                         .filter(timeKey => timeKey !== '_userCleared' && allStoredData[dateKey][timeKey].text?.trim())
-                        .map(timeKey => ({ date: dateKey, ...allStoredData[dateKey][timeKey] }));
+                        .map(timeKey => ({ date: dateKey, time: timeKey, ...allStoredData[dateKey][timeKey] }));
                     activitiesToExport.push(...dailyEntries);
                 });
 
@@ -806,7 +800,7 @@
             if (lines.length <= 1) return showMessage("CSV file is empty or has no data.", 'error');
             
             const allExistingData = loadActivityDataFromLocalStorage();
-            const importedData = {};
+            const importedDays = {};
 
             lines.slice(1).forEach(line => {
                 const row = parseCsvLine(line);
@@ -814,50 +808,40 @@
                 const [displayDateStr, time, activityText] = row;
                 const dateKey = parseDisplayDateToYYYYMMDD(displayDateStr);
                 if (!dateKey) return console.warn(`Skipping row with invalid date: ${displayDateStr}`);
-                if (!importedData[dateKey]) importedData[dateKey] = {};
-                const order = Object.keys(importedData[dateKey]).length;
-                importedData[dateKey][time] = { text: activityText, order };
+                
+                if (!allExistingData[dateKey]) allExistingData[dateKey] = {};
+                importedDays[dateKey] = true;
+
+                const existingEntry = allExistingData[dateKey][time];
+                if (existingEntry) {
+                    const existingText = existingEntry.text.trim();
+                    const importedText = activityText.trim();
+                    if (existingText && importedText) {
+                        existingEntry.text = `${existingText} ${importedText}`;
+                    } else if (importedText) {
+                        existingEntry.text = importedText;
+                    }
+                } else {
+                    const order = Object.keys(allExistingData[dateKey]).filter(k => k !== '_userCleared').length;
+                    allExistingData[dateKey][time] = { text: activityText, order };
+                }
+            });
+            
+            Object.keys(importedDays).forEach(dateKey => {
+                let dayArray = Object.keys(allExistingData[dateKey])
+                    .filter(key => key !== '_userCleared')
+                    .map(timeKey => ({ time: timeKey, ...allExistingData[dateKey][timeKey] }))
+                    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+                let reorderedMap = {};
+                dayArray.forEach((activity, index) => {
+                    reorderedMap[activity.time] = { text: activity.text, order: index };
+                });
+                if (allExistingData[dateKey]._userCleared) reorderedMap._userCleared = true;
+                allExistingData[dateKey] = reorderedMap;
             });
 
-            for (const dateKey in importedData) {
-                if (!allExistingData[dateKey]) {
-                    allExistingData[dateKey] = importedData[dateKey];
-                } else {
-                    for (const timeKey in importedData[dateKey]) {
-                        const importedEntry = importedData[dateKey][timeKey];
-                        const existingEntry = allExistingData[dateKey][timeKey];
-                        if (existingEntry) {
-                            const existingText = existingEntry.text.trim();
-                            const importedText = importedEntry.text.trim();
-                            if (existingText && importedText) {
-                                existingEntry.text = `${existingText} ${importedText}`;
-                            } else if (importedText) {
-                                existingEntry.text = importedText;
-                            }
-                        } else {
-                            allExistingData[dateKey][timeKey] = importedEntry;
-                        }
-                    }
-                }
-            }
-            
-            for (const dateKey in importedData) {
-                if (allExistingData[dateKey]) {
-                    let dayArray = Object.keys(allExistingData[dateKey])
-                        .filter(key => key !== '_userCleared')
-                        .map(timeKey => ({ time: timeKey, ...allExistingData[dateKey][timeKey] }))
-                        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-                    let reorderedMap = {};
-                    dayArray.forEach((activity, index) => {
-                        reorderedMap[activity.time] = { text: activity.text, order: index };
-                    });
-                    if (allExistingData[dateKey]._userCleared) reorderedMap._userCleared = true;
-                    allExistingData[dateKey] = reorderedMap;
-                }
-            }
-
             saveActivityDataToLocalStorage(allExistingData);
-            showMessage("CSV data imported and merged successfully!", 'success');
+            showMessage("CSV data imported and merged!", 'success');
             updateView();
         }
 
@@ -878,7 +862,7 @@
             return result.map(f => f.trim().replace(/^"|"$/g, ''));
         }
         
-        // Drag and Drop implementation (unchanged)
+        // Drag and Drop implementation
         function attachDragAndDropListeners() {
             dailyActivityTableBody.querySelectorAll('tr').forEach(row => {
                 row.addEventListener('dragstart', handleDragStart); row.addEventListener('dragover', handleDragOver);
@@ -935,7 +919,6 @@
             const today = new Date();
             selectedDate = today;
             currentMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-            // This now respects the current view instead of forcing a switch
             updateView();
         });
         currentPeriodDisplay.addEventListener('click', () => {
