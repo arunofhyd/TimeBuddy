@@ -431,6 +431,11 @@
                 // And ensure 'order' property exists for all activities
                 for (const dateKey in parsedData) {
                     for (const timeKey in parsedData[dateKey]) {
+                        // BUG FIX: Skip the internal _userCleared flag to prevent script crash
+                        if (timeKey === '_userCleared') {
+                            continue;
+                        }
+
                         if (typeof parsedData[dateKey][timeKey] === 'string') {
                             parsedData[dateKey][timeKey] = {
                                 text: parsedData[dateKey][timeKey],
@@ -993,7 +998,6 @@
                 new Notification("TimeBuddy - Log Activity!", {
                     body: `What did you do in the last hour?`,
                     requireInteraction: true // Make the notification persistent until interacted with
-                    silent: true // No sound
                 });
             } else if (Notification.permission !== "denied") {
                 Notification.requestPermission().then(function (permission) {
@@ -1001,7 +1005,6 @@
                         new Notification("TimeBuddy - Log Activity!", {
                             body: `What did you do in the last hour?`,
                             requireInteraction: true // Make the notification persistent until interacted with
-                            silent: true // No sound
                         });
                     }
                 });
