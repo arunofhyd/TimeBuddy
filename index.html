@@ -203,7 +203,6 @@
                 height: 6px;
                 margin-top: 2px;
             }
-            /* Adjust padding for table cells on small screens */
             .daily-activity-table-body td {
                 padding-left: 10px;
                 padding-right: 10px;
@@ -215,9 +214,7 @@
 
     <div class="w-full max-w-4xl bg-white rounded-xl border border-gray-200 shadow-2xl p-6 md:p-8">
         <div class="flex justify-between items-center mb-6">
-            <h1 class="text-4xl font-extrabold text-gray-800 tracking-tight text-center w-full">
-                TimeBuddy
-            </h1>
+            <h1 class="text-4xl font-extrabold text-gray-800 tracking-tight text-center w-full">TimeBuddy</h1>
         </div>
 
         <div id="message-display" role="alert">
@@ -226,32 +223,21 @@
 
         <div class="flex flex-col space-y-4 mb-8 w-full">
             <div class="flex space-x-4 w-full">
-                <button id="month-view-btn" class="w-1/2 px-5 py-3 text-base font-semibold btn-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                    Month View
-                </button>
-                <button id="day-view-btn" class="w-1/2 px-5 py-3 text-base font-semibold btn-secondary rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                    Day View
-                </button>
+                <button id="month-view-btn" class="w-1/2 px-5 py-3 text-base font-semibold btn-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Month View</button>
+                <button id="day-view-btn" class="w-1/2 px-5 py-3 text-base font-semibold btn-secondary rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Day View</button>
             </div>
-
             <div class="flex items-center justify-between w-full">
                 <button id="prev-btn" class="btn-primary rounded-full flex items-center justify-center w-12 h-12 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
                 </button>
-                <h2 id="current-period-display" class="text-xl font-bold text-gray-800 text-center mx-2 cursor-pointer hover:text-blue-600 transition-colors duration-200">
-                </h2>
+                <h2 id="current-period-display" class="text-xl font-bold text-gray-800 text-center mx-2 cursor-pointer hover:text-blue-600 transition-colors duration-200"></h2>
                 <button id="next-btn" class="btn-primary rounded-full flex items-center justify-center w-12 h-12 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
                 </button>
             </div>
-
-            <button id="today-btn" class="w-full px-5 py-3 text-base font-bold text-gray-700 bg-white border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 hover:bg-gray-50">
-                Today
-            </button>
-            
+            <button id="today-btn" class="w-full px-5 py-3 text-base font-bold text-gray-700 bg-white border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 hover:bg-gray-50">Today</button>
             <input type="file" id="upload-csv-input" accept=".csv" class="hidden">
         </div>
-
 
         <div id="main-content-area" class="w-full">
             <div id="calendar-view" class="grid grid-cols-7 gap-3">
@@ -263,11 +249,10 @@
                 <div class="py-3 text-center text-sm font-semibold text-gray-700 bg-gray-100 border border-gray-200 rounded-lg">Fri</div>
                 <div class="py-3 text-center text-sm font-semibold text-gray-700 bg-gray-100 border border-gray-200 rounded-lg">Sat</div>
             </div>
-
             <div id="daily-view" class="hidden">
                 <button id="add-new-slot-btn" class="px-6 py-3 mb-6 btn-primary rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                     Add New Slot
-                    <svg class="inline-block w-5 h-5 ml-2 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                    <svg class="inline-block w-5 h-5 ml-2 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                 </button>
                 <table class="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden shadow-md">
                     <thead class="bg-gray-50">
@@ -277,19 +262,17 @@
                             <th class="py-3 px-4 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200 w-1/6">Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="daily-activity-table-body" class="divide-y divide-gray-200">
-                    </tbody>
+                    <tbody id="daily-activity-table-body" class="divide-y divide-gray-200"></tbody>
                 </table>
                 <p id="no-daily-activities-message" class="text-center text-gray-500 italic mt-6 hidden">No activities recorded for this day.</p>
             </div>
-
             <div class="mt-8 pt-6 border-t border-gray-200 flex flex-col md:flex-row gap-4">
                 <button id="upload-csv-btn" class="w-full md:w-1/2 px-5 py-3 text-base font-semibold btn-secondary rounded-lg flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0l-4 4m4-4v12"></path></svg>
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0l-4 4m4-4v12"></path></svg>
                     <span>Upload Data</span>
                 </button>
                 <button id="download-csv-btn" class="w-full md:w-1/2 px-5 py-3 text-base font-semibold btn-primary rounded-lg flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                     <span>Download Data</span>
                 </button>
             </div>
@@ -312,11 +295,11 @@
         <div class="bg-white rounded-xl border border-gray-200 shadow-2xl p-6 md:p-8 w-full max-w-md transform transition-all duration-300 scale-100">
             <div class="flex justify-between items-center mb-6">
                 <button id="prev-year-btn" class="p-2 btn-secondary rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" aria-label="Previous Year">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path></svg>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path></svg>
                 </button>
                 <h3 id="picker-year-display" class="text-2xl font-semibold text-gray-800">2023</h3>
                 <button id="next-year-btn" class="p-2 btn-secondary rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" aria-label="Next Year">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M6 5l7 7-7 7"></path></svg>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M6 5l7 7-7 7"></path></svg>
                 </button>
             </div>
             <div id="month-grid" class="grid grid-cols-3 gap-3"></div>
@@ -420,7 +403,10 @@
         }
 
         function getYYYYMMDD(date) {
-            return date.toISOString().split('T')[0];
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
         }
 
         function formatDateForDisplay(dateString) {
@@ -604,7 +590,6 @@
             const orderedTimeKeys = Array.from(dailyActivityTableBody.children).map(row => row.dataset.time);
             let newDailyActivitiesMap = {};
             orderedTimeKeys.forEach((timeKey, index) => {
-                // Ensure the entry exists before trying to access properties
                 const originalEntry = dailyActivitiesMap[timeKey] || { text: dailyActivityTableBody.querySelector(`[data-time="${timeKey}"] .activity-text-editable`).textContent };
                 newDailyActivitiesMap[timeKey] = { text: originalEntry.text, order: index };
             });
@@ -652,13 +637,14 @@
         }
 
         function showNativeNotification() {
-            if (!("Notification" in window)) return console.warn("Notifications not supported.");
-            
+            if (!("Notification" in window)) {
+                return console.warn("Notifications not supported.");
+            }
             if (Notification.permission === "granted") {
                 new Notification("TimeBuddy - Log Activity!", {
                     body: `What did you do in the last hour?`,
                     requireInteraction: true,
-                    silent: true 
+                    silent: true
                 });
             } else if (Notification.permission !== "denied") {
                 Notification.requestPermission().then(permission => {
@@ -725,7 +711,7 @@
             const allStoredData = loadActivityDataFromLocalStorage();
             if (!newTimeKey) {
                 showMessage("Time cannot be empty.", 'error');
-                return updateView(); // Re-render to revert the change in the UI
+                return updateView();
             }
             if (!allStoredData[dateKey]) allStoredData[dateKey] = {};
             if (allStoredData[dateKey][newTimeKey] && oldTimeKey !== newTimeKey) {
