@@ -1,33 +1,43 @@
-⏰ TimeBuddy: A Simple, Client-Side Time Tracker
-TimeBuddy is a lightweight and intuitive time tracking tool built with vanilla HTML, CSS, and JavaScript. With no backend required, you can just open index.html and start logging your activities immediately. It's designed for anyone who wants a straightforward way to track their time without the complexity of larger applications.
+# ⏰ TimeBuddy: A Simple, Client-Side Time Tracker
 
-✨ Features
-🔔 Hourly Prompts: Get desktop notifications every hour to log your time, ensuring you never forget.
+TimeBuddy is a lightweight and intuitive time tracking tool built with vanilla HTML, CSS, and JavaScript. With no backend required, you can just open `index.html` and start logging your activities immediately. It's perfect for anyone who wants a straightforward way to track their time without the complexity of larger apps.
 
-🗓️ Dual Views: Seamlessly switch between a full Month View for a high-level overview and a detailed Day View for managing specific time slots.
+---
 
-✏️ Effortless Editing: Edit activities inline and reorder them with a simple drag-and-drop interface.
+### ✨ Features
 
-🔄 Data Portability: Easily import and export your activity logs as CSV files for backup or analysis.
+- 🔔 **Hourly Prompts**  
+  Get desktop notifications every hour to log your time, so you never forget.
 
-📱 Fully Responsive: The layout works beautifully on both desktop and mobile devices.
+- 🗓️ **Dual Views**  
+  Switch between a full **Month View** for a high-level overview and a detailed **Day View** for managing time slots.
 
-✅ Zero Dependencies: Runs 100% in your browser using Local Storage, keeping your data private and on your machine.
+- ✏️ **Effortless Editing**  
+  Edit activities inline and reorder them with simple drag-and-drop.
 
-🚀 Getting Started
-Getting started with TimeBuddy is incredibly simple:
+- 🔄 **Data Portability**  
+  Import/export logs as CSV files for easy backup or analysis.
 
-Clone or download this repository.
+- 📱 **Fully Responsive**  
+  Works beautifully on both desktop and mobile browsers.
 
-Open the index.html file in your favorite web browser.
+- ✅ **Zero Dependencies**  
+  100% client-side. Your data stays private, stored locally in your browser.
 
-You're all set! Start tracking your time.
+---
 
-🛠️ Tech Stack
-This project is built with a focus on simplicity and performance, using only core web technologies:
+### 🚀 Getting Started
 
-HTML
+1. Clone or download this repository.
+2. Open the `index.html` file in your web browser.
+3. Start tracking your time—no setup required!
 
-Tailwind CSS
+---
 
-Vanilla JavaScript
+### 🛠️ Tech Stack
+
+Built with simplicity and performance in mind using core web technologies:
+
+- HTML  
+- Tailwind CSS  
+- Vanilla JavaScript
