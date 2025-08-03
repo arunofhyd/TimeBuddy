@@ -611,6 +611,19 @@
 
         // --- Core Logic & Data Manipulation ---
         
+        // *** NEW FUNCTION TO CREATE DEFAULT SLOTS ***
+        function initializeDayWithDefaults(dateKey) {
+            const dayData = {};
+            const date = new Date(dateKey + 'T00:00:00');
+            if (date.getDay() !== 0) { // Not Sunday
+                for (let h = 8; h <= 17; h++) {
+                    const timeKey = `${String(h).padStart(2, '0')}:00-${String(h + 1).padStart(2, '0')}:00`;
+                    dayData[timeKey] = { text: "", order: h - 8 };
+                }
+            }
+            return dayData;
+        }
+
         function updateView() {
             const isMonthView = currentView === 'month';
             monthViewBtn.classList.toggle('btn-primary', isMonthView);
@@ -674,8 +687,12 @@
             if (!activityText) return showMessage("Activity cannot be empty.", 'error');
 
             const allStoredData = loadActivityDataFromLocalStorage();
-            if (!allStoredData[dateKey]) allStoredData[dateKey] = {};
             
+            // *** FIX: Initialize day with defaults if it's new ***
+            if (!allStoredData[dateKey] || allStoredData[dateKey]._userCleared) {
+                allStoredData[dateKey] = initializeDayWithDefaults(dateKey);
+            }
+
             const promptEndHour = parseInt(currentPromptHour.split(':')[0]);
             const targetTimeKey = `${String(promptEndHour - 1).padStart(2, '0')}:00-${String(promptEndHour).padStart(2, '0')}:00`;
             const existingEntry = allStoredData[dateKey][targetTimeKey];
@@ -685,7 +702,7 @@
                 existingEntry.text = existingText ? `${existingText} ${activityText}` : activityText;
             } else {
                 const existingKeys = Object.keys(allStoredData[dateKey]).filter(k => k !== '_userCleared');
-                const maxOrder = existingKeys.length > 0 ? Math.max(...existingKeys.map(k => allStoredData[dateKey][k].order)) : -1;
+                const maxOrder = existingKeys.length > 0 ? Math.max(...Object.values(allStoredData[dateKey]).map(v => v.order || 0)) : -1;
                 allStoredData[dateKey][targetTimeKey] = { text: activityText, order: maxOrder + 1 };
             }
             
@@ -699,15 +716,20 @@
         function saveInlineActivityText(timeKey, newActivityText) {
             const dateKey = getYYYYMMDD(selectedDate);
             const allStoredData = loadActivityDataFromLocalStorage();
-            if (!allStoredData[dateKey]) allStoredData[dateKey] = {};
+            
+            // *** FIX: Initialize day with defaults if it's new ***
+            if (!allStoredData[dateKey] || allStoredData[dateKey]._userCleared) {
+                allStoredData[dateKey] = initializeDayWithDefaults(dateKey);
+            }
 
             if (allStoredData[dateKey][timeKey]) {
                 allStoredData[dateKey][timeKey].text = newActivityText;
             } else {
                 const existingKeys = Object.keys(allStoredData[dateKey]).filter(k => k !== '_userCleared');
-                const maxOrder = existingKeys.length > 0 ? Math.max(...existingKeys.map(k => allStoredData[dateKey][k].order)) : -1;
+                const maxOrder = existingKeys.length > 0 ? Math.max(...Object.values(allStoredData[dateKey]).map(v => v.order || 0)) : -1;
                 allStoredData[dateKey][timeKey] = { text: newActivityText, order: maxOrder + 1 };
             }
+            
             delete allStoredData[dateKey]._userCleared;
             saveActivityDataToLocalStorage(allStoredData);
             showMessage("Activity updated!", 'success');
@@ -753,10 +775,8 @@
         
         function downloadCSV() {
             const allStoredData = loadActivityDataFromLocalStorage();
-            const yearMonth = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}`;
             let activitiesToExport = [];
             Object.keys(allStoredData)
-                .filter(dateKey => dateKey.startsWith(yearMonth))
                 .forEach(dateKey => {
                     const dailyEntries = Object.keys(allStoredData[dateKey])
                         .filter(timeKey => timeKey !== '_userCleared' && allStoredData[dateKey][timeKey].text?.trim())
@@ -764,7 +784,7 @@
                     activitiesToExport.push(...dailyEntries);
                 });
 
-            if (activitiesToExport.length === 0) return showMessage("No activities to export for this month.", 'info');
+            if (activitiesToExport.length === 0) return showMessage("No activities found to export.", 'info');
 
             activitiesToExport.sort((a, b) => a.date.localeCompare(b.date) || a.order - b.order);
             let csvContent = "data:text/csv;charset=utf-8,Date,Time,Activity\n";
@@ -775,7 +795,7 @@
             
             const link = document.createElement("a");
             link.href = encodeURI(csvContent);
-            link.download = `TimeBuddy_${yearMonth}.csv`;
+            link.download = `TimeBuddy_Export.csv`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -926,11 +946,16 @@
         addNewSlotBtn.addEventListener('click', () => {
             const dateKey = getYYYYMMDD(selectedDate);
             const allStoredData = loadActivityDataFromLocalStorage();
-            if (!allStoredData[dateKey]) allStoredData[dateKey] = {};
+            
+            // *** FIX: Initialize day with defaults if it's new ***
+            if (!allStoredData[dateKey] || allStoredData[dateKey]._userCleared) {
+                allStoredData[dateKey] = initializeDayWithDefaults(dateKey);
+            }
+
             let newTimeKey = "00:00", counter = 0;
             while (allStoredData[dateKey][newTimeKey]) newTimeKey = `00:00-${++counter}`;
             const existingKeys = Object.keys(allStoredData[dateKey]).filter(k => k !== '_userCleared');
-            const maxOrder = existingKeys.length > 0 ? Math.max(...existingKeys.map(k => allStoredData[dateKey][k].order)) : -1;
+            const maxOrder = existingKeys.length > 0 ? Math.max(...Object.values(allStoredData[dateKey]).map(v => v.order || 0)) : -1;
             allStoredData[dateKey][newTimeKey] = { text: "", order: maxOrder + 1 };
             delete allStoredData[dateKey]._userCleared;
             saveActivityDataToLocalStorage(allStoredData);
