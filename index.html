@@ -176,6 +176,12 @@
             background-color: #f0f8ff;
         }
         
+        /* FIX: Added CSS rules for text wrapping within activity cell */
+        .activity-text-editable {
+            white-space: pre-wrap; /* Allows wrapping on spaces */
+            word-break: break-all; /* Breaks long words that don't have spaces */
+        }
+        
         /* Responsive adjustments for smaller screens */
         @media (max-width: 767px) {
             #calendar-view {
@@ -194,6 +200,10 @@
                 width: 6px;
                 height: 6px;
                 margin-top: 2px;
+            }
+            /* FIX: Ensure activity cell content wraps */
+            .daily-activity-table-body td:nth-child(2) {
+                white-space: normal;
             }
             .daily-activity-table-body td {
                 padding-left: 10px;
@@ -246,7 +256,8 @@
                     Add New Slot
                     <svg class="inline-block w-5 h-5 ml-2 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                 </button>
-                <table class="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden shadow-md">
+                <!-- FIX: Added table-fixed to constrain table width -->
+                <table class="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden shadow-md table-fixed">
                     <thead class="bg-gray-50">
                         <tr>
                             <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200 w-1/6">Time</th>
@@ -557,6 +568,7 @@
                     row.innerHTML = `
                         <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-900 border-b border-gray-100 cursor-text time-editable" data-time="${activity.time}" contenteditable="true">${activity.time}</td>
                         <td class="py-3 px-4 text-sm text-gray-900 border-b border-gray-100">
+                            <!-- FIX: The CSS rules above handle the text wrapping now. -->
                             <div class="activity-text-editable" data-time="${activity.time}" contenteditable="true">${activity.text}</div>
                         </td>
                         <td class="py-3 px-4 text-sm border-b border-gray-100 flex space-x-1 justify-center items-center">
