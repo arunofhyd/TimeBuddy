@@ -731,41 +731,55 @@
             }
         }
 
+        // Modified to show native system notification and open modal only on click
+        function showNativeNotification(promptHour) {
+            if (!("Notification" in window)) {
+                console.warn("Notifications not supported.");
+                return;
+            }
+
+            const createAndHandleNotification = () => {
+                const notification = new Notification("TimeBuddy - Log Activity!", {
+                    body: `What did you do in the last hour?`,
+                    requireInteraction: true, // Keep notification visible until interacted with
+                    silent: true // No sound
+                });
+
+                // Open the modal when the user clicks the native notification
+                notification.onclick = function() {
+                    window.focus(); // Bring the browser tab to the foreground
+                    hourlyActivityInput.value = '';
+                    hourlyPromptModal.classList.remove('hidden');
+                    currentPromptHour = promptHour; // Ensure the correct hour is set for the modal
+                    notification.close(); // Close the notification after it's clicked
+                };
+            };
+
+            if (Notification.permission === "granted") {
+                createAndHandleNotification();
+            } else if (Notification.permission !== "denied") {
+                // Request permission if not granted or denied
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        createAndHandleNotification();
+                    }
+                });
+            }
+        }
+
         function checkTimeAndPrompt() {
             const now = new Date();
+            // Reset lastPromptedHour if the day changes
             if (lastPromptedDate !== getYYYYMMDD(now)) {
                 lastPromptedHour = null;
                 lastPromptedDate = getYYYYMMDD(now);
             }
+            // Check if it's a weekday (Monday=1 to Friday=5), between 8 AM and 6 PM (inclusive),
+            // on the exact hour (minutes === 0), and not already prompted for this hour
             if (now.getDay() >= 1 && now.getDay() <= 5 && now.getHours() >= 8 && now.getHours() <= 18 && now.getMinutes() === 0 && lastPromptedHour !== now.getHours()) {
-                currentPromptHour = `${String(now.getHours()).padStart(2, '0')}:00`;
-                showNativeNotification();
-                hourlyActivityInput.value = '';
-                hourlyPromptModal.classList.remove('hidden');
-                lastPromptedHour = now.getHours();
-            }
-        }
-
-        function showNativeNotification() {
-            if (!("Notification" in window)) {
-                return console.warn("Notifications not supported.");
-            }
-            if (Notification.permission === "granted") {
-                new Notification("TimeBuddy - Log Activity!", {
-                    body: `What did you do in the last hour?`,
-                    requireInteraction: true,
-                    silent: true
-                });
-            } else if (Notification.permission !== "denied") {
-                Notification.requestPermission().then(permission => {
-                    if (permission === "granted") {
-                        new Notification("TimeBuddy - Log Activity!", {
-                            body: `What did you do in the last hour?`,
-                            requireInteraction: true,
-                            silent: true
-                        });
-                    }
-                });
+                const promptHour = `${String(now.getHours()).padStart(2, '0')}:00`;
+                showNativeNotification(promptHour); // Only show the native notification
+                lastPromptedHour = now.getHours(); // Mark this hour as prompted
             }
         }
 
@@ -1099,11 +1113,14 @@
         }
 
         window.onload = function() {
+            // Request notification permission on load if not already granted or denied
             if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
                 Notification.requestPermission();
             }
             updateView();
+            // Check every minute for prompting
             setInterval(checkTimeAndPrompt, 60 * 1000);
+            // Initial check when the page loads
             checkTimeAndPrompt();
         };
 
