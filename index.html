@@ -637,6 +637,7 @@
         }
 
         function handleMoveUpClick(e) {
+            e.stopPropagation(); // Prevent blur on the inline editor
             const row = e.currentTarget.closest('tr');
             const prevRow = row.previousElementSibling;
             if (prevRow) {
@@ -646,6 +647,7 @@
         }
 
         function handleMoveDownClick(e) {
+            e.stopPropagation(); // Prevent blur on the inline editor
             const row = e.currentTarget.closest('tr');
             const nextRow = row.nextElementSibling;
             if (nextRow) {
@@ -686,6 +688,7 @@
         }
 
         function handleDeleteButtonClick(event) {
+            event.stopPropagation(); // Prevent blur on the inline editor
             deleteActivity(getYYYYMMDD(selectedDate), event.currentTarget.dataset.time);
         }
         
@@ -697,14 +700,14 @@
             let newDailyActivitiesMap = {};
             orderedTimeKeys.forEach((timeKey, index) => {
                 if (!timeKey) return;
-                const originalEntry = dailyActivitiesMap[timeKey] || { text: dailyActivityTableBody.querySelector(`[data-time="${timeKey}"] .activity-text-editable`).textContent };
+                const originalEntry = dailyActivitiesMap[timeKey] || { text: dailyActivityTableBody.querySelector(`.activity-text-editable[data-time="${timeKey}"]`).textContent };
                 newDailyActivitiesMap[timeKey] = { text: originalEntry.text, order: index };
             });
             if (dailyActivitiesMap._userCleared) newDailyActivitiesMap._userCleared = true;
             allStoredData[dateKey] = newDailyActivitiesMap;
             saveActivityDataToLocalStorage(allStoredData);
             showMessage("Activities reordered!", 'success');
-            // Re-render to update button disabled states
+            // Re-render is necessary here to update button disabled states
             renderDailyActivities();
         }
 
@@ -809,7 +812,13 @@
             hourlyPromptModal.classList.add('hidden');
             if (dateKey === getYYYYMMDD(selectedDate)) updateView();
         }
-
+        
+        /**
+         * @description This function saves the inline activity text to local storage.
+         * The call to `updateView()` was removed to fix the mobile keyboard issue. 
+         * The browser's native `contenteditable` behavior already updates the UI, 
+         * so a full DOM re-render is not needed and causes the keyboard to disappear.
+         */
         function saveInlineActivityText(timeKey, newActivityText) {
             const dateKey = getYYYYMMDD(selectedDate);
             const allStoredData = loadActivityDataFromLocalStorage();
@@ -830,9 +839,13 @@
             saveActivityDataToLocalStorage(allStoredData);
             showMessage("Activity updated!", 'success');
             editingInlineTimeKey = null;
-            updateView();
         }
 
+        /**
+         * @description This function saves the inline time to local storage.
+         * A full re-render is still necessary here because changing the time key 
+         * can affect the sorting order of all activities.
+         */
         function saveInlineTime(oldTimeKey, newTimeKey) {
             const dateKey = getYYYYMMDD(selectedDate);
             const allStoredData = loadActivityDataFromLocalStorage();
@@ -951,7 +964,7 @@
                 allStoredData[dateKey] = reorderedMap;
             });
 
-            saveActivityDataToLocalStorage(allStoredData);
+            saveActivityDataToLocalStorage(allExistingData);
             showMessage("CSV data imported and merged!", 'success');
             updateView();
         }
@@ -1014,7 +1027,7 @@
             delete allStoredData[dateKey]._userCleared;
             saveActivityDataToLocalStorage(allStoredData);
             updateView();
-            setTimeout(() => dailyActivityTableBody.querySelector(`.activity-text-editable[data-time="${newTimeKey}"]`)?.click(), 0);
+            setTimeout(() => dailyActivityTableBody.querySelector(`.activity-text-editable[data-time="${newTimeKey}"]`)?.focus(), 0);
         });
         saveHourlyActivityBtn.addEventListener('click', saveHourlyActivity);
         closeHourlyPromptModalBtn.addEventListener('click', () => hourlyPromptModal.classList.add('hidden'));
