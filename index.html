@@ -562,7 +562,6 @@
             }
         }
 
-        // FIX: Reverting to the original table rendering logic
         function renderDailyActivities() {
             dailyActivityTableBody.innerHTML = '';
             const dateKey = getYYYYMMDD(selectedDate);
@@ -847,32 +846,59 @@
         }
 
         /**
-         * @description This function saves the inline time to local storage.
-         * A full re-render is still necessary here because changing the time key 
-         * can affect the sorting order of all activities.
+         * @description This function saves the inline time to local storage and updates the DOM.
+         * It updates the data-time attribute on the relevant elements and then re-renders the entire daily view.
+         * Re-rendering is necessary here because a time change affects the sorting order of all activities.
+         * Re-rendering is the most reliable way to ensure the list remains correctly sorted and interactive.
          */
         function saveInlineTime(oldTimeKey, newTimeKey) {
             const dateKey = getYYYYMMDD(selectedDate);
             const allStoredData = loadActivityDataFromLocalStorage();
             if (!newTimeKey) {
                 showMessage("Time cannot be empty.", 'error');
-                return updateView();
+                return;
             }
             if (!allStoredData[dateKey]) allStoredData[dateKey] = {};
             if (allStoredData[dateKey][newTimeKey] && oldTimeKey !== newTimeKey) {
                 showMessage(`Time "${newTimeKey}" already exists.`, 'error');
-                return updateView();
+                return;
             }
-            const entry = allStoredData[dateKey][oldTimeKey];
-            if (entry) {
+
+            const oldEntry = allStoredData[dateKey][oldTimeKey];
+            if (oldEntry) {
+                const newEntry = { ...oldEntry, text: oldEntry.text, order: oldEntry.order };
                 delete allStoredData[dateKey][oldTimeKey];
-                allStoredData[dateKey][newTimeKey] = entry;
+                allStoredData[dateKey][newTimeKey] = newEntry;
             }
             saveActivityDataToLocalStorage(allStoredData);
+            
+            // Find the row for the old time key and update its data-time and the time display
+            const oldRow = dailyActivityTableBody.querySelector(`tr[data-time="${oldTimeKey}"]`);
+            if (oldRow) {
+                oldRow.dataset.time = newTimeKey;
+                const timeEditableDiv = oldRow.querySelector('.time-editable');
+                if (timeEditableDiv) {
+                    timeEditableDiv.textContent = newTimeKey;
+                    timeEditableDiv.dataset.time = newTimeKey;
+                }
+                // Update data-time for the activity text as well
+                const activityEditableDiv = oldRow.querySelector('.activity-text-editable');
+                if (activityEditableDiv) {
+                    activityEditableDiv.dataset.time = newTimeKey;
+                }
+                // Update the delete button data-time
+                const deleteBtn = oldRow.querySelector('.delete-btn');
+                if (deleteBtn) {
+                    deleteBtn.dataset.time = newTimeKey;
+                }
+            }
+
             showMessage("Time updated!", 'success');
             editingInlineTimeKey = null;
-            updateView();
+            // A full re-render is still needed to correctly sort the list
+            renderDailyActivities();
         }
+
 
         function deleteActivity(dateKey, timeKey) {
             const allStoredData = loadActivityDataFromLocalStorage();
