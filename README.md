@@ -1,6 +1,6 @@
 # ⏰ TimeBuddy: A Simple, Client-Side Time Tracker
 
-TimeBuddy is a lightweight and intuitive time tracking tool built with vanilla HTML, CSS, and JavaScript. With no backend required, you can just open `index.html` and start logging your activities immediately. It's perfect for anyone who wants a straightforward way to track their time without the complexity of larger apps.
+TimeBuddy is a lightweight and intuitive time tracking tool built with vanilla HTML. With no backend required, you can just open `index.html` and start logging your activities immediately. It's perfect for anyone who wants a straightforward way to track their time without the complexity of larger apps.
 
 ---
 
@@ -25,19 +25,3 @@ TimeBuddy is a lightweight and intuitive time tracking tool built with vanilla H
   100% client-side. Your data stays private, stored locally in your browser.
 
 ---
-
-### 🚀 Getting Started
-
-1. Clone or download this repository.
-2. Open the `index.html` file in your web browser.
-3. Start tracking your time—no setup required!
-
----
-
-### 🛠️ Tech Stack
-
-Built with simplicity and performance in mind using core web technologies:
-
-- HTML  
-- Tailwind CSS  
-- Vanilla JavaScript
