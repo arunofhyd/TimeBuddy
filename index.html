@@ -645,17 +645,14 @@
         function handleInlineEditClick(event) {
             const targetElement = event.currentTarget;
             const time = targetElement.dataset.time;
+            // If another element was being edited, blur it first
             if (editingInlineTimeKey && editingInlineTimeKey !== time) {
                 const prevEl = dailyActivityTableBody.querySelector(`[data-time="${editingInlineTimeKey}"]`);
                 prevEl?.blur();
             }
             targetElement.classList.add('editing');
             editingInlineTimeKey = time;
-            const actionsCell = targetElement.closest('tr').querySelector('td:last-child');
-            actionsCell.innerHTML = `
-                <button class="icon-btn save-btn" aria-label="Save" data-time="${time}"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg></button>
-                <button class="icon-btn delete-btn" aria-label="Delete" data-time="${time}"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>`;
-            attachInlineActionListeners(time);
+            // No changes to action buttons on click, they remain consistent
         }
 
         function handleInlineEditBlur(event) {
@@ -668,29 +665,19 @@
                 }
             }
             targetElement.classList.remove('editing');
+            // Re-render to ensure buttons are correctly enabled/disabled based on new order
+            renderDailyActivities(); 
         }
 
         function handleInlineEditKeydown(event) {
             if (event.key === 'Enter') {
                 event.preventDefault();
-                event.currentTarget.blur();
+                event.currentTarget.blur(); // Trigger blur to save changes
             }
         }
 
         function handleDeleteButtonClick(event) {
             deleteActivity(getYYYYMMDD(selectedDate), event.currentTarget.dataset.time);
-        }
-
-        function attachInlineActionListeners(timeKey) {
-            const actionsCell = dailyActivityTableBody.querySelector(`td[data-time="${timeKey}"]`);
-            actionsCell?.querySelector('.save-btn')?.addEventListener('click', (e) => {
-                const time = e.currentTarget.dataset.time;
-                dailyActivityTableBody.querySelector(`.activity-text-editable[data-time="${time}"]`)?.blur();
-                dailyActivityTableBody.querySelector(`.time-editable[data-time="${time}"]`)?.blur();
-            });
-            actionsCell?.querySelector('.delete-btn')?.addEventListener('click', (e) => {
-                deleteActivity(getYYYYMMDD(selectedDate), e.currentTarget.dataset.time);
-            });
         }
         
         function updateActivityOrderInLocalStorage() {
@@ -707,7 +694,7 @@
             allStoredData[dateKey] = newDailyActivitiesMap;
             saveActivityDataToLocalStorage(allStoredData);
             showMessage("Activities reordered!", 'success');
-            renderDailyActivities();
+            renderDailyActivities(); // Re-render to update disabled states of buttons
         }
 
         // --- Core Logic & Data Manipulation ---
