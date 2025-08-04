@@ -17,6 +17,7 @@
         /* Style for calendar grid cells */
         .calendar-day-cell {
             min-height: 100px;
+            position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -160,10 +161,21 @@
         }
 
         /* Inline editing specific styles */
-        .activity-text-editable, .time-editable {
+        .activity-text-editable {
             min-height: 24px;
             outline: none;
             border-bottom: 1px dashed #a0aec0;
+            padding-bottom: 2px;
+            transition: border-color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+            cursor: text;
+            white-space: pre-wrap; /* Allows wrapping of content */
+            word-break: break-word; /* Prevents overflow with long words */
+        }
+        /* The time-editable element no longer has a dotted line under it */
+        .time-editable {
+            min-height: 24px;
+            outline: none;
+            border-bottom: none; /* Removed the dotted line */
             padding-bottom: 2px;
             transition: border-color 0.2s ease-in-out, background-color 0.2s ease-in-out;
             cursor: text;
@@ -176,38 +188,54 @@
             background-color: #f0f8ff;
         }
         
-        /* FIX: Added CSS rules for text wrapping within activity cell */
-        .activity-text-editable {
-            white-space: pre-wrap; /* Allows wrapping on spaces */
-            word-break: break-all; /* Breaks long words that don't have spaces */
-        }
-        
-        /* Responsive adjustments for smaller screens */
+
+        /* The main fix: on small screens, the table container becomes horizontally scrollable */
         @media (max-width: 767px) {
-            #calendar-view {
-                gap: 0.25rem;
-            }
+            /* FIX: Making the calendar cells perfect squares */
             .calendar-day-cell {
-                min-height: 70px;
-                padding: 8px;
-                justify-content: flex-start;
+                height: 0;
+                padding-top: 100%; /* Makes height equal to width */
+                min-height: unset; /* Override the desktop min-height */
+            }
+            .calendar-day-content {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 4px;
+            }
+            /* FIX: Restore font size for day numbers on mobile */
+            .calendar-day-content .day-number {
+                font-weight: 600;
+                font-size: 1.2em; /* Restored original font size */
             }
             .day-number {
-                font-size: 0.875em;
-                margin-bottom: 2px;
+                /* Removed mobile specific font size */
+                margin-bottom: 6px;
             }
             .activity-indicator {
                 width: 6px;
                 height: 6px;
                 margin-top: 2px;
             }
-            /* FIX: Ensure activity cell content wraps */
-            .daily-activity-table-body td:nth-child(2) {
-                white-space: normal;
+
+            #daily-view-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
             }
             .daily-activity-table-body td {
                 padding-left: 10px;
                 padding-right: 10px;
+            }
+            /* Making the table more compact on small screens */
+            .daily-activity-table th, .daily-activity-table td {
+                padding: 0.5rem;
+                font-size: 0.875rem;
             }
         }
     </style>
@@ -242,31 +270,34 @@
         </div>
 
         <div id="main-content-area" class="w-full">
+            <!-- FIX: Removed box styling from weekday headers -->
             <div id="calendar-view" class="grid grid-cols-7 gap-3">
-                <div class="py-3 text-center text-sm font-semibold text-red-500 bg-gray-100 border border-gray-200 rounded-lg">Sun</div>
-                <div class="py-3 text-center text-sm font-semibold text-gray-700 bg-gray-100 border border-gray-200 rounded-lg">Mon</div>
-                <div class="py-3 text-center text-sm font-semibold text-gray-700 bg-gray-100 border border-gray-200 rounded-lg">Tue</div>
-                <div class="py-3 text-center text-sm font-semibold text-gray-700 bg-gray-100 border border-gray-200 rounded-lg">Wed</div>
-                <div class="py-3 text-center text-sm font-semibold text-gray-700 bg-gray-100 border border-gray-200 rounded-lg">Thu</div>
-                <div class="py-3 text-center text-sm font-semibold text-gray-700 bg-gray-100 border border-gray-200 rounded-lg">Fri</div>
-                <div class="py-3 text-center text-sm font-semibold text-gray-700 bg-gray-100 border border-gray-200 rounded-lg">Sat</div>
+                <div class="py-3 text-center text-sm font-semibold text-red-500">Sun</div>
+                <div class="py-3 text-center text-sm font-semibold text-gray-700">Mon</div>
+                <div class="py-3 text-center text-sm font-semibold text-gray-700">Tue</div>
+                <div class="py-3 text-center text-sm font-semibold text-gray-700">Wed</div>
+                <div class="py-3 text-center text-sm font-semibold text-gray-700">Thu</div>
+                <div class="py-3 text-center text-sm font-semibold text-gray-700">Fri</div>
+                <div class="py-3 text-center text-sm font-semibold text-gray-700">Sat</div>
             </div>
+            <!-- FIX: Added a new container for the daily view with horizontal scrolling on small screens -->
             <div id="daily-view" class="hidden">
                 <button id="add-new-slot-btn" class="px-6 py-3 mb-6 btn-primary rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                     Add New Slot
                     <svg class="inline-block w-5 h-5 ml-2 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                 </button>
-                <!-- FIX: Added table-fixed to constrain table width -->
-                <table class="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden shadow-md table-fixed">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200 w-1/6">Time</th>
-                            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200 w-4/6">Activity</th>
-                            <th class="py-3 px-4 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200 w-1/6">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="daily-activity-table-body" class="divide-y divide-gray-200"></tbody>
-                </table>
+                <div id="daily-view-container" class="bg-white border border-gray-200 rounded-lg shadow-md">
+                    <table class="daily-activity-table min-w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200 w-1/6">Time</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200 w-4/6">Activity</th>
+                                <th class="py-3 px-4 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200 w-1/6">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="daily-activity-table-body" class="divide-y divide-gray-200"></tbody>
+                    </table>
+                </div>
                 <p id="no-daily-activities-message" class="text-center text-gray-500 italic mt-6 hidden">No activities recorded for this day.</p>
             </div>
             <div class="mt-8 pt-6 border-t border-gray-200 flex flex-col md:flex-row gap-4">
@@ -507,7 +538,13 @@
                 if (hasActivity) dayCell.classList.add('has-activity');
                 if (getYYYYMMDD(date) === getYYYYMMDD(selectedDate) && currentView === 'day') dayCell.classList.add('selected-day');
                 if (getYYYYMMDD(date) === getYYYYMMDD(today)) dayCell.classList.add('is-today');
-                dayCell.innerHTML = `<div class="day-number">${day}</div>${hasActivity ? '<div class="activity-indicator"></div>' : ''}`;
+
+                // FIX: Use a content wrapper for proper positioning on mobile
+                const contentWrapper = document.createElement('div');
+                contentWrapper.className = 'calendar-day-content';
+                contentWrapper.innerHTML = `<div class="day-number">${day}</div>${hasActivity ? '<div class="activity-indicator"></div>' : ''}`;
+                dayCell.appendChild(contentWrapper);
+                
                 dayCell.dataset.date = dateKey;
                 dayCell.addEventListener('click', () => {
                     selectedDate = date;
@@ -525,6 +562,7 @@
             }
         }
 
+        // FIX: Reverting to the original table rendering logic
         function renderDailyActivities() {
             dailyActivityTableBody.innerHTML = '';
             const dateKey = getYYYYMMDD(selectedDate);
@@ -566,9 +604,10 @@
                         </button>`;
                     
                     row.innerHTML = `
-                        <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-900 border-b border-gray-100 cursor-text time-editable" data-time="${activity.time}" contenteditable="true">${activity.time}</td>
+                        <td class="py-3 px-4 text-sm text-gray-900 border-b border-gray-100 cursor-text">
+                            <div class="time-editable whitespace-nowrap" data-time="${activity.time}" contenteditable="true">${activity.time}</div>
+                        </td>
                         <td class="py-3 px-4 text-sm text-gray-900 border-b border-gray-100">
-                            <!-- FIX: The CSS rules above handle the text wrapping now. -->
                             <div class="activity-text-editable" data-time="${activity.time}" contenteditable="true">${activity.text}</div>
                         </td>
                         <td class="py-3 px-4 text-sm border-b border-gray-100 flex space-x-1 justify-center items-center">
@@ -692,7 +731,7 @@
             calendarView.classList.toggle('hidden', !isMonthView);
             dailyView.classList.toggle('hidden', isMonthView);
             currentPeriodDisplay.classList.add('cursor-pointer');
-
+            
             if (isMonthView) {
                 currentPeriodDisplay.textContent = currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
                 renderCalendar();
@@ -701,7 +740,7 @@
                 renderDailyActivities();
             }
         }
-
+        
         function checkTimeAndPrompt() {
             const now = new Date();
             if (lastPromptedDate !== getYYYYMMDD(now)) {
@@ -909,10 +948,10 @@
                     reorderedMap[activity.time] = { text: activity.text, order: index };
                 });
                 if (allExistingData[dateKey]._userCleared) reorderedMap._userCleared = true;
-                allExistingData[dateKey] = reorderedMap;
+                allStoredData[dateKey] = reorderedMap;
             });
 
-            saveActivityDataToLocalStorage(allExistingData);
+            saveActivityDataToLocalStorage(allStoredData);
             showMessage("CSV data imported and merged!", 'success');
             updateView();
         }
@@ -1029,6 +1068,8 @@
             if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
                 Notification.requestPermission();
             }
+            // Add a window resize listener to update the view on breakpoint changes
+            window.addEventListener('resize', updateView);
             updateView();
             setInterval(checkTimeAndPrompt, 60 * 1000);
             checkTimeAndPrompt();
