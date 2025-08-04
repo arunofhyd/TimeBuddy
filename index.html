@@ -969,7 +969,7 @@
                 allStoredData[dateKey] = reorderedMap;
             });
 
-            saveActivityDataToLocalStorage(allExistingData);
+            saveActivityDataToLocalStorage(allStoredData);
             showMessage("CSV data imported and merged!", 'success');
             updateView();
         }
