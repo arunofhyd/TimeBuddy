@@ -129,9 +129,13 @@
         .icon-btn.delete:hover {
             color: #e53e3e;
         }
-        /* Style for the move handle */
-        .move-handle {
-            cursor: move;
+        .icon-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        .icon-btn:disabled:hover {
+            background-color: transparent;
+            border-color: transparent;
         }
 
         /* Message popup styles */
@@ -170,19 +174,6 @@
         }
         .activity-text-editable.editing, .time-editable.editing {
             background-color: #f0f8ff;
-        }
-
-        /* Drag and Drop styles */
-        .daily-activity-table-body tr.dragging {
-            opacity: 0.5;
-            background-color: #e0f2fe;
-            border: 1px dashed #3b82f6;
-        }
-        .daily-activity-table-body tr.drag-placeholder {
-            height: 64px;
-            border: 2px dashed #3b82f6;
-            background-color: #f0f9ff;
-            transition: all 0.2s ease;
         }
         
         /* Responsive adjustments for smaller screens */
@@ -344,7 +335,6 @@
         let lastPromptedDate = null;
         let currentView = 'month';
         let editingInlineTimeKey = null;
-        let draggedItem = null;
         let pickerYear = new Date().getFullYear();
 
         // DOM Elements
@@ -549,21 +539,29 @@
             
             noDailyActivitiesMessage.classList.toggle('hidden', dailyActivitiesArray.length > 0);
             if (dailyActivitiesArray.length > 0) {
-                dailyActivitiesArray.forEach(activity => {
+                dailyActivitiesArray.forEach((activity, index) => {
                     const row = document.createElement('tr');
                     row.className = 'hover:bg-gray-100 transition-colors duration-150';
                     row.dataset.time = activity.time;
+
+                    const upButton = `
+                        <button class="icon-btn move-up-btn" aria-label="Move up" ${index === 0 ? 'disabled' : ''}>
+                            <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+                        </button>`;
+
+                    const downButton = `
+                        <button class="icon-btn move-down-btn" aria-label="Move down" ${index === dailyActivitiesArray.length - 1 ? 'disabled' : ''}>
+                            <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>`;
+                    
                     row.innerHTML = `
                         <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-900 border-b border-gray-100 cursor-text time-editable" data-time="${activity.time}" contenteditable="true">${activity.time}</td>
                         <td class="py-3 px-4 text-sm text-gray-900 border-b border-gray-100">
                             <div class="activity-text-editable" data-time="${activity.time}" contenteditable="true">${activity.text}</div>
                         </td>
-                        <td class="py-3 px-4 text-sm border-b border-gray-100 flex space-x-2 justify-center items-center">
-                            <button class="icon-btn move-handle" draggable="true" aria-label="Move activity">
-                                <svg class="w-5 h-5 text-gray-400 pointer-events-none" fill="currentColor" viewBox="0 0 16 16">
-                                    <path d="M7 2a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM7 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM7 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
-                                </svg>
-                            </button>
+                        <td class="py-3 px-4 text-sm border-b border-gray-100 flex space-x-1 justify-center items-center">
+                            ${upButton}
+                            ${downButton}
                             <button class="icon-btn delete-btn" aria-label="Delete" data-time="${activity.time}">
                                 <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                             </button>
@@ -571,7 +569,6 @@
                     dailyActivityTableBody.appendChild(row);
                 });
                 attachDailyActivityEventListeners();
-                attachDragAndDropListeners();
             }
         }
 
@@ -584,6 +581,27 @@
                 el.addEventListener('keydown', handleInlineEditKeydown);
             });
             dailyActivityTableBody.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', handleDeleteButtonClick));
+            dailyActivityTableBody.querySelectorAll('.move-up-btn').forEach(btn => btn.addEventListener('click', handleMoveUpClick));
+            dailyActivityTableBody.querySelectorAll('.move-down-btn').forEach(btn => btn.addEventListener('click', handleMoveDownClick));
+        }
+
+        function handleMoveUpClick(e) {
+            const row = e.currentTarget.closest('tr');
+            const prevRow = row.previousElementSibling;
+            if (prevRow) {
+                row.parentElement.insertBefore(row, prevRow);
+                updateActivityOrderInLocalStorage();
+            }
+        }
+
+        function handleMoveDownClick(e) {
+            const row = e.currentTarget.closest('tr');
+            const nextRow = row.nextElementSibling;
+            if (nextRow) {
+                // Insert the current row after the next row by inserting it before the next row's next sibling.
+                nextRow.parentNode.insertBefore(row, nextRow.nextSibling);
+                updateActivityOrderInLocalStorage();
+            }
         }
 
         function handleInlineEditClick(event) {
@@ -627,6 +645,7 @@
             const orderedTimeKeys = Array.from(dailyActivityTableBody.children).map(row => row.dataset.time);
             let newDailyActivitiesMap = {};
             orderedTimeKeys.forEach((timeKey, index) => {
+                if (!timeKey) return;
                 const originalEntry = dailyActivitiesMap[timeKey] || { text: dailyActivityTableBody.querySelector(`[data-time="${timeKey}"] .activity-text-editable`).textContent };
                 newDailyActivitiesMap[timeKey] = { text: originalEntry.text, order: index };
             });
@@ -634,6 +653,7 @@
             allStoredData[dateKey] = newDailyActivitiesMap;
             saveActivityDataToLocalStorage(allStoredData);
             showMessage("Activities reordered!", 'success');
+            // Re-render to update button disabled states
             renderDailyActivities();
         }
 
@@ -902,70 +922,6 @@
             return result.map(f => f.trim().replace(/^"|"$/g, ''));
         }
         
-        // --- Drag and Drop implementation ---
-        
-        function attachDragAndDropListeners() {
-            dailyActivityTableBody.querySelectorAll('.move-handle').forEach(handle => {
-                handle.addEventListener('dragstart', handleDragStart);
-            });
-            dailyActivityTableBody.querySelectorAll('tr').forEach(row => {
-                row.addEventListener('dragover', handleDragOver);
-                row.addEventListener('dragleave', handleDragLeave);
-                row.addEventListener('drop', handleDrop);
-                row.addEventListener('dragend', handleDragEnd);
-            });
-        }
-
-        function handleDragStart(e) {
-            draggedItem = e.target.closest('tr');
-            e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/plain', draggedItem.dataset.time);
-            setTimeout(() => {
-                draggedItem.classList.add('dragging');
-            }, 0);
-        }
-
-        function handleDragOver(e) {
-            e.preventDefault();
-            const targetRow = e.target.closest('tr');
-            if (!targetRow || targetRow === draggedItem) return;
-
-            dailyActivityTableBody.querySelectorAll('.drag-placeholder').forEach(el => el.remove());
-
-            const rect = targetRow.getBoundingClientRect();
-            const before = e.clientY < rect.top + rect.height / 2;
-
-            const placeholder = document.createElement("tr");
-            placeholder.className = "drag-placeholder";
-            placeholder.innerHTML = `<td colspan="3"></td>`;
-
-            if (before) {
-                dailyActivityTableBody.insertBefore(placeholder, targetRow);
-            } else {
-                dailyActivityTableBody.insertBefore(placeholder, targetRow.nextSibling);
-            }
-        }
-
-        function handleDragLeave(e) { 
-            // This is handled in dragover, so we don't need a separate leave handler for the placeholder.
-        }
-
-        function handleDrop(e) {
-            e.preventDefault();
-            const placeholder = dailyActivityTableBody.querySelector(".drag-placeholder");
-            if (placeholder) {
-                dailyActivityTableBody.insertBefore(draggedItem, placeholder);
-                placeholder.remove();
-            }
-            updateActivityOrderInLocalStorage();
-        }
-
-        function handleDragEnd() {
-            draggedItem?.classList.remove('dragging');
-            draggedItem = null;
-            dailyActivityTableBody.querySelectorAll('.drag-placeholder').forEach(p => p.remove());
-        }
-
         // --- Event Listeners & Initialization ---
         
         monthViewBtn.addEventListener('click', () => { currentView = 'month'; updateView(); });
