@@ -627,13 +627,29 @@
 
         function attachDailyActivityEventListeners() {
             dailyActivityTableBody.querySelectorAll('.activity-text-editable, .time-editable').forEach(el => {
-                el.addEventListener('click', handleInlineEditClick);
+                // Changed from 'click' to 'focus' for a more reliable mobile experience
+                el.addEventListener('focus', handleInlineEditFocus); 
                 el.addEventListener('blur', handleInlineEditBlur);
                 el.addEventListener('keydown', handleInlineEditKeydown);
             });
             dailyActivityTableBody.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', handleDeleteButtonClick));
             dailyActivityTableBody.querySelectorAll('.move-up-btn').forEach(btn => btn.addEventListener('click', handleMoveUpClick));
             dailyActivityTableBody.querySelectorAll('.move-down-btn').forEach(btn => btn.addEventListener('click', handleMoveDownClick));
+        }
+        
+        /**
+         * New function to handle focus events on inline editable fields.
+         * This replaces the old handleInlineEditClick function.
+         */
+        function handleInlineEditFocus(event) {
+            const targetElement = event.currentTarget;
+            const time = targetElement.dataset.time;
+            if (editingInlineTimeKey && editingInlineTimeKey !== time) {
+                const prevEl = dailyActivityTableBody.querySelector(`[data-time="${editingInlineTimeKey}"]`);
+                prevEl?.blur();
+            }
+            targetElement.classList.add('editing');
+            editingInlineTimeKey = time;
         }
 
         function handleMoveUpClick(e) {
@@ -655,17 +671,6 @@
                 nextRow.parentNode.insertBefore(row, nextRow.nextSibling);
                 updateActivityOrderInLocalStorage();
             }
-        }
-
-        function handleInlineEditClick(event) {
-            const targetElement = event.currentTarget;
-            const time = targetElement.dataset.time;
-            if (editingInlineTimeKey && editingInlineTimeKey !== time) {
-                const prevEl = dailyActivityTableBody.querySelector(`[data-time="${editingInlineTimeKey}"]`);
-                prevEl?.blur();
-            }
-            targetElement.classList.add('editing');
-            editingInlineTimeKey = time;
         }
 
         function handleInlineEditBlur(event) {
