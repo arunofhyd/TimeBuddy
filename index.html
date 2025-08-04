@@ -564,14 +564,11 @@
             dailyActivityTableBody.querySelectorAll('.move-down-btn').forEach(btn => btn.addEventListener('click', handleMoveDownClick));
         }
         
-        function handleInlineEditFocus(event) {
-            const targetElement = event.currentTarget;
-            const time = targetElement.dataset.time;
-
-    // Only update internal tracking without blurring other fields
-            editingInlineTimeKey = time;
-            targetElement.classList.add('editing');
-        }
+       function handleInlineEditFocus(event) {
+            // 🛑 Do absolutely nothing except maybe style (optional)
+            // We no longer track editingInlineTimeKey here
+            event.currentTarget.classList.add('editing');
+         }
 
         function handleMoveUpClick(e) {
             e.stopPropagation();
@@ -593,27 +590,22 @@
             }
         }
 
-        function handleInlineEditBlur(event) {
+       function handleInlineEditBlur(event) {
             const targetElement = event.currentTarget;
-        
-            // Capture values before blur finishes
             const newValue = targetElement.textContent.trim();
             const isTimeField = targetElement.classList.contains('time-editable');
             const timeKey = targetElement.dataset.time;
         
             targetElement.classList.remove('editing');
         
-            // Delay logic until after keyboard is closed
+            // Delay data update to avoid layout shift mid-keyboard
             setTimeout(() => {
-                if (editingInlineTimeKey === timeKey) {
-                    if (isTimeField) {
-                        saveInlineTime(timeKey, newValue);
-                    } else {
-                        saveInlineActivityText(timeKey, newValue);
-                    }
-                    editingInlineTimeKey = null;
+                if (isTimeField) {
+                    saveInlineTime(timeKey, newValue);
+                } else {
+                    saveInlineActivityText(timeKey, newValue);
                 }
-            }, 300); // enough delay to let keyboard fully disappear
+            }, 100); // Slight delay allows keyboard to fully dismiss
         }
 
         function handleInlineEditKeydown(event) {
