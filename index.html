@@ -10,24 +10,54 @@
         /* Custom styles for Inter font and general body */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f0f2f5;
-            color: #2d3748;
+            background-color: #f0f2f5; /* Soft light gray background */
+            color: #2d3748; /* Darker text for readability */
         }
 
-        /* Style for calendar grid cells */
+        /* Updated Calendar Cell Layout - Perfect squares on mobile */
         .calendar-day-cell {
-            min-height: 100px;
             position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            padding: 12px;
+            height: 0;
+            padding-top: 100%; /* Creates perfect square aspect ratio */
             cursor: pointer;
             border-radius: 8px;
             transition: all 0.2s ease-in-out;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
+
+        .calendar-day-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 8px;
+        }
+
+        @media (min-width: 768px) {
+            .calendar-day-cell {
+                min-height: 100px;
+                height: auto;
+                padding-top: 0;
+                padding: 12px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: flex-start;
+            }
+            
+            .calendar-day-content {
+                position: static;
+                width: 100%;
+                height: 100%;
+                padding: 0;
+            }
+        }
+
         .calendar-day-cell.current-month {
             background-color: #ffffff;
             border: 1px solid #e2e8f0;
@@ -75,6 +105,11 @@
             background-color: #3b82f6;
             border-radius: 50%;
             margin-top: 6px;
+        }
+
+        /* Responsive scrolling for daily view */
+        #daily-view-container {
+            overflow-x: auto;
         }
 
         /* Custom button styles for a more polished look */
@@ -127,16 +162,22 @@
             background-color: #e2e8f0;
             border-color: #cbd5e0;
         }
+        .icon-btn.edit:hover, .icon-btn.save:hover {
+            color: #3b82f6;
+        }
         .icon-btn.delete:hover {
             color: #e53e3e;
         }
+
+        /* Disabled button styles */
         .icon-btn:disabled {
             opacity: 0.4;
             cursor: not-allowed;
+            pointer-events: none;
         }
-        .icon-btn:disabled:hover {
-            background-color: transparent;
-            border-color: transparent;
+
+        .pointer-events-none {
+            pointer-events: none;
         }
 
         /* Message popup styles */
@@ -160,26 +201,19 @@
             -webkit-backdrop-filter: blur(5px);
         }
 
-        /* Inline editing specific styles */
+        /* Inline editing specific styles - removed dashed border from time-editable */
+        .activity-text-editable, .time-editable {
+            min-height: 24px;
+            outline: none;
+            padding-bottom: 2px;
+            transition: border-color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+            cursor: text;
+        }
+        
         .activity-text-editable {
-            min-height: 24px;
-            outline: none;
             border-bottom: 1px dashed #a0aec0;
-            padding-bottom: 2px;
-            transition: border-color 0.2s ease-in-out, background-color 0.2s ease-in-out;
-            cursor: text;
-            white-space: pre-wrap;
-            word-break: break-word;
         }
-        .time-editable {
-            min-height: 24px;
-            outline: none;
-            border-bottom: none;
-            padding-bottom: 2px;
-            transition: border-color 0.2s ease-in-out, background-color 0.2s ease-in-out;
-            cursor: text;
-            white-space: nowrap; /* Prevent time from wrapping */
-        }
+        
         .activity-text-editable:focus, .time-editable:focus {
             border-bottom: 1px solid #3b82f6;
             background-color: #f0f8ff;
@@ -188,43 +222,36 @@
             background-color: #f0f8ff;
         }
 
-        /* Mobile specific fixes (from new code) */
+        /* Drag and Drop styles */
+        .daily-activity-table-body tr.dragging {
+            opacity: 0.5;
+            background-color: #e0f2fe;
+            border: 1px dashed #3b82f6;
+        }
+        .daily-activity-table-body tr.drag-over-top {
+            border-top: 2px solid #3b82f6;
+        }
+        .daily-activity-table-body tr.drag-over-bottom {
+            border-bottom: 2px solid #3b82f6;
+        }
+
+        /* Responsive adjustments for smaller screens */
         @media (max-width: 767px) {
-            .calendar-day-cell {
-                height: 0;
-                padding-top: 100%;
-                min-height: unset;
-            }
-            .calendar-day-content {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                padding: 4px;
-            }
-            .calendar-day-content .day-number {
-                font-size: 1.2em;
+            #calendar-view {
+                gap: 0.25rem;
             }
             .day-number {
-                margin-bottom: 6px;
+                font-size: 0.875em;
+                margin-bottom: 2px;
             }
             .activity-indicator {
                 width: 6px;
                 height: 6px;
                 margin-top: 2px;
             }
-            #daily-view-container {
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-            }
-            .daily-activity-table th, .daily-activity-table td {
-                padding: 0.5rem;
-                font-size: 0.875rem;
+            .daily-activity-table-body td {
+                padding-left: 10px;
+                padding-right: 10px;
             }
         }
     </style>
@@ -260,21 +287,21 @@
 
         <div id="main-content-area" class="w-full">
             <div id="calendar-view" class="grid grid-cols-7 gap-3">
-                <div class="py-3 text-center text-sm font-semibold text-red-500">Sun</div>
-                <div class="py-3 text-center text-sm font-semibold text-gray-700">Mon</div>
-                <div class="py-3 text-center text-sm font-semibold text-gray-700">Tue</div>
-                <div class="py-3 text-center text-sm font-semibold text-gray-700">Wed</div>
-                <div class="py-3 text-center text-sm font-semibold text-gray-700">Thu</div>
-                <div class="py-3 text-center text-sm font-semibold text-gray-700">Fri</div>
-                <div class="py-3 text-center text-sm font-semibold text-gray-700">Sat</div>
+                <div class="py-3 text-center text-sm font-semibold text-red-500 rounded-lg">Sun</div>
+                <div class="py-3 text-center text-sm font-semibold text-gray-700 rounded-lg">Mon</div>
+                <div class="py-3 text-center text-sm font-semibold text-gray-700 rounded-lg">Tue</div>
+                <div class="py-3 text-center text-sm font-semibold text-gray-700 rounded-lg">Wed</div>
+                <div class="py-3 text-center text-sm font-semibold text-gray-700 rounded-lg">Thu</div>
+                <div class="py-3 text-center text-sm font-semibold text-gray-700 rounded-lg">Fri</div>
+                <div class="py-3 text-center text-sm font-semibold text-gray-700 rounded-lg">Sat</div>
             </div>
             <div id="daily-view" class="hidden">
                 <button id="add-new-slot-btn" class="px-6 py-3 mb-6 btn-primary rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                     Add New Slot
                     <svg class="inline-block w-5 h-5 ml-2 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                 </button>
-                <div id="daily-view-container" class="bg-white border border-gray-200 rounded-lg shadow-md">
-                    <table class="daily-activity-table min-w-full">
+                <div id="daily-view-container">
+                    <table class="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden shadow-md daily-activity-table">
                         <thead class="bg-gray-50">
                             <tr>
                                 <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200 w-1/6">Time</th>
@@ -282,7 +309,7 @@
                                 <th class="py-3 px-4 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200 w-1/6">Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="daily-activity-table-body" class="divide-y divide-gray-200"></tbody>
+                        <tbody id="daily-activity-table-body" class="divide-y divide-gray-200 daily-activity-table-body"></tbody>
                     </table>
                 </div>
                 <p id="no-daily-activities-message" class="text-center text-gray-500 italic mt-6 hidden">No activities recorded for this day.</p>
@@ -364,6 +391,7 @@
         let lastPromptedDate = null;
         let currentView = 'month';
         let editingInlineTimeKey = null;
+        let draggedItem = null;
         let pickerYear = new Date().getFullYear();
 
         // DOM Elements
@@ -400,11 +428,6 @@
 
         // --- Helper Functions ---
 
-        /**
-         * Displays a temporary message to the user.
-         * @param {string} msg The message text.
-         * @param {string} type The type of message ('info' or 'error').
-         */
         function showMessage(msg, type = 'info') {
             messageText.textContent = msg;
             messageDisplay.className = 'fixed bottom-5 right-5 z-50 px-4 py-3 rounded-lg shadow-md transition-opacity duration-300';
@@ -419,10 +442,6 @@
             messageDisplay.dataset.timeoutId = timeoutId;
         }
 
-        /**
-         * Loads activity data from local storage, handling potential parse errors and data migration.
-         * @returns {object} The activity data object.
-         */
         function loadActivityDataFromLocalStorage() {
             try {
                 const storedData = localStorage.getItem('activityTrackerData');
@@ -447,10 +466,6 @@
             }
         }
 
-        /**
-         * Saves activity data to local storage.
-         * @param {object} data The activity data object to save.
-         */
         function saveActivityDataToLocalStorage(data) {
             try {
                 localStorage.setItem('activityTrackerData', JSON.stringify(data));
@@ -460,11 +475,6 @@
             }
         }
 
-        /**
-         * Formats a Date object into a YYYY-MM-DD string.
-         * @param {Date} date The date object.
-         * @returns {string} The formatted date string.
-         */
         function getYYYYMMDD(date) {
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -472,21 +482,11 @@
             return `${year}-${month}-${day}`;
         }
 
-        /**
-         * Formats a YYYY-MM-DD date string for display.
-         * @param {string} dateString The date string in YYYY-MM-DD format.
-         * @returns {string} The formatted date string (e.g., 'Mon, May 1, 2023').
-         */
         function formatDateForDisplay(dateString) {
             const date = new Date(dateString + 'T00:00:00');
             return date.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' });
         }
 
-        /**
-         * Parses a display date string back into YYYY-MM-DD format.
-         * @param {string} displayDateStr The formatted display date string.
-         * @returns {string|null} The YYYY-MM-DD string or null if parsing fails.
-         */
         function parseDisplayDateToYYYYMMDD(displayDateStr) {
             const parts = displayDateStr.split(', ');
             if (parts.length < 3) return null;
@@ -508,6 +508,7 @@
             for (let i = 0; i < firstDayOfMonth.getDay(); i++) {
                 const emptyCell = document.createElement('div');
                 emptyCell.className = 'calendar-day-cell other-month';
+                emptyCell.innerHTML = '<div class="calendar-day-content"></div>';
                 calendarView.appendChild(emptyCell);
             }
 
@@ -525,11 +526,13 @@
                 if (hasActivity) dayCell.classList.add('has-activity');
                 if (getYYYYMMDD(date) === getYYYYMMDD(selectedDate) && currentView === 'day') dayCell.classList.add('selected-day');
                 if (getYYYYMMDD(date) === getYYYYMMDD(today)) dayCell.classList.add('is-today');
-
-                const contentWrapper = document.createElement('div');
-                contentWrapper.className = 'calendar-day-content';
-                contentWrapper.innerHTML = `<div class="day-number">${day}</div>${hasActivity ? '<div class="activity-indicator"></div>' : ''}`;
-                dayCell.appendChild(contentWrapper);
+                
+                dayCell.innerHTML = `
+                    <div class="calendar-day-content">
+                        <div class="day-number">${day}</div>
+                        ${hasActivity ? '<div class="activity-indicator"></div>' : ''}
+                    </div>
+                `;
                 
                 dayCell.dataset.date = dateKey;
                 dayCell.addEventListener('click', () => {
@@ -544,6 +547,7 @@
             for (let i = 0; i < (7 - (totalCells % 7)) % 7; i++) {
                 const emptyCell = document.createElement('div');
                 emptyCell.className = 'calendar-day-cell other-month';
+                emptyCell.innerHTML = '<div class="calendar-day-content"></div>';
                 calendarView.appendChild(emptyCell);
             }
         }
@@ -563,7 +567,7 @@
                 dailyActivitiesArray = Object.keys(dailyActivitiesMap)
                     .filter(timeKey => timeKey !== '_userCleared')
                     .map(timeKey => ({ time: timeKey, ...dailyActivitiesMap[timeKey] }))
-                    .sort((a, b) => (a.order || 0) - (b.order || 0));
+                    .sort((a, b) => a.order - b.order);
             } else if (!isUserCleared && !isSunday) {
                 for (let h = 8; h <= 17; h++) {
                     const timeKey = `${String(h).padStart(2, '0')}:00-${String(h + 1).padStart(2, '0')}:00`;
@@ -576,35 +580,32 @@
                 dailyActivitiesArray.forEach((activity, index) => {
                     const row = document.createElement('tr');
                     row.className = 'hover:bg-gray-100 transition-colors duration-150';
+                    row.draggable = true;
                     row.dataset.time = activity.time;
-
-                    const upButton = `
-                        <button class="icon-btn move-up-btn" aria-label="Move up" ${index === 0 ? 'disabled' : ''}>
-                            <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
-                        </button>`;
-
-                    const downButton = `
-                        <button class="icon-btn move-down-btn" aria-label="Move down" ${index === dailyActivitiesArray.length - 1 ? 'disabled' : ''}>
-                            <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </button>`;
+                    
+                    const isFirst = index === 0;
+                    const isLast = index === dailyActivitiesArray.length - 1;
                     
                     row.innerHTML = `
-                        <td class="py-3 px-4 text-sm text-gray-900 border-b border-gray-100 cursor-text">
-                            <div class="time-editable whitespace-nowrap" data-time="${activity.time}" contenteditable="true">${activity.time}</div>
-                        </td>
+                        <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-900 border-b border-gray-100 cursor-text time-editable" data-time="${activity.time}" contenteditable="true">${activity.time}</td>
                         <td class="py-3 px-4 text-sm text-gray-900 border-b border-gray-100">
                             <div class="activity-text-editable" data-time="${activity.time}" contenteditable="true">${activity.text}</div>
                         </td>
-                        <td class="py-3 px-4 text-sm border-b border-gray-100 flex space-x-1 justify-center items-center">
-                            ${upButton}
-                            ${downButton}
+                        <td class="py-3 px-4 text-sm border-b border-gray-100 flex space-x-1 justify-center items-center" data-time="${activity.time}">
+                            <button class="icon-btn move-up-btn" aria-label="Move Up" data-time="${activity.time}" ${isFirst ? 'disabled' : ''}>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+                            </button>
+                            <button class="icon-btn move-down-btn" aria-label="Move Down" data-time="${activity.time}" ${isLast ? 'disabled' : ''}>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
                             <button class="icon-btn delete-btn" aria-label="Delete" data-time="${activity.time}">
-                                <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                             </button>
                         </td>`;
                     dailyActivityTableBody.appendChild(row);
                 });
                 attachDailyActivityEventListeners();
+                attachDragAndDropListeners();
             }
         }
 
@@ -616,26 +617,28 @@
                 el.addEventListener('blur', handleInlineEditBlur);
                 el.addEventListener('keydown', handleInlineEditKeydown);
             });
-            dailyActivityTableBody.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', handleDeleteButtonClick));
             dailyActivityTableBody.querySelectorAll('.move-up-btn').forEach(btn => btn.addEventListener('click', handleMoveUpClick));
             dailyActivityTableBody.querySelectorAll('.move-down-btn').forEach(btn => btn.addEventListener('click', handleMoveDownClick));
+            dailyActivityTableBody.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', handleDeleteButtonClick));
         }
 
-        function handleMoveUpClick(e) {
-            const row = e.currentTarget.closest('tr');
-            const prevRow = row.previousElementSibling;
-            if (prevRow) {
-                row.parentElement.insertBefore(row, prevRow);
-                updateActivityOrderAndReRender();
+        function handleMoveUpClick(event) {
+            const timeKey = event.currentTarget.dataset.time;
+            const currentRow = event.currentTarget.closest('tr');
+            const previousRow = currentRow.previousElementSibling;
+            if (previousRow) {
+                dailyActivityTableBody.insertBefore(currentRow, previousRow);
+                updateActivityOrderInLocalStorage();
             }
         }
 
-        function handleMoveDownClick(e) {
-            const row = e.currentTarget.closest('tr');
-            const nextRow = row.nextElementSibling;
+        function handleMoveDownClick(event) {
+            const timeKey = event.currentTarget.dataset.time;
+            const currentRow = event.currentTarget.closest('tr');
+            const nextRow = currentRow.nextElementSibling;
             if (nextRow) {
-                nextRow.parentNode.insertBefore(row, nextRow.nextSibling);
-                updateActivityOrderAndReRender();
+                dailyActivityTableBody.insertBefore(nextRow, currentRow);
+                updateActivityOrderInLocalStorage();
             }
         }
 
@@ -648,13 +651,13 @@
             }
             targetElement.classList.add('editing');
             editingInlineTimeKey = time;
+            const actionsCell = targetElement.closest('tr').querySelector('td:last-child');
+            actionsCell.innerHTML = `
+                <button class="icon-btn save-btn" aria-label="Save" data-time="${time}"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg></button>
+                <button class="icon-btn delete-btn" aria-label="Delete" data-time="${time}"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>`;
+            attachInlineActionListeners(time);
         }
 
-        /**
-         * FIX: This function no longer calls a full re-render for text edits.
-         * It saves the data and updates the calendar view to show/hide the activity dot.
-         * The contenteditable element already updates its text in real-time.
-         */
         function handleInlineEditBlur(event) {
             const targetElement = event.currentTarget;
             if (editingInlineTimeKey === targetElement.dataset.time) {
@@ -677,15 +680,26 @@
         function handleDeleteButtonClick(event) {
             deleteActivity(getYYYYMMDD(selectedDate), event.currentTarget.dataset.time);
         }
+
+        function attachInlineActionListeners(timeKey) {
+            const actionsCell = dailyActivityTableBody.querySelector(`td[data-time="${timeKey}"]`);
+            actionsCell?.querySelector('.save-btn')?.addEventListener('click', (e) => {
+                const time = e.currentTarget.dataset.time;
+                dailyActivityTableBody.querySelector(`.activity-text-editable[data-time="${time}"]`)?.blur();
+                dailyActivityTableBody.querySelector(`.time-editable[data-time="${time}"]`)?.blur();
+            });
+            actionsCell?.querySelector('.delete-btn')?.addEventListener('click', (e) => {
+                deleteActivity(getYYYYMMDD(selectedDate), e.currentTarget.dataset.time);
+            });
+        }
         
-        function updateActivityOrderAndReRender() {
+        function updateActivityOrderInLocalStorage() {
             const dateKey = getYYYYMMDD(selectedDate);
             const allStoredData = loadActivityDataFromLocalStorage();
             let dailyActivitiesMap = allStoredData[dateKey] || {};
             const orderedTimeKeys = Array.from(dailyActivityTableBody.children).map(row => row.dataset.time);
             let newDailyActivitiesMap = {};
             orderedTimeKeys.forEach((timeKey, index) => {
-                if (!timeKey) return;
                 const originalEntry = dailyActivitiesMap[timeKey] || { text: dailyActivityTableBody.querySelector(`[data-time="${timeKey}"] .activity-text-editable`).textContent };
                 newDailyActivitiesMap[timeKey] = { text: originalEntry.text, order: index };
             });
@@ -693,16 +707,16 @@
             allStoredData[dateKey] = newDailyActivitiesMap;
             saveActivityDataToLocalStorage(allStoredData);
             showMessage("Activities reordered!", 'success');
-            // Re-render is necessary here to update the disabled states of the move buttons
             renderDailyActivities();
         }
 
         // --- Core Logic & Data Manipulation ---
         
+        // *** NEW FUNCTION TO CREATE DEFAULT SLOTS ***
         function initializeDayWithDefaults(dateKey) {
             const dayData = {};
             const date = new Date(dateKey + 'T00:00:00');
-            if (date.getDay() !== 0) {
+            if (date.getDay() !== 0) { // Not Sunday
                 for (let h = 8; h <= 17; h++) {
                     const timeKey = `${String(h).padStart(2, '0')}:00-${String(h + 1).padStart(2, '0')}:00`;
                     dayData[timeKey] = { text: "", order: h - 8 };
@@ -719,8 +733,8 @@
             dayViewBtn.classList.toggle('btn-secondary', isMonthView);
             calendarView.classList.toggle('hidden', !isMonthView);
             dailyView.classList.toggle('hidden', isMonthView);
-            currentPeriodDisplay.classList.add('cursor-pointer');
-            
+            currentPeriodDisplay.classList.add('cursor-pointer'); // Always clickable
+
             if (isMonthView) {
                 currentPeriodDisplay.textContent = currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
                 renderCalendar();
@@ -729,7 +743,7 @@
                 renderDailyActivities();
             }
         }
-        
+
         function checkTimeAndPrompt() {
             const now = new Date();
             if (lastPromptedDate !== getYYYYMMDD(now)) {
@@ -775,6 +789,7 @@
 
             const allStoredData = loadActivityDataFromLocalStorage();
             
+            // *** FIX: Initialize day with defaults if it's new ***
             if (!allStoredData[dateKey] || allStoredData[dateKey]._userCleared) {
                 allStoredData[dateKey] = initializeDayWithDefaults(dateKey);
             }
@@ -798,15 +813,12 @@
             hourlyPromptModal.classList.add('hidden');
             if (dateKey === getYYYYMMDD(selectedDate)) updateView();
         }
-        
-        /**
-         * FIX: Modified this function to not re-render the entire table.
-         * It updates the local storage and then updates the calendar view's activity dots.
-         */
+
         function saveInlineActivityText(timeKey, newActivityText) {
             const dateKey = getYYYYMMDD(selectedDate);
             const allStoredData = loadActivityDataFromLocalStorage();
             
+            // *** FIX: Initialize day with defaults if it's new ***
             if (!allStoredData[dateKey] || allStoredData[dateKey]._userCleared) {
                 allStoredData[dateKey] = initializeDayWithDefaults(dateKey);
             }
@@ -823,13 +835,9 @@
             saveActivityDataToLocalStorage(allStoredData);
             showMessage("Activity updated!", 'success');
             editingInlineTimeKey = null;
-            renderCalendar(); // Only update the calendar view, not the entire daily table
+            updateView();
         }
 
-        /**
-         * FIX: A full re-render is still needed here because the time key (and data-time attribute)
-         * of the table row is changing, which is a structural change.
-         */
         function saveInlineTime(oldTimeKey, newTimeKey) {
             const dateKey = getYYYYMMDD(selectedDate);
             const allStoredData = loadActivityDataFromLocalStorage();
@@ -850,7 +858,7 @@
             saveActivityDataToLocalStorage(allStoredData);
             showMessage("Time updated!", 'success');
             editingInlineTimeKey = null;
-            updateView(); // A full re-render is needed for a time change
+            updateView();
         }
 
         function deleteActivity(dateKey, timeKey) {
@@ -879,7 +887,7 @@
 
             if (activitiesToExport.length === 0) return showMessage("No activities found to export.", 'info');
 
-            activitiesToExport.sort((a, b) => a.date.localeCompare(b.date) || (a.order || 0) - (b.order || 0));
+            activitiesToExport.sort((a, b) => a.date.localeCompare(b.date) || a.order - b.order);
             let csvContent = "data:text/csv;charset=utf-8,Date,Time,Activity\n";
             csvContent += activitiesToExport.map(entry => {
                 const activity = `"${entry.text.replace(/"/g, '""')}"`;
@@ -970,6 +978,45 @@
             return result.map(f => f.trim().replace(/^"|"$/g, ''));
         }
         
+        // Drag and Drop implementation
+        function attachDragAndDropListeners() {
+            dailyActivityTableBody.querySelectorAll('tr').forEach(row => {
+                row.addEventListener('dragstart', handleDragStart); row.addEventListener('dragover', handleDragOver);
+                row.addEventListener('dragleave', handleDragLeave); row.addEventListener('drop', handleDrop);
+                row.addEventListener('dragend', handleDragEnd);
+            });
+        }
+        function handleDragStart(e) {
+            draggedItem = e.target.closest('tr');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', draggedItem.dataset.time);
+            draggedItem.classList.add('dragging');
+        }
+        function handleDragOver(e) {
+            e.preventDefault();
+            const targetRow = e.target.closest('tr');
+            if (targetRow && targetRow !== draggedItem) {
+                dailyActivityTableBody.querySelectorAll('.drag-over-top, .drag-over-bottom').forEach(row => row.classList.remove('drag-over-top', 'drag-over-bottom'));
+                const rect = targetRow.getBoundingClientRect();
+                targetRow.classList.add(e.clientY - rect.top < rect.height / 2 ? 'drag-over-top' : 'drag-over-bottom');
+            }
+        }
+        function handleDragLeave(e) { e.target.closest('tr')?.classList.remove('drag-over-top', 'drag-over-bottom'); }
+        function handleDrop(e) {
+            e.preventDefault();
+            const targetRow = e.target.closest('tr');
+            if (!targetRow || targetRow === draggedItem) return;
+            const rect = targetRow.getBoundingClientRect();
+            dailyActivityTableBody.querySelectorAll('.drag-over-top, .drag-over-bottom').forEach(row => row.classList.remove('drag-over-top', 'drag-over-bottom'));
+            dailyActivityTableBody.insertBefore(draggedItem, e.clientY - rect.top < rect.height / 2 ? targetRow : targetRow.nextSibling);
+            updateActivityOrderInLocalStorage();
+        }
+        function handleDragEnd() {
+            draggedItem?.classList.remove('dragging');
+            draggedItem = null;
+            dailyActivityTableBody.querySelectorAll('.drag-over-top, .drag-over-bottom').forEach(row => row.classList.remove('drag-over-top', 'drag-over-bottom'));
+        }
+
         // --- Event Listeners & Initialization ---
         
         monthViewBtn.addEventListener('click', () => { currentView = 'month'; updateView(); });
@@ -999,6 +1046,7 @@
             const dateKey = getYYYYMMDD(selectedDate);
             const allStoredData = loadActivityDataFromLocalStorage();
             
+            // *** FIX: Initialize day with defaults if it's new ***
             if (!allStoredData[dateKey] || allStoredData[dateKey]._userCleared) {
                 allStoredData[dateKey] = initializeDayWithDefaults(dateKey);
             }
@@ -1011,7 +1059,7 @@
             delete allStoredData[dateKey]._userCleared;
             saveActivityDataToLocalStorage(allStoredData);
             updateView();
-            setTimeout(() => dailyActivityTableBody.querySelector(`.activity-text-editable[data-time="${newTimeKey}"]`)?.focus(), 0);
+            setTimeout(() => dailyActivityTableBody.querySelector(`.activity-text-editable[data-time="${newTimeKey}"]`)?.click(), 0);
         });
         saveHourlyActivityBtn.addEventListener('click', saveHourlyActivity);
         closeHourlyPromptModalBtn.addEventListener('click', () => hourlyPromptModal.classList.add('hidden'));
@@ -1049,6 +1097,8 @@
                 button.addEventListener('click', () => {
                     currentMonth = new Date(pickerYear, index, 1);
                     selectedDate = new Date(pickerYear, index, selectedDate.getDate());
+                    // If the day doesn't exist in the new month (e.g., 31st), it will roll over.
+                    // Let's ensure it's a valid day in the new month.
                     const lastDayOfNewMonth = new Date(pickerYear, index + 1, 0).getDate();
                     if (selectedDate.getDate() > lastDayOfNewMonth) {
                         selectedDate.setDate(lastDayOfNewMonth);
@@ -1065,7 +1115,6 @@
             if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
                 Notification.requestPermission();
             }
-            window.addEventListener('resize', updateView);
             updateView();
             setInterval(checkTimeAndPrompt, 60 * 1000);
             checkTimeAndPrompt();
