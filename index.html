@@ -7,60 +7,61 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        /* Custom styles for Inter font and general body */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f0f2f5;
-            color: #2d3748;
+            background-color: #f0f2f5; /* Soft light gray background */
+            color: #2d3748; /* Darker text for readability */
         }
 
+        /* Style for calendar grid cells */
         .calendar-day-cell {
-            min-height: 100px;
-            position: relative;
+            min-height: 100px; /* Ensure cells have enough height */
             display: flex;
             flex-direction: column;
-            align-items: center;
+            align-items: center; /* Center content horizontally */
             justify-content: flex-start;
-            padding: 12px;
+            padding: 12px; /* Increased padding */
             cursor: pointer;
-            border-radius: 8px;
-            transition: all 0.2s ease-in-out;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border-radius: 8px; /* More rounded corners */
+            transition: all 0.2s ease-in-out; /* Smoother transitions */
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05); /* Subtle shadow */
         }
         .calendar-day-cell.current-month {
-            background-color: #ffffff;
-            border: 1px solid #e2e8f0;
+            background-color: #ffffff; /* White for current month days */
+            border: 1px solid #e2e8f0; /* Light border */
         }
         .calendar-day-cell.other-month {
-            background-color: #f8fafc;
-            color: #a0aec0;
+            background-color: #f8fafc; /* Very light for other months */
+            color: #a0aec0; /* Faded text for other months */
             border: 1px solid #edf2f7;
         }
         .calendar-day-cell.has-activity {
-            border: 2px solid #3b82f6;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 2px solid #3b82f6; /* Updated Blue */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* More prominent shadow */
         }
         .calendar-day-cell.selected-day {
-            background-color: #eff6ff;
-            border: 2px solid #3b82f6;
-            transform: translateY(-2px);
+            background-color: #eff6ff; /* Light blue highlight for selected day */
+            border: 2px solid #3b82f6; /* Updated Blue */
+            transform: translateY(-2px); /* Slight lift */
             box-shadow: 0 6px 10px rgba(0,0,0,0.15);
         }
         .calendar-day-cell:hover {
-            background-color: #e2e8f0;
-            transform: translateY(-1px);
+            background-color: #e2e8f0; /* Hover effect */
+            transform: translateY(-1px); /* Slight lift on hover */
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         .day-number {
-            font-weight: 600;
-            font-size: 1.2em;
+            font-weight: 600; /* Semi-bold */
+            font-size: 1.2em; /* Slightly larger */
             margin-bottom: 6px;
             color: #2d3748;
         }
         .calendar-day-cell.other-month .day-number {
-            color: #a0aec0;
+            color: #a0aec0; /* Faded for other months */
         }
         .calendar-day-cell.is-sunday .day-number {
-            color: #ef4444;
+            color: #ef4444; /* Red color for Sunday numbers */
         }
         .calendar-day-cell.is-today .day-number {
             color: #3b82f6;
@@ -68,73 +69,71 @@
         }
 
         .activity-indicator {
-            width: 10px;
+            width: 10px; /* Slightly larger dot */
             height: 10px;
-            background-color: #3b82f6;
+            background-color: #3b82f6; /* Updated Blue */
             border-radius: 50%;
             margin-top: 6px;
         }
 
+        /* Custom button styles for a more polished look */
         .btn-primary {
-            background-color: #3b82f6;
+            background-color: #3b82f6; /* Updated Blue (Vibrant) */
             color: #ffffff;
-            border: 1px solid #3b82f6;
+            border: 1px solid #3b82f6; /* Updated Blue */
             transition: all 0.2s ease-in-out;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .btn-primary:hover {
-            background-color: #2563eb;
+            background-color: #2563eb; /* Darker vibrant blue on hover */
             box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         }
         .btn-secondary {
-            background-color: #e2e8f0;
+            background-color: #e2e8f0; /* Light gray */
             color: #4a5568;
             border: 1px solid #e2e8f0;
             transition: all 0.2s ease-in-out;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
         .btn-secondary:hover {
-            background-color: #cbd5e0;
+            background-color: #cbd5e0; /* Darker gray on hover */
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         .btn-danger {
-            background-color: #e53e3e;
+            background-color: #e53e3e; /* Red */
             color: #ffffff;
             border: 1px solid #e53e3e;
             transition: all 0.2s ease-in-out;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .btn-danger:hover {
-            background-color: #c53030;
+            background-color: #c53030; /* Darker red on hover */
             box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         }
 
+        /* Icon button specific styles */
         .icon-btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 0.5rem;
-            border-radius: 0.375rem;
+            padding: 0.5rem; /* Smaller padding for icons */
+            border-radius: 0.375rem; /* Tailwind rounded-md */
             transition: all 0.2s ease-in-out;
-            border: 1px solid transparent;
-            color: #4a5568;
+            border: 1px solid transparent; /* Default transparent border */
+            color: #4a5568; /* Default icon color */
         }
         .icon-btn:hover {
-            background-color: #e2e8f0;
-            border-color: #cbd5e0;
+            background-color: #e2e8f0; /* Light gray on hover */
+            border-color: #cbd5e0; /* Subtle border on hover */
+        }
+        .icon-btn.edit:hover, .icon-btn.save:hover {
+            color: #3b82f6; /* Updated Blue */
         }
         .icon-btn.delete:hover {
-            color: #e53e3e;
-        }
-        .icon-btn:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-        .icon-btn:disabled:hover {
-            background-color: transparent;
-            border-color: transparent;
+            color: #e53e3e; /* Red on hover */
         }
 
+        /* Message popup styles */
         #message-display {
             position: fixed;
             bottom: 20px;
@@ -149,69 +148,64 @@
             visibility: visible;
         }
 
+        /* Modal backdrop blur */
         .modal-backdrop {
             backdrop-filter: blur(5px);
             -webkit-backdrop-filter: blur(5px);
         }
 
+        /* Inline editing specific styles */
         .activity-text-editable, .time-editable {
-            min-height: 24px;
-            outline: none;
-            border-bottom: 1px dashed #a0aec0;
+            min-height: 24px; /* Ensure a minimum height for editing */
+            outline: none; /* Remove default outline */
+            border-bottom: 1px dashed #a0aec0; /* Subtle dashed border when editable */
             padding-bottom: 2px;
             transition: border-color 0.2s ease-in-out, background-color 0.2s ease-in-out;
-            cursor: text;
-            white-space: pre-wrap;
-            word-break: break-word;
-        }
-        .time-editable {
-            border-bottom: none;
+            cursor: text; /* Indicate it's editable */
         }
         .activity-text-editable:focus, .time-editable:focus {
-            border-bottom: 1px solid #3b82f6;
-            background-color: #f0f8ff;
+            border-bottom: 1px solid #3b82f6; /* Updated Blue */
+            background-color: #f0f8ff; /* Very light blue background on focus */
         }
         .activity-text-editable.editing, .time-editable.editing {
-            background-color: #f0f8ff;
+            background-color: #f0f8ff; /* Light blue background when editing */
         }
-        
+
+        /* Drag and Drop styles */
+        .daily-activity-table-body tr.dragging {
+            opacity: 0.5;
+            background-color: #e0f2fe; /* Light blue background for dragged item */
+            border: 1px dashed #3b82f6; /* Updated Blue */
+        }
+        .daily-activity-table-body tr.drag-over-top {
+            border-top: 2px solid #3b82f6; /* Updated Blue */
+        }
+        .daily-activity-table-body tr.drag-over-bottom {
+            border-bottom: 2px solid #3b82f6; /* Updated Blue */
+        }
+
+        /* Responsive adjustments for smaller screens */
         @media (max-width: 767px) {
+            #calendar-view {
+                gap: 0.25rem; /* Reduced gap for smaller screens (gap-1) */
+            }
             .calendar-day-cell {
-                height: 0;
-                padding-top: 100%; /* Makes height equal to width */
-                min-height: unset;
-            }
-            .calendar-day-content {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                padding: 4px;
-            }
-            .calendar-day-content .day-number {
-                font-weight: 600;
-                font-size: 1.2em;
+                min-height: 70px; /* Flexible height instead of a fixed square */
+                padding: 8px; /* More vertical space for content */
+                justify-content: flex-start; /* Align content to the top */
             }
             .day-number {
-                margin-bottom: 6px;
+                font-size: 0.875em; /* Smaller font for smaller cells */
+                margin-bottom: 2px;
             }
             .activity-indicator {
                 width: 6px;
                 height: 6px;
                 margin-top: 2px;
             }
-            #daily-view-container {
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-            }
-            .daily-activity-table th, .daily-activity-table td {
-                padding: 0.5rem;
-                font-size: 0.875rem;
+            .daily-activity-table-body td {
+                padding-left: 10px;
+                padding-right: 10px;
             }
         }
     </style>
@@ -247,31 +241,29 @@
 
         <div id="main-content-area" class="w-full">
             <div id="calendar-view" class="grid grid-cols-7 gap-3">
-                <div class="py-3 text-center text-sm font-semibold text-red-500">Sun</div>
-                <div class="py-3 text-center text-sm font-semibold text-gray-700">Mon</div>
-                <div class="py-3 text-center text-sm font-semibold text-gray-700">Tue</div>
-                <div class="py-3 text-center text-sm font-semibold text-gray-700">Wed</div>
-                <div class="py-3 text-center text-sm font-semibold text-gray-700">Thu</div>
-                <div class="py-3 text-center text-sm font-semibold text-gray-700">Fri</div>
-                <div class="py-3 text-center text-sm font-semibold text-gray-700">Sat</div>
+                <div class="py-3 text-center text-sm font-semibold text-red-500 bg-gray-100 border border-gray-200 rounded-lg">Sun</div>
+                <div class="py-3 text-center text-sm font-semibold text-gray-700 bg-gray-100 border border-gray-200 rounded-lg">Mon</div>
+                <div class="py-3 text-center text-sm font-semibold text-gray-700 bg-gray-100 border border-gray-200 rounded-lg">Tue</div>
+                <div class="py-3 text-center text-sm font-semibold text-gray-700 bg-gray-100 border border-gray-200 rounded-lg">Wed</div>
+                <div class="py-3 text-center text-sm font-semibold text-gray-700 bg-gray-100 border border-gray-200 rounded-lg">Thu</div>
+                <div class="py-3 text-center text-sm font-semibold text-gray-700 bg-gray-100 border border-gray-200 rounded-lg">Fri</div>
+                <div class="py-3 text-center text-sm font-semibold text-gray-700 bg-gray-100 border border-gray-200 rounded-lg">Sat</div>
             </div>
             <div id="daily-view" class="hidden">
                 <button id="add-new-slot-btn" class="px-6 py-3 mb-6 btn-primary rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                     Add New Slot
                     <svg class="inline-block w-5 h-5 ml-2 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                 </button>
-                <div id="daily-view-container" class="bg-white border border-gray-200 rounded-lg shadow-md">
-                    <table class="daily-activity-table min-w-full">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200 w-1/6">Time</th>
-                                <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200 w-4/6">Activity</th>
-                                <th class="py-3 px-4 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200 w-1/6">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="daily-activity-table-body" class="divide-y divide-gray-200"></tbody>
-                    </table>
-                </div>
+                <table class="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden shadow-md">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200 w-1/6">Time</th>
+                            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200 w-4/6">Activity</th>
+                            <th class="py-3 px-4 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200 w-1/6">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="daily-activity-table-body" class="divide-y divide-gray-200"></tbody>
+                </table>
                 <p id="no-daily-activities-message" class="text-center text-gray-500 italic mt-6 hidden">No activities recorded for this day.</p>
             </div>
             <div class="mt-8 pt-6 border-t border-gray-200 flex flex-col md:flex-row gap-4">
@@ -343,6 +335,7 @@
     </div>
 
     <script>
+        // Global state variables
         let currentMonth = new Date();
         let selectedDate = new Date();
         let currentPromptHour = '';
@@ -350,8 +343,10 @@
         let lastPromptedDate = null;
         let currentView = 'month';
         let editingInlineTimeKey = null;
+        let draggedItem = null;
         let pickerYear = new Date().getFullYear();
 
+        // DOM Elements
         const messageDisplay = document.getElementById('message-display');
         const messageText = document.getElementById('message-text');
         const currentPeriodDisplay = document.getElementById('current-period-display');
@@ -403,7 +398,6 @@
             try {
                 const storedData = localStorage.getItem('activityTrackerData');
                 const parsedData = storedData ? JSON.parse(storedData) : {};
-                // Data migration for older formats
                 for (const dateKey in parsedData) {
                     if (typeof parsedData[dateKey] !== 'object' || parsedData[dateKey] === null) continue;
                     for (const timeKey in parsedData[dateKey]) {
@@ -464,27 +458,26 @@
             const today = new Date();
             
             for (let i = 0; i < firstDayOfMonth.getDay(); i++) {
-                calendarView.appendChild(document.createElement('div')).className = 'calendar-day-cell other-month';
+                const emptyCell = document.createElement('div');
+                emptyCell.className = 'calendar-day-cell other-month';
+                calendarView.appendChild(emptyCell);
             }
 
             for (let day = 1; day <= lastDayOfMonth.getDate(); day++) {
                 const date = new Date(year, month, day);
                 const dateKey = getYYYYMMDD(date);
-                let hasActivity = Object.keys(allStoredData[dateKey] || {})
-                    .some(key => key !== '_userCleared' && allStoredData[dateKey][key].text?.trim());
-                
+                let hasActivity = false;
+                if (allStoredData[dateKey]) {
+                    hasActivity = Object.keys(allStoredData[dateKey])
+                        .some(key => key !== '_userCleared' && allStoredData[dateKey][key].text?.trim());
+                }
                 const dayCell = document.createElement('div');
                 dayCell.className = 'calendar-day-cell current-month';
                 if (date.getDay() === 0) dayCell.classList.add('is-sunday');
                 if (hasActivity) dayCell.classList.add('has-activity');
                 if (getYYYYMMDD(date) === getYYYYMMDD(selectedDate) && currentView === 'day') dayCell.classList.add('selected-day');
                 if (getYYYYMMDD(date) === getYYYYMMDD(today)) dayCell.classList.add('is-today');
-
-                const contentWrapper = document.createElement('div');
-                contentWrapper.className = 'calendar-day-content';
-                contentWrapper.innerHTML = `<div class="day-number">${day}</div>${hasActivity ? '<div class="activity-indicator"></div>' : ''}`;
-                dayCell.appendChild(contentWrapper);
-                
+                dayCell.innerHTML = `<div class="day-number">${day}</div>${hasActivity ? '<div class="activity-indicator"></div>' : ''}`;
                 dayCell.dataset.date = dateKey;
                 dayCell.addEventListener('click', () => {
                     selectedDate = date;
@@ -496,7 +489,9 @@
 
             const totalCells = firstDayOfMonth.getDay() + lastDayOfMonth.getDate();
             for (let i = 0; i < (7 - (totalCells % 7)) % 7; i++) {
-                calendarView.appendChild(document.createElement('div')).className = 'calendar-day-cell other-month';
+                const emptyCell = document.createElement('div');
+                emptyCell.className = 'calendar-day-cell other-month';
+                calendarView.appendChild(emptyCell);
             }
         }
 
@@ -515,7 +510,7 @@
                 dailyActivitiesArray = Object.keys(dailyActivitiesMap)
                     .filter(timeKey => timeKey !== '_userCleared')
                     .map(timeKey => ({ time: timeKey, ...dailyActivitiesMap[timeKey] }))
-                    .sort((a, b) => (a.order || 0) - (b.order || 0));
+                    .sort((a, b) => a.order - b.order);
             } else if (!isUserCleared && !isSunday) {
                 for (let h = 8; h <= 17; h++) {
                     const timeKey = `${String(h).padStart(2, '0')}:00-${String(h + 1).padStart(2, '0')}:00`;
@@ -525,29 +520,24 @@
             
             noDailyActivitiesMessage.classList.toggle('hidden', dailyActivitiesArray.length > 0);
             if (dailyActivitiesArray.length > 0) {
-                dailyActivitiesArray.forEach((activity, index) => {
+                dailyActivitiesArray.forEach(activity => {
                     const row = document.createElement('tr');
                     row.className = 'hover:bg-gray-100 transition-colors duration-150';
+                    row.draggable = true;
                     row.dataset.time = activity.time;
-
-                    const upButton = `<button class="icon-btn move-up-btn" aria-label="Move up" ${index === 0 ? 'disabled' : ''}><svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg></button>`;
-                    const downButton = `<button class="icon-btn move-down-btn" aria-label="Move down" ${index === dailyActivitiesArray.length - 1 ? 'disabled' : ''}><svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button>`;
-                    
                     row.innerHTML = `
-                        <td class="py-3 px-4 text-sm text-gray-900 border-b border-gray-100 cursor-text">
-                            <div class="time-editable whitespace-nowrap" data-time="${activity.time}" contenteditable="true">${activity.time}</div>
-                        </td>
+                        <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-900 border-b border-gray-100 cursor-text time-editable" data-time="${activity.time}" contenteditable="true">${activity.time}</td>
                         <td class="py-3 px-4 text-sm text-gray-900 border-b border-gray-100">
                             <div class="activity-text-editable" data-time="${activity.time}" contenteditable="true">${activity.text}</div>
                         </td>
-                        <td class="py-3 px-4 text-sm border-b border-gray-100 flex space-x-1 justify-center items-center">
-                            ${upButton}
-                            ${downButton}
-                            <button class="icon-btn delete-btn" aria-label="Delete" data-time="${activity.time}"><svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+                        <td class="py-3 px-4 text-sm border-b border-gray-100 flex space-x-1 justify-center items-center" data-time="${activity.time}">
+                            <button class="icon-btn edit-btn" aria-label="Edit" data-time="${activity.time}"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
+                            <button class="icon-btn delete-btn" aria-label="Delete" data-time="${activity.time}"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
                         </td>`;
                     dailyActivityTableBody.appendChild(row);
                 });
                 attachDailyActivityEventListeners();
+                attachDragAndDropListeners();
             }
         }
 
@@ -555,57 +545,40 @@
 
         function attachDailyActivityEventListeners() {
             dailyActivityTableBody.querySelectorAll('.activity-text-editable, .time-editable').forEach(el => {
-                el.addEventListener('focus', handleInlineEditFocus); 
+                el.addEventListener('click', handleInlineEditClick);
                 el.addEventListener('blur', handleInlineEditBlur);
                 el.addEventListener('keydown', handleInlineEditKeydown);
             });
+            dailyActivityTableBody.querySelectorAll('.edit-btn').forEach(btn => btn.addEventListener('click', handleEditButtonClick));
             dailyActivityTableBody.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', handleDeleteButtonClick));
-            dailyActivityTableBody.querySelectorAll('.move-up-btn').forEach(btn => btn.addEventListener('click', handleMoveUpClick));
-            dailyActivityTableBody.querySelectorAll('.move-down-btn').forEach(btn => btn.addEventListener('click', handleMoveDownClick));
-        }
-        
-       function handleInlineEditFocus(event) {
-            // 🛑 Do absolutely nothing except maybe style (optional)
-            // We no longer track editingInlineTimeKey here
-            event.currentTarget.classList.add('editing');
-         }
-
-        function handleMoveUpClick(e) {
-            e.stopPropagation();
-            const row = e.currentTarget.closest('tr');
-            const prevRow = row.previousElementSibling;
-            if (prevRow) {
-                row.parentElement.insertBefore(row, prevRow);
-                updateActivityOrderInLocalStorage();
-            }
         }
 
-        function handleMoveDownClick(e) {
-            e.stopPropagation();
-            const row = e.currentTarget.closest('tr');
-            const nextRow = row.nextElementSibling;
-            if (nextRow) {
-                nextRow.parentNode.insertBefore(row, nextRow.nextSibling);
-                updateActivityOrderInLocalStorage();
-            }
-        }
-
-       function handleInlineEditBlur(event) {
+        function handleInlineEditClick(event) {
             const targetElement = event.currentTarget;
-            const newValue = targetElement.textContent.trim();
-            const isTimeField = targetElement.classList.contains('time-editable');
-            const timeKey = targetElement.dataset.time;
-        
-            targetElement.classList.remove('editing');
-        
-            // Delay data update to avoid layout shift mid-keyboard
-            setTimeout(() => {
-                if (isTimeField) {
-                    saveInlineTime(timeKey, newValue);
+            const time = targetElement.dataset.time;
+            if (editingInlineTimeKey && editingInlineTimeKey !== time) {
+                const prevEl = dailyActivityTableBody.querySelector(`[data-time="${editingInlineTimeKey}"]`);
+                prevEl?.blur();
+            }
+            targetElement.classList.add('editing');
+            editingInlineTimeKey = time;
+            const actionsCell = targetElement.closest('tr').querySelector('td:last-child');
+            actionsCell.innerHTML = `
+                <button class="icon-btn save-btn" aria-label="Save" data-time="${time}"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg></button>
+                <button class="icon-btn delete-btn" aria-label="Delete" data-time="${time}"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>`;
+            attachInlineActionListeners(time);
+        }
+
+        function handleInlineEditBlur(event) {
+            const targetElement = event.currentTarget;
+            if (editingInlineTimeKey === targetElement.dataset.time) {
+                if (targetElement.classList.contains('time-editable')) {
+                    saveInlineTime(targetElement.dataset.time, targetElement.textContent.trim());
                 } else {
-                    saveInlineActivityText(timeKey, newValue);
+                    saveInlineActivityText(targetElement.dataset.time, targetElement.textContent.trim());
                 }
-            }, 100); // Slight delay allows keyboard to fully dismiss
+            }
+            targetElement.classList.remove('editing');
         }
 
         function handleInlineEditKeydown(event) {
@@ -615,9 +588,24 @@
             }
         }
 
+        function handleEditButtonClick(event) {
+            event.currentTarget.closest('tr').querySelector('.activity-text-editable')?.click();
+        }
+
         function handleDeleteButtonClick(event) {
-            event.stopPropagation();
             deleteActivity(getYYYYMMDD(selectedDate), event.currentTarget.dataset.time);
+        }
+
+        function attachInlineActionListeners(timeKey) {
+            const actionsCell = dailyActivityTableBody.querySelector(`td[data-time="${timeKey}"]`);
+            actionsCell?.querySelector('.save-btn')?.addEventListener('click', (e) => {
+                const time = e.currentTarget.dataset.time;
+                dailyActivityTableBody.querySelector(`.activity-text-editable[data-time="${time}"]`)?.blur();
+                dailyActivityTableBody.querySelector(`.time-editable[data-time="${time}"]`)?.blur();
+            });
+            actionsCell?.querySelector('.delete-btn')?.addEventListener('click', (e) => {
+                deleteActivity(getYYYYMMDD(selectedDate), e.currentTarget.dataset.time);
+            });
         }
         
         function updateActivityOrderInLocalStorage() {
@@ -627,19 +615,19 @@
             const orderedTimeKeys = Array.from(dailyActivityTableBody.children).map(row => row.dataset.time);
             let newDailyActivitiesMap = {};
             orderedTimeKeys.forEach((timeKey, index) => {
-                if (!timeKey) return;
-                const originalEntry = dailyActivitiesMap[timeKey] || { text: dailyActivityTableBody.querySelector(`.activity-text-editable[data-time="${timeKey}"]`).textContent };
+                const originalEntry = dailyActivitiesMap[timeKey] || { text: dailyActivityTableBody.querySelector(`[data-time="${timeKey}"] .activity-text-editable`).textContent };
                 newDailyActivitiesMap[timeKey] = { text: originalEntry.text, order: index };
             });
             if (dailyActivitiesMap._userCleared) newDailyActivitiesMap._userCleared = true;
             allStoredData[dateKey] = newDailyActivitiesMap;
             saveActivityDataToLocalStorage(allStoredData);
             showMessage("Activities reordered!", 'success');
-            renderDailyActivities(); // Re-render is necessary to update button disabled states
+            renderDailyActivities();
         }
 
         // --- Core Logic & Data Manipulation ---
         
+        // *** NEW FUNCTION TO CREATE DEFAULT SLOTS ***
         function initializeDayWithDefaults(dateKey) {
             const dayData = {};
             const date = new Date(dateKey + 'T00:00:00');
@@ -660,7 +648,8 @@
             dayViewBtn.classList.toggle('btn-secondary', isMonthView);
             calendarView.classList.toggle('hidden', !isMonthView);
             dailyView.classList.toggle('hidden', isMonthView);
-            
+            currentPeriodDisplay.classList.add('cursor-pointer'); // Always clickable
+
             if (isMonthView) {
                 currentPeriodDisplay.textContent = currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
                 renderCalendar();
@@ -669,14 +658,13 @@
                 renderDailyActivities();
             }
         }
-        
+
         function checkTimeAndPrompt() {
             const now = new Date();
             if (lastPromptedDate !== getYYYYMMDD(now)) {
                 lastPromptedHour = null;
                 lastPromptedDate = getYYYYMMDD(now);
             }
-            // Prompt on the hour from 8 AM to 6 PM on weekdays
             if (now.getDay() >= 1 && now.getDay() <= 5 && now.getHours() >= 8 && now.getHours() <= 18 && now.getMinutes() === 0 && lastPromptedHour !== now.getHours()) {
                 currentPromptHour = `${String(now.getHours()).padStart(2, '0')}:00`;
                 showNativeNotification();
@@ -687,7 +675,9 @@
         }
 
         function showNativeNotification() {
-            if (!("Notification" in window)) return;
+            if (!("Notification" in window)) {
+                return console.warn("Notifications not supported.");
+            }
             if (Notification.permission === "granted") {
                 new Notification("TimeBuddy - Log Activity!", {
                     body: `What did you do in the last hour?`,
@@ -696,7 +686,13 @@
                 });
             } else if (Notification.permission !== "denied") {
                 Notification.requestPermission().then(permission => {
-                    if (permission === "granted") showNativeNotification();
+                    if (permission === "granted") {
+                        new Notification("TimeBuddy - Log Activity!", {
+                            body: `What did you do in the last hour?`,
+                            requireInteraction: true,
+                            silent: true
+                        });
+                    }
                 });
             }
         }
@@ -707,6 +703,8 @@
             if (!activityText) return showMessage("Activity cannot be empty.", 'error');
 
             const allStoredData = loadActivityDataFromLocalStorage();
+            
+            // *** FIX: Initialize day with defaults if it's new ***
             if (!allStoredData[dateKey] || allStoredData[dateKey]._userCleared) {
                 allStoredData[dateKey] = initializeDayWithDefaults(dateKey);
             }
@@ -719,7 +717,8 @@
                 const existingText = existingEntry.text.trim();
                 existingEntry.text = existingText ? `${existingText} ${activityText}` : activityText;
             } else {
-                const maxOrder = Math.max(-1, ...Object.values(allStoredData[dateKey]).map(v => v.order || 0));
+                const existingKeys = Object.keys(allStoredData[dateKey]).filter(k => k !== '_userCleared');
+                const maxOrder = existingKeys.length > 0 ? Math.max(...Object.values(allStoredData[dateKey]).map(v => v.order || 0)) : -1;
                 allStoredData[dateKey][targetTimeKey] = { text: activityText, order: maxOrder + 1 };
             }
             
@@ -729,16 +728,12 @@
             hourlyPromptModal.classList.add('hidden');
             if (dateKey === getYYYYMMDD(selectedDate)) updateView();
         }
-        
-        /**
-         * Saves inline activity text. The call to updateView() is removed to prevent
-         * the mobile keyboard from dismissing, as the browser's native contenteditable
-         * behavior already updates the UI.
-         */
+
         function saveInlineActivityText(timeKey, newActivityText) {
             const dateKey = getYYYYMMDD(selectedDate);
             const allStoredData = loadActivityDataFromLocalStorage();
             
+            // *** FIX: Initialize day with defaults if it's new ***
             if (!allStoredData[dateKey] || allStoredData[dateKey]._userCleared) {
                 allStoredData[dateKey] = initializeDayWithDefaults(dateKey);
             }
@@ -746,7 +741,8 @@
             if (allStoredData[dateKey][timeKey]) {
                 allStoredData[dateKey][timeKey].text = newActivityText;
             } else {
-                const maxOrder = Math.max(-1, ...Object.values(allStoredData[dateKey]).map(v => v.order || 0));
+                const existingKeys = Object.keys(allStoredData[dateKey]).filter(k => k !== '_userCleared');
+                const maxOrder = existingKeys.length > 0 ? Math.max(...Object.values(allStoredData[dateKey]).map(v => v.order || 0)) : -1;
                 allStoredData[dateKey][timeKey] = { text: newActivityText, order: maxOrder + 1 };
             }
             
@@ -754,47 +750,30 @@
             saveActivityDataToLocalStorage(allStoredData);
             showMessage("Activity updated!", 'success');
             editingInlineTimeKey = null;
+            updateView();
         }
 
-        /**
-         * Saves an edited time slot. A full re-render is avoided to prevent mobile
-         * keyboard issues. The specific row is updated in the DOM directly.
-         * The list will be correctly sorted on the next full view render.
-         */
         function saveInlineTime(oldTimeKey, newTimeKey) {
             const dateKey = getYYYYMMDD(selectedDate);
             const allStoredData = loadActivityDataFromLocalStorage();
             if (!newTimeKey) {
                 showMessage("Time cannot be empty.", 'error');
-                renderDailyActivities(); // Re-render to restore old value
-                return;
+                return updateView();
             }
             if (!allStoredData[dateKey]) allStoredData[dateKey] = {};
             if (allStoredData[dateKey][newTimeKey] && oldTimeKey !== newTimeKey) {
                 showMessage(`Time "${newTimeKey}" already exists.`, 'error');
-                renderDailyActivities(); // Re-render to restore old value
-                return;
+                return updateView();
             }
-
-            const oldEntry = allStoredData[dateKey][oldTimeKey];
-            if (oldEntry) {
+            const entry = allStoredData[dateKey][oldTimeKey];
+            if (entry) {
                 delete allStoredData[dateKey][oldTimeKey];
-                allStoredData[dateKey][newTimeKey] = oldEntry; // Keep same text and order for now
+                allStoredData[dateKey][newTimeKey] = entry;
             }
             saveActivityDataToLocalStorage(allStoredData);
-            
-            // Manually update the DOM to reflect the change without a full re-render
-            const editedRow = dailyActivityTableBody.querySelector(`tr[data-time="${oldTimeKey}"]`);
-            if (editedRow) {
-                editedRow.dataset.time = newTimeKey;
-                editedRow.querySelector('.time-editable').dataset.time = newTimeKey;
-                editedRow.querySelector('.activity-text-editable').dataset.time = newTimeKey;
-                editedRow.querySelector('.delete-btn').dataset.time = newTimeKey;
-            }
-
             showMessage("Time updated!", 'success');
             editingInlineTimeKey = null;
-            // No re-render here to keep mobile keyboard active.
+            updateView();
         }
 
         function deleteActivity(dateKey, timeKey) {
@@ -813,19 +792,20 @@
         function downloadCSV() {
             const allStoredData = loadActivityDataFromLocalStorage();
             let activitiesToExport = [];
-            Object.keys(allStoredData).forEach(dateKey => {
-                const dailyEntries = Object.keys(allStoredData[dateKey])
-                    .filter(timeKey => timeKey !== '_userCleared' && allStoredData[dateKey][timeKey].text?.trim())
-                    .map(timeKey => ({ date: dateKey, time: timeKey, ...allStoredData[dateKey][timeKey] }));
-                activitiesToExport.push(...dailyEntries);
-            });
+            Object.keys(allStoredData)
+                .forEach(dateKey => {
+                    const dailyEntries = Object.keys(allStoredData[dateKey])
+                        .filter(timeKey => timeKey !== '_userCleared' && allStoredData[dateKey][timeKey].text?.trim())
+                        .map(timeKey => ({ date: dateKey, time: timeKey, ...allStoredData[dateKey][timeKey] }));
+                    activitiesToExport.push(...dailyEntries);
+                });
 
             if (activitiesToExport.length === 0) return showMessage("No activities found to export.", 'info');
 
-            activitiesToExport.sort((a, b) => a.date.localeCompare(b.date) || (a.order || 0) - (b.order || 0));
+            activitiesToExport.sort((a, b) => a.date.localeCompare(b.date) || a.order - b.order);
             let csvContent = "data:text/csv;charset=utf-8,Date,Time,Activity\n";
             csvContent += activitiesToExport.map(entry => {
-                const activity = `"${(entry.text || '').replace(/"/g, '""')}"`;
+                const activity = `"${entry.text.replace(/"/g, '""')}"`;
                 return `"${formatDateForDisplay(entry.date)}","${entry.time}",${activity}`;
             }).join("\n");
             
@@ -850,7 +830,7 @@
             const lines = csvContent.split('\n').filter(line => line.trim());
             if (lines.length <= 1) return showMessage("CSV file is empty or has no data.", 'error');
             
-            const allStoredData = loadActivityDataFromLocalStorage();
+            const allExistingData = loadActivityDataFromLocalStorage();
             const importedDays = {};
 
             lines.slice(1).forEach(line => {
@@ -860,37 +840,38 @@
                 const dateKey = parseDisplayDateToYYYYMMDD(displayDateStr);
                 if (!dateKey) return console.warn(`Skipping row with invalid date: ${displayDateStr}`);
                 
-                if (!allStoredData[dateKey]) allStoredData[dateKey] = {};
+                if (!allExistingData[dateKey]) allExistingData[dateKey] = {};
                 importedDays[dateKey] = true;
 
-                const existingEntry = allStoredData[dateKey][time];
+                const existingEntry = allExistingData[dateKey][time];
                 if (existingEntry) {
-                    const existingText = (existingEntry.text || '').trim();
-                    const importedText = (activityText || '').trim();
-                    if (existingText && importedText) existingEntry.text = `${existingText} ${importedText}`;
-                    else if (importedText) existingEntry.text = importedText;
+                    const existingText = existingEntry.text.trim();
+                    const importedText = activityText.trim();
+                    if (existingText && importedText) {
+                        existingEntry.text = `${existingText} ${importedText}`;
+                    } else if (importedText) {
+                        existingEntry.text = importedText;
+                    }
                 } else {
-                    const order = Object.keys(allStoredData[dateKey]).filter(k => k !== '_userCleared').length;
-                    allStoredData[dateKey][time] = { text: activityText, order };
+                    const order = Object.keys(allExistingData[dateKey]).filter(k => k !== '_userCleared').length;
+                    allExistingData[dateKey][time] = { text: activityText, order };
                 }
             });
             
-            // Re-order imported days to ensure consistency
             Object.keys(importedDays).forEach(dateKey => {
-                let dayArray = Object.entries(allStoredData[dateKey])
-                    .filter(([key, _]) => key !== '_userCleared')
-                    .map(([timeKey, value]) => ({ time: timeKey, ...value }))
+                let dayArray = Object.keys(allExistingData[dateKey])
+                    .filter(key => key !== '_userCleared')
+                    .map(timeKey => ({ time: timeKey, ...allExistingData[dateKey][timeKey] }))
                     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-                
                 let reorderedMap = {};
                 dayArray.forEach((activity, index) => {
                     reorderedMap[activity.time] = { text: activity.text, order: index };
                 });
-                if (allStoredData[dateKey]._userCleared) reorderedMap._userCleared = true;
-                allStoredData[dateKey] = reorderedMap;
+                if (allExistingData[dateKey]._userCleared) reorderedMap._userCleared = true;
+                allExistingData[dateKey] = reorderedMap;
             });
 
-            saveActivityDataToLocalStorage(allStoredData);
+            saveActivityDataToLocalStorage(allExistingData);
             showMessage("CSV data imported and merged!", 'success');
             updateView();
         }
@@ -912,6 +893,45 @@
             return result.map(f => f.trim().replace(/^"|"$/g, ''));
         }
         
+        // Drag and Drop implementation
+        function attachDragAndDropListeners() {
+            dailyActivityTableBody.querySelectorAll('tr').forEach(row => {
+                row.addEventListener('dragstart', handleDragStart); row.addEventListener('dragover', handleDragOver);
+                row.addEventListener('dragleave', handleDragLeave); row.addEventListener('drop', handleDrop);
+                row.addEventListener('dragend', handleDragEnd);
+            });
+        }
+        function handleDragStart(e) {
+            draggedItem = e.target.closest('tr');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', draggedItem.dataset.time);
+            draggedItem.classList.add('dragging');
+        }
+        function handleDragOver(e) {
+            e.preventDefault();
+            const targetRow = e.target.closest('tr');
+            if (targetRow && targetRow !== draggedItem) {
+                dailyActivityTableBody.querySelectorAll('.drag-over-top, .drag-over-bottom').forEach(row => row.classList.remove('drag-over-top', 'drag-over-bottom'));
+                const rect = targetRow.getBoundingClientRect();
+                targetRow.classList.add(e.clientY - rect.top < rect.height / 2 ? 'drag-over-top' : 'drag-over-bottom');
+            }
+        }
+        function handleDragLeave(e) { e.target.closest('tr')?.classList.remove('drag-over-top', 'drag-over-bottom'); }
+        function handleDrop(e) {
+            e.preventDefault();
+            const targetRow = e.target.closest('tr');
+            if (!targetRow || targetRow === draggedItem) return;
+            const rect = targetRow.getBoundingClientRect();
+            dailyActivityTableBody.querySelectorAll('.drag-over-top, .drag-over-bottom').forEach(row => row.classList.remove('drag-over-top', 'drag-over-bottom'));
+            dailyActivityTableBody.insertBefore(draggedItem, e.clientY - rect.top < rect.height / 2 ? targetRow : targetRow.nextSibling);
+            updateActivityOrderInLocalStorage();
+        }
+        function handleDragEnd() {
+            draggedItem?.classList.remove('dragging');
+            draggedItem = null;
+            dailyActivityTableBody.querySelectorAll('.drag-over-top, .drag-over-bottom').forEach(row => row.classList.remove('drag-over-top', 'drag-over-bottom'));
+        }
+
         // --- Event Listeners & Initialization ---
         
         monthViewBtn.addEventListener('click', () => { currentView = 'month'; updateView(); });
@@ -941,19 +961,20 @@
             const dateKey = getYYYYMMDD(selectedDate);
             const allStoredData = loadActivityDataFromLocalStorage();
             
+            // *** FIX: Initialize day with defaults if it's new ***
             if (!allStoredData[dateKey] || allStoredData[dateKey]._userCleared) {
                 allStoredData[dateKey] = initializeDayWithDefaults(dateKey);
             }
 
-            let newTimeKey = "00:00-01:00", counter = 1;
-            while (allStoredData[dateKey][newTimeKey]) newTimeKey = `New Slot ${counter++}`;
-            
-            const maxOrder = Math.max(-1, ...Object.values(allStoredData[dateKey]).map(v => v.order || 0));
+            let newTimeKey = "00:00", counter = 0;
+            while (allStoredData[dateKey][newTimeKey]) newTimeKey = `00:00-${++counter}`;
+            const existingKeys = Object.keys(allStoredData[dateKey]).filter(k => k !== '_userCleared');
+            const maxOrder = existingKeys.length > 0 ? Math.max(...Object.values(allStoredData[dateKey]).map(v => v.order || 0)) : -1;
             allStoredData[dateKey][newTimeKey] = { text: "", order: maxOrder + 1 };
             delete allStoredData[dateKey]._userCleared;
             saveActivityDataToLocalStorage(allStoredData);
             updateView();
-            setTimeout(() => dailyActivityTableBody.querySelector(`.activity-text-editable[data-time="${newTimeKey}"]`)?.focus(), 0);
+            setTimeout(() => dailyActivityTableBody.querySelector(`.activity-text-editable[data-time="${newTimeKey}"]`)?.click(), 0);
         });
         saveHourlyActivityBtn.addEventListener('click', saveHourlyActivity);
         closeHourlyPromptModalBtn.addEventListener('click', () => hourlyPromptModal.classList.add('hidden'));
@@ -963,8 +984,12 @@
         prevYearBtn.addEventListener('click', () => { pickerYear--; renderMonthPicker(); });
         nextYearBtn.addEventListener('click', () => { pickerYear++; renderMonthPicker(); });
         closeMonthPickerBtn.addEventListener('click', () => monthPickerModal.classList.add('hidden'));
-        resetDataBtn.addEventListener('click', () => confirmResetModal.classList.remove('hidden'));
-        cancelResetBtn.addEventListener('click', () => confirmResetModal.classList.add('hidden'));
+        resetDataBtn.addEventListener('click', () => {
+            confirmResetModal.classList.remove('hidden');
+        });
+        cancelResetBtn.addEventListener('click', () => {
+            confirmResetModal.classList.add('hidden');
+        });
         confirmResetBtn.addEventListener('click', () => {
             localStorage.removeItem('activityTrackerData');
             confirmResetModal.classList.add('hidden');
@@ -981,13 +1006,19 @@
                 button.className = 'px-4 py-3 rounded-lg font-medium text-gray-800 bg-gray-100 hover:bg-blue-100 hover:text-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500';
                 button.textContent = name;
                 if (pickerYear === currentMonth.getFullYear() && index === currentMonth.getMonth()) {
-                    button.classList.add('bg-blue-500', 'text-white', 'hover:bg-blue-600');
+                    button.classList.add('bg-blue-500', 'text-white');
                     button.classList.remove('bg-gray-100', 'text-gray-800');
                 }
                 button.addEventListener('click', () => {
-                    const newDate = new Date(pickerYear, index, 1);
-                    currentMonth = newDate;
-                    selectedDate = newDate; // Default to the first of the month
+                    currentMonth = new Date(pickerYear, index, 1);
+                    selectedDate = new Date(pickerYear, index, selectedDate.getDate());
+                    // If the day doesn't exist in the new month (e.g., 31st), it will roll over.
+                    // Let's ensure it's a valid day in the new month.
+                    const lastDayOfNewMonth = new Date(pickerYear, index + 1, 0).getDate();
+                    if (selectedDate.getDate() > lastDayOfNewMonth) {
+                        selectedDate.setDate(lastDayOfNewMonth);
+                    }
+                    
                     updateView();
                     monthPickerModal.classList.add('hidden');
                 });
@@ -999,7 +1030,6 @@
             if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
                 Notification.requestPermission();
             }
-            window.addEventListener('resize', updateView);
             updateView();
             setInterval(checkTimeAndPrompt, 60 * 1000);
             checkTimeAndPrompt();
