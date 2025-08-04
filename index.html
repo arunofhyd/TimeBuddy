@@ -567,12 +567,10 @@
         function handleInlineEditFocus(event) {
             const targetElement = event.currentTarget;
             const time = targetElement.dataset.time;
-            if (editingInlineTimeKey && editingInlineTimeKey !== time) {
-                const prevEl = dailyActivityTableBody.querySelector(`[data-time="${editingInlineTimeKey}"]`);
-                prevEl?.blur();
-            }
-            targetElement.classList.add('editing');
+
+    // Only update internal tracking without blurring other fields
             editingInlineTimeKey = time;
+            targetElement.classList.add('editing');
         }
 
         function handleMoveUpClick(e) {
