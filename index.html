@@ -595,14 +595,25 @@
 
         function handleInlineEditBlur(event) {
             const targetElement = event.currentTarget;
-            if (editingInlineTimeKey === targetElement.dataset.time) {
-                if (targetElement.classList.contains('time-editable')) {
-                    saveInlineTime(targetElement.dataset.time, targetElement.textContent.trim());
-                } else {
-                    saveInlineActivityText(targetElement.dataset.time, targetElement.textContent.trim());
-                }
-            }
+        
+            // Capture values before blur finishes
+            const newValue = targetElement.textContent.trim();
+            const isTimeField = targetElement.classList.contains('time-editable');
+            const timeKey = targetElement.dataset.time;
+        
             targetElement.classList.remove('editing');
+        
+            // Delay logic until after keyboard is closed
+            setTimeout(() => {
+                if (editingInlineTimeKey === timeKey) {
+                    if (isTimeField) {
+                        saveInlineTime(timeKey, newValue);
+                    } else {
+                        saveInlineActivityText(timeKey, newValue);
+                    }
+                    editingInlineTimeKey = null;
+                }
+            }, 300); // enough delay to let keyboard fully disappear
         }
 
         function handleInlineEditKeydown(event) {
