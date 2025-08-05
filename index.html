@@ -67,9 +67,14 @@
             color: #a0aec0;
             border: 1px solid #edf2f7;
         }
+        /* Edited days now only have the dot, no outline from this class */
         .calendar-day-cell.has-activity {
-            border: 2px solid #3b82f6;
+            /* Removed border: 2px solid #3b82f6; */
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        /* Current day gets the outline */
+        .calendar-day-cell.is-today {
+            border: 2px solid #3b82f6;
         }
         .calendar-day-cell.selected-day {
             background-color: #eff6ff;
@@ -523,9 +528,14 @@
                 const dayCell = document.createElement('div');
                 dayCell.className = 'calendar-day-cell current-month';
                 if (date.getDay() === 0) dayCell.classList.add('is-sunday');
+                
+                // Add has-activity class for the blue dot
                 if (hasActivity) dayCell.classList.add('has-activity');
-                if (getYYYYMMDD(date) === getYYYYMMDD(selectedDate) && currentView === 'day') dayCell.classList.add('selected-day');
+                
+                // Add is-today class for the blue outline
                 if (getYYYYMMDD(date) === getYYYYMMDD(today)) dayCell.classList.add('is-today');
+
+                if (getYYYYMMDD(date) === getYYYYMMDD(selectedDate) && currentView === 'day') dayCell.classList.add('selected-day');
                 
                 dayCell.innerHTML = `
                     <div class="calendar-day-content">
