@@ -680,7 +680,8 @@
         }
 
         function handleInlineEditKeydown(event) {
-            if (event.key === 'Enter') {
+            // Check if Shift + Enter is pressed
+            if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault();
                 event.currentTarget.blur(); // Trigger blur to save changes
             }
@@ -811,7 +812,7 @@
 
             if (existingEntry) {
                 const existingText = existingEntry.text.trim();
-                existingEntry.text = existingText ? `${existingText} ${activityText}` : activityText;
+                existingEntry.text = existingText ? `${existingText}\n${activityText}` : activityText;
             } else {
                 const existingKeys = Object.keys(allStoredData[dateKey]).filter(k => k !== '_userCleared');
                 const maxOrder = existingKeys.length > 0 ? Math.max(...Object.values(allStoredData[dateKey]).map(v => v.order || 0)) : -1;
@@ -944,7 +945,7 @@
                     const existingText = existingEntry.text.trim();
                     const importedText = activityText.trim();
                     if (existingText && importedText) {
-                        existingEntry.text = `${existingText} ${importedText}`;
+                        existingEntry.text = `${existingText}\n${importedText}`;
                     } else if (importedText) {
                         existingEntry.text = importedText;
                     }
@@ -1091,6 +1092,14 @@
             confirmResetModal.classList.add('hidden');
             showMessage("All data has been reset.", 'success');
             updateView();
+        });
+        // Add a keydown listener to the hourly activity input
+        hourlyActivityInput.addEventListener('keydown', (event) => {
+            // Check if Shift + Enter is pressed
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                saveHourlyActivity();
+            }
         });
 
         function renderMonthPicker() {
