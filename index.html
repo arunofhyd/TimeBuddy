@@ -498,6 +498,11 @@
             const date = new Date(`${parts[1]} ${parts[2]}`);
             return isNaN(date.getTime()) ? null : getYYYYMMDD(date);
         }
+        
+        // Helper to convert newline characters to <br> for HTML display
+        function formatTextForDisplay(text) {
+            return text.replace(/\n/g, '<br>');
+        }
 
         // --- View Rendering ---
 
@@ -599,7 +604,7 @@
                     row.innerHTML = `
                         <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-900 border-b border-gray-100 cursor-text time-editable" data-time="${activity.time}" contenteditable="true">${activity.time}</td>
                         <td class="py-3 px-4 text-sm text-gray-900 border-b border-gray-100">
-                            <div class="activity-text-editable" data-time="${activity.time}" contenteditable="true">${activity.text}</div>
+                            <div class="activity-text-editable" data-time="${activity.time}" contenteditable="true">${formatTextForDisplay(activity.text)}</div>
                         </td>
                         <td class="py-3 px-4 text-sm flex space-x-1 justify-center items-center" data-time="${activity.time}">
                             <button class="icon-btn move-up-btn" aria-label="Move Up" data-time="${activity.time}" ${isFirst ? 'disabled' : ''}>
@@ -669,9 +674,9 @@
             const targetElement = event.currentTarget;
             if (editingInlineTimeKey === targetElement.dataset.time) {
                 if (targetElement.classList.contains('time-editable')) {
-                    saveInlineTime(targetElement.dataset.time, targetElement.textContent.trim());
+                    saveInlineTime(targetElement.dataset.time, targetElement.innerText.trim());
                 } else {
-                    saveInlineActivityText(targetElement.dataset.time, targetElement.textContent.trim());
+                    saveInlineActivityText(targetElement.dataset.time, targetElement.innerText.trim());
                 }
             }
             targetElement.classList.remove('editing');
@@ -680,7 +685,7 @@
         }
 
         function handleInlineEditKeydown(event) {
-            // Check if Shift + Enter is pressed
+            // Check if Enter is pressed without Shift
             if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault();
                 event.currentTarget.blur(); // Trigger blur to save changes
@@ -698,7 +703,7 @@
             const orderedTimeKeys = Array.from(dailyActivityTableBody.children).map(row => row.dataset.time);
             let newDailyActivitiesMap = {};
             orderedTimeKeys.forEach((timeKey, index) => {
-                const originalEntry = dailyActivitiesMap[timeKey] || { text: dailyActivityTableBody.querySelector(`[data-time="${timeKey}"] .activity-text-editable`).textContent };
+                const originalEntry = dailyActivitiesMap[timeKey] || { text: dailyActivityTableBody.querySelector(`[data-time="${timeKey}"] .activity-text-editable`).innerText };
                 newDailyActivitiesMap[timeKey] = { text: originalEntry.text, order: index };
             });
             if (dailyActivitiesMap._userCleared) newDailyActivitiesMap._userCleared = true;
@@ -812,6 +817,7 @@
 
             if (existingEntry) {
                 const existingText = existingEntry.text.trim();
+                // FIX: Append with a newline instead of a space
                 existingEntry.text = existingText ? `${existingText}\n${activityText}` : activityText;
             } else {
                 const existingKeys = Object.keys(allStoredData[dateKey]).filter(k => k !== '_userCleared');
@@ -945,6 +951,7 @@
                     const existingText = existingEntry.text.trim();
                     const importedText = activityText.trim();
                     if (existingText && importedText) {
+                        // FIX: Append with a newline
                         existingEntry.text = `${existingText}\n${importedText}`;
                     } else if (importedText) {
                         existingEntry.text = importedText;
@@ -1095,7 +1102,7 @@
         });
         // Add a keydown listener to the hourly activity input
         hourlyActivityInput.addEventListener('keydown', (event) => {
-            // Check if Shift + Enter is pressed
+            // Check if Enter is pressed without Shift
             if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault();
                 saveHourlyActivity();
