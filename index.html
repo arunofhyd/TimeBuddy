@@ -1106,10 +1106,6 @@
         }
 
         window.onload = function() {
-            // Request notification permission on load if not already granted or denied
-            if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
-                Notification.requestPermission();
-            }
             updateView();
             // Check every minute for prompting
             setInterval(checkTimeAndPrompt, 60 * 1000);
