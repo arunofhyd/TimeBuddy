@@ -90,7 +90,7 @@
         .day-number {
             font-weight: 600;
             font-size: 1.2em;
-            margin-bottom: 6px;
+            margin-bottom: 4px; /* Adjusted for note container */
             color: #2d3748;
         }
         .calendar-day-cell.other-month .day-number {
@@ -104,12 +104,33 @@
             font-weight: 700;
         }
 
+        /* New styles for the tiny text note */
+        .day-note-container {
+            height: 14px; /* Fixed height for the container */
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .day-note {
+            font-size: 0.65rem; /* Tiny text */
+            color: #6b7280; /* A muted gray */
+            line-height: 1;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
         .activity-indicator {
             width: 10px;
             height: 10px;
             background-color: #3b82f6;
             border-radius: 50%;
-            margin-top: 6px;
+            margin-top: 4px; /* Adjusted for note container */
         }
 
         /* Responsive scrolling for daily view */
@@ -247,12 +268,18 @@
             }
             .day-number {
                 font-size: 0.875em;
-                margin-bottom: 2px;
+                margin-bottom: 2px; /* Adjusted for mobile */
             }
             .activity-indicator {
                 width: 6px;
                 height: 6px;
-                margin-top: 2px;
+                margin-top: 2px; /* Adjusted for mobile */
+            }
+            .day-note-container {
+                height: 12px; /* Adjust height for mobile */
+            }
+            .day-note {
+                font-size: 0.6rem; /* Adjust font size for mobile */
             }
             .daily-activity-table-body td {
                 padding-left: 10px;
@@ -274,7 +301,7 @@
 
         <div class="flex flex-col space-y-4 mb-8 w-full">
             <div class="flex space-x-4 w-full">
-                <button id="month-view-btn" class="w-1/2 px-5 py-3 text-base font-semibold btn-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Month View</button>
+                <button id="month-view-btn" class="w-1/2 px-5 py-3 text-base font-bold btn-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Month View</button>
                 <button id="day-view-btn" class="w-1/2 px-5 py-3 text-base font-semibold btn-secondary rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Day View</button>
             </div>
             <div class="flex items-center justify-between w-full">
@@ -301,10 +328,18 @@
                 <div class="py-3 text-center text-sm font-semibold text-gray-700 rounded-lg">Sat</div>
             </div>
             <div id="daily-view" class="hidden">
-                <button id="add-new-slot-btn" class="px-6 py-3 mb-6 btn-primary rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                    Add New Slot
-                    <svg class="inline-block w-5 h-5 ml-2 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                </button>
+                <!-- Daily controls section -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                    <!-- Daily Note Input on the left -->
+                    <div class="sm:w-1/2">
+                        <input type="text" id="daily-note-input" maxlength="5" class="w-full px-4 py-2.5 text-lg font-semibold text-gray-800 bg-gray-50 border-2 border-gray-200 rounded-lg shadow-inner focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all placeholder:text-gray-400 placeholder:font-medium" placeholder="Daily Note (max 5 chars.)">
+                    </div>
+                    <!-- Add New Slot Button on the right -->
+                    <button id="add-new-slot-btn" class="px-6 py-2.5 btn-primary rounded-lg w-full sm:w-1/2 whitespace-nowrap text-base font-semibold">
+                        Add New Slot
+                        <svg class="inline-block w-5 h-5 ml-2 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                    </button>
+                </div>
                 <div id="daily-view-container">
                     <table class="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden shadow-md daily-activity-table">
                         <thead class="bg-gray-50">
@@ -410,6 +445,7 @@
         const todayBtn = document.getElementById('today-btn');
         const calendarView = document.getElementById('calendar-view');
         const dailyView = document.getElementById('daily-view');
+        const dailyNoteInput = document.getElementById('daily-note-input'); // New element
         const addNewSlotBtn = document.getElementById('add-new-slot-btn');
         const dailyActivityTableBody = document.getElementById('daily-activity-table-body');
         const noDailyActivitiesMessage = document.getElementById('no-daily-activities-message');
@@ -454,7 +490,7 @@
                 for (const dateKey in parsedData) {
                     if (typeof parsedData[dateKey] !== 'object' || parsedData[dateKey] === null) continue;
                     for (const timeKey in parsedData[dateKey]) {
-                        if (timeKey === '_userCleared') continue;
+                        if (timeKey === '_userCleared' || timeKey === 'note') continue; // Ignore note field here
                         if (typeof parsedData[dateKey][timeKey] === 'string') {
                             parsedData[dateKey][timeKey] = { text: parsedData[dateKey][timeKey], order: 0 };
                         }
@@ -525,19 +561,20 @@
             for (let day = 1; day <= lastDayOfMonth.getDate(); day++) {
                 const date = new Date(year, month, day);
                 const dateKey = getYYYYMMDD(date);
+                const dayData = allStoredData[dateKey] || {};
+                const noteText = dayData.note || ''; // Get note text if it exists
+
                 let hasActivity = false;
-                if (allStoredData[dateKey]) {
-                    hasActivity = Object.keys(allStoredData[dateKey])
-                        .some(key => key !== '_userCleared' && allStoredData[dateKey][key].text?.trim());
+                if (dayData) {
+                    hasActivity = Object.keys(dayData)
+                        .some(key => key !== '_userCleared' && key !== 'note' && dayData[key].text?.trim());
                 }
                 const dayCell = document.createElement('div');
                 dayCell.className = 'calendar-day-cell current-month';
                 if (date.getDay() === 0) dayCell.classList.add('is-sunday');
                 
-                // Add has-activity class for the blue dot
                 if (hasActivity) dayCell.classList.add('has-activity');
                 
-                // Add is-today class for the blue outline
                 if (getYYYYMMDD(date) === getYYYYMMDD(today)) dayCell.classList.add('is-today');
 
                 if (getYYYYMMDD(date) === getYYYYMMDD(selectedDate) && currentView === 'day') dayCell.classList.add('selected-day');
@@ -545,6 +582,9 @@
                 dayCell.innerHTML = `
                     <div class="calendar-day-content">
                         <div class="day-number">${day}</div>
+                        <div class="day-note-container">
+                             ${noteText ? `<span class="day-note">${noteText}</span>` : ''}
+                        </div>
                         ${hasActivity ? '<div class="activity-indicator"></div>' : ''}
                     </div>
                 `;
@@ -574,17 +614,20 @@
             const dailyActivitiesMap = allStoredData[dateKey] || {};
             let dailyActivitiesArray = [];
 
+            // Populate the daily note input
+            dailyNoteInput.value = dailyActivitiesMap.note || '';
+
             const isUserCleared = dailyActivitiesMap._userCleared === true;
-            const hasStoredActivities = Object.keys(dailyActivitiesMap).filter(key => key !== '_userCleared').length > 0;
+            const hasStoredActivities = Object.keys(dailyActivitiesMap).filter(key => key !== '_userCleared' && key !== 'note').length > 0;
             const isSunday = selectedDate.getDay() === 0;
 
             if (hasStoredActivities) {
                 dailyActivitiesArray = Object.keys(dailyActivitiesMap)
-                    .filter(timeKey => timeKey !== '_userCleared')
+                    .filter(timeKey => timeKey !== '_userCleared' && timeKey !== 'note')
                     .map(timeKey => ({ time: timeKey, ...dailyActivitiesMap[timeKey] }))
                     .sort((a, b) => a.order - b.order);
             } else if (!isUserCleared && !isSunday) {
-                for (let h = 8; h <= 17; h++) {
+                 for (let h = 8; h <= 17; h++) {
                     const timeKey = `${String(h).padStart(2, '0')}:00-${String(h + 1).padStart(2, '0')}:00`;
                     dailyActivitiesArray.push({ time: timeKey, text: "", order: h - 8 });
                 }
@@ -638,7 +681,6 @@
         }
 
         function handleMoveUpClick(event) {
-            const timeKey = event.currentTarget.dataset.time;
             const currentRow = event.currentTarget.closest('tr');
             const previousRow = currentRow.previousElementSibling;
             if (previousRow) {
@@ -648,7 +690,6 @@
         }
 
         function handleMoveDownClick(event) {
-            const timeKey = event.currentTarget.dataset.time;
             const currentRow = event.currentTarget.closest('tr');
             const nextRow = currentRow.nextElementSibling;
             if (nextRow) {
@@ -660,14 +701,12 @@
         function handleInlineEditClick(event) {
             const targetElement = event.currentTarget;
             const time = targetElement.dataset.time;
-            // If another element was being edited, blur it first
             if (editingInlineTimeKey && editingInlineTimeKey !== time) {
                 const prevEl = dailyActivityTableBody.querySelector(`[data-time="${editingInlineTimeKey}"]`);
                 prevEl?.blur();
             }
             targetElement.classList.add('editing');
             editingInlineTimeKey = time;
-            // No changes to action buttons on click, they remain consistent
         }
 
         function handleInlineEditBlur(event) {
@@ -680,15 +719,13 @@
                 }
             }
             targetElement.classList.remove('editing');
-            // Re-render to ensure buttons are correctly enabled/disabled based on new order
             renderDailyActivities(); 
         }
 
         function handleInlineEditKeydown(event) {
-            // Check if Enter is pressed without Shift
             if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault();
-                event.currentTarget.blur(); // Trigger blur to save changes
+                event.currentTarget.blur();
             }
         }
 
@@ -702,6 +739,11 @@
             let dailyActivitiesMap = allStoredData[dateKey] || {};
             const orderedTimeKeys = Array.from(dailyActivityTableBody.children).map(row => row.dataset.time);
             let newDailyActivitiesMap = {};
+            
+            if (dailyActivitiesMap.note) {
+                newDailyActivitiesMap.note = dailyActivitiesMap.note;
+            }
+
             orderedTimeKeys.forEach((timeKey, index) => {
                 const originalEntry = dailyActivitiesMap[timeKey] || { text: dailyActivityTableBody.querySelector(`[data-time="${timeKey}"] .activity-text-editable`).innerText };
                 newDailyActivitiesMap[timeKey] = { text: originalEntry.text, order: index };
@@ -710,12 +752,30 @@
             allStoredData[dateKey] = newDailyActivitiesMap;
             saveActivityDataToLocalStorage(allStoredData);
             showMessage("Activities reordered!", 'success');
-            renderDailyActivities(); // Re-render to update disabled states of buttons
+            renderDailyActivities();
         }
 
         // --- Core Logic & Data Manipulation ---
         
-        // *** NEW FUNCTION TO CREATE DEFAULT SLOTS ***
+        function saveDailyNote() {
+            const dateKey = getYYYYMMDD(selectedDate);
+            const noteText = dailyNoteInput.value.substring(0, 5);
+
+            const allStoredData = loadActivityDataFromLocalStorage();
+            if (!allStoredData[dateKey]) {
+                allStoredData[dateKey] = {};
+            }
+
+            if (noteText) {
+                allStoredData[dateKey].note = noteText;
+            } else {
+                delete allStoredData[dateKey].note;
+            }
+
+            saveActivityDataToLocalStorage(allStoredData);
+            // The calendar will update automatically when the user switches back to month view.
+        }
+
         function initializeDayWithDefaults(dateKey) {
             const dayData = {};
             const date = new Date(dateKey + 'T00:00:00');
@@ -730,13 +790,22 @@
 
         function updateView() {
             const isMonthView = currentView === 'month';
+            
+            // Month Button Styling
             monthViewBtn.classList.toggle('btn-primary', isMonthView);
             monthViewBtn.classList.toggle('btn-secondary', !isMonthView);
+            monthViewBtn.classList.toggle('font-bold', isMonthView);
+            monthViewBtn.classList.toggle('font-semibold', !isMonthView);
+
+            // Day Button Styling
             dayViewBtn.classList.toggle('btn-primary', !isMonthView);
             dayViewBtn.classList.toggle('btn-secondary', isMonthView);
+            dayViewBtn.classList.toggle('font-bold', !isMonthView);
+            dayViewBtn.classList.toggle('font-semibold', isMonthView);
+
             calendarView.classList.toggle('hidden', !isMonthView);
             dailyView.classList.toggle('hidden', isMonthView);
-            currentPeriodDisplay.classList.add('cursor-pointer'); // Always clickable
+            currentPeriodDisplay.classList.add('cursor-pointer');
 
             if (isMonthView) {
                 currentPeriodDisplay.textContent = currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
@@ -749,20 +818,16 @@
         
         function checkTimeAndPrompt() {
             const now = new Date();
-            // Reset lastPromptedHour if the day changes
             if (lastPromptedDate !== getYYYYMMDD(now)) {
                 lastPromptedHour = null;
                 lastPromptedDate = getYYYYMMDD(now);
             }
-            // Check if it's a weekday, between 8 AM and 6 PM, on the exact hour,
-            // and not already prompted for this hour.
             if (now.getDay() >= 1 && now.getDay() <= 5 && now.getHours() >= 8 && now.getHours() <= 18 && now.getMinutes() === 0 && lastPromptedHour !== now.getHours()) {
                 const promptHour = `${String(now.getHours()).padStart(2, '0')}:00`;
-                // Directly show the modal instead of a native notification
                 hourlyActivityInput.value = '';
                 hourlyPromptModal.classList.remove('hidden');
                 currentPromptHour = promptHour;
-                lastPromptedHour = now.getHours(); // Mark this hour as prompted
+                lastPromptedHour = now.getHours();
             }
         }
 
@@ -773,7 +838,6 @@
 
             const allStoredData = loadActivityDataFromLocalStorage();
             
-            // *** FIX: Initialize day with defaults if it's new ***
             if (!allStoredData[dateKey] || allStoredData[dateKey]._userCleared) {
                 allStoredData[dateKey] = initializeDayWithDefaults(dateKey);
             }
@@ -784,10 +848,9 @@
 
             if (existingEntry) {
                 const existingText = existingEntry.text.trim();
-                // FIX: Append with a newline instead of a space
                 existingEntry.text = existingText ? `${existingText}\n${activityText}` : activityText;
             } else {
-                const existingKeys = Object.keys(allStoredData[dateKey]).filter(k => k !== '_userCleared');
+                const existingKeys = Object.keys(allStoredData[dateKey]).filter(k => k !== '_userCleared' && k !== 'note');
                 const maxOrder = existingKeys.length > 0 ? Math.max(...Object.values(allStoredData[dateKey]).map(v => v.order || 0)) : -1;
                 allStoredData[dateKey][targetTimeKey] = { text: activityText, order: maxOrder + 1 };
             }
@@ -803,15 +866,15 @@
             const dateKey = getYYYYMMDD(selectedDate);
             const allStoredData = loadActivityDataFromLocalStorage();
             
-            // *** FIX: Initialize day with defaults if it's new ***
             if (!allStoredData[dateKey] || allStoredData[dateKey]._userCleared) {
                 allStoredData[dateKey] = initializeDayWithDefaults(dateKey);
+                 allStoredData[dateKey]._userCleared = true;
             }
 
             if (allStoredData[dateKey][timeKey]) {
                 allStoredData[dateKey][timeKey].text = newActivityText;
             } else {
-                const existingKeys = Object.keys(allStoredData[dateKey]).filter(k => k !== '_userCleared');
+                const existingKeys = Object.keys(allStoredData[dateKey]).filter(k => k !== '_userCleared' && k !== 'note');
                 const maxOrder = existingKeys.length > 0 ? Math.max(...Object.values(allStoredData[dateKey]).map(v => v.order || 0)) : -1;
                 allStoredData[dateKey][timeKey] = { text: newActivityText, order: maxOrder + 1 };
             }
@@ -850,8 +913,8 @@
             const allStoredData = loadActivityDataFromLocalStorage();
             if (allStoredData[dateKey]?.[timeKey]) {
                 delete allStoredData[dateKey][timeKey];
-                if (Object.keys(allStoredData[dateKey]).filter(k => k !== '_userCleared').length === 0) {
-                    allStoredData[dateKey] = { _userCleared: true };
+                if (Object.keys(allStoredData[dateKey]).filter(k => k !== '_userCleared' && k !== 'note').length === 0) {
+                    allStoredData[dateKey]._userCleared = true;
                 }
                 saveActivityDataToLocalStorage(allStoredData);
                 showMessage("Activity deleted.", 'success');
@@ -865,7 +928,7 @@
             Object.keys(allStoredData)
                 .forEach(dateKey => {
                     const dailyEntries = Object.keys(allStoredData[dateKey])
-                        .filter(timeKey => timeKey !== '_userCleared' && allStoredData[dateKey][timeKey].text?.trim())
+                        .filter(timeKey => timeKey !== '_userCleared' && timeKey !== 'note' && allStoredData[dateKey][timeKey].text?.trim())
                         .map(timeKey => ({ date: dateKey, time: timeKey, ...allStoredData[dateKey][timeKey] }));
                     activitiesToExport.push(...dailyEntries);
                 });
@@ -908,33 +971,42 @@
                 if (row.length < 3) return;
                 const [displayDateStr, time, activityText] = row;
                 const dateKey = parseDisplayDateToYYYYMMDD(displayDateStr);
-                if (!dateKey) return console.warn(`Skipping row with invalid date: ${displayDateStr}`);
+                if (!dateKey) {
+                    console.warn(`Skipping row with invalid date: ${displayDateStr}`);
+                    return;
+                }
                 
                 if (!allExistingData[dateKey]) allExistingData[dateKey] = {};
                 importedDays[dateKey] = true;
 
                 const existingEntry = allExistingData[dateKey][time];
+                const importedText = activityText.trim();
+
                 if (existingEntry) {
                     const existingText = existingEntry.text.trim();
-                    const importedText = activityText.trim();
-                    if (existingText && importedText) {
-                        // FIX: Append with a newline
-                        existingEntry.text = `${existingText}\n${importedText}`;
-                    } else if (importedText) {
-                        existingEntry.text = importedText;
+                    // If the imported text is not an exact match, merge it.
+                    if (existingText !== importedText) {
+                         existingEntry.text = existingText ? `${existingText}\n${importedText}` : importedText;
                     }
+                    // If it is an exact match, do nothing.
                 } else {
-                    const order = Object.keys(allExistingData[dateKey]).filter(k => k !== '_userCleared').length;
-                    allExistingData[dateKey][time] = { text: activityText, order };
+                    // If the entry doesn't exist, create a new one.
+                    const order = Object.keys(allExistingData[dateKey]).filter(k => k !== '_userCleared' && k !== 'note').length;
+                    allExistingData[dateKey][time] = { text: importedText, order };
                 }
             });
             
             Object.keys(importedDays).forEach(dateKey => {
                 let dayArray = Object.keys(allExistingData[dateKey])
-                    .filter(key => key !== '_userCleared')
+                    .filter(key => key !== '_userCleared' && key !== 'note')
                     .map(timeKey => ({ time: timeKey, ...allExistingData[dateKey][timeKey] }))
                     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
                 let reorderedMap = {};
+                
+                if (allExistingData[dateKey].note) {
+                    reorderedMap.note = allExistingData[dateKey].note;
+                }
+
                 dayArray.forEach((activity, index) => {
                     reorderedMap[activity.time] = { text: activity.text, order: index };
                 });
@@ -964,7 +1036,6 @@
             return result.map(f => f.trim().replace(/^"|"$/g, ''));
         }
         
-        // Drag and Drop implementation
         function attachDragAndDropListeners() {
             dailyActivityTableBody.querySelectorAll('tr').forEach(row => {
                 row.addEventListener('dragstart', handleDragStart); row.addEventListener('dragover', handleDragOver);
@@ -1032,14 +1103,14 @@
             const dateKey = getYYYYMMDD(selectedDate);
             const allStoredData = loadActivityDataFromLocalStorage();
             
-            // *** FIX: Initialize day with defaults if it's new ***
             if (!allStoredData[dateKey] || allStoredData[dateKey]._userCleared) {
                 allStoredData[dateKey] = initializeDayWithDefaults(dateKey);
+                 allStoredData[dateKey]._userCleared = true;
             }
 
             let newTimeKey = "00:00", counter = 0;
             while (allStoredData[dateKey][newTimeKey]) newTimeKey = `00:00-${++counter}`;
-            const existingKeys = Object.keys(allStoredData[dateKey]).filter(k => k !== '_userCleared');
+            const existingKeys = Object.keys(allStoredData[dateKey]).filter(k => k !== '_userCleared' && k !== 'note');
             const maxOrder = existingKeys.length > 0 ? Math.max(...Object.values(allStoredData[dateKey]).map(v => v.order || 0)) : -1;
             allStoredData[dateKey][newTimeKey] = { text: "", order: maxOrder + 1 };
             delete allStoredData[dateKey]._userCleared;
@@ -1054,7 +1125,7 @@
         uploadCsvInput.addEventListener('change', handleFileUpload);
         prevYearBtn.addEventListener('click', () => { pickerYear--; renderMonthPicker(); });
         nextYearBtn.addEventListener('click', () => { pickerYear++; renderMonthPicker(); });
-        closeMonthPickerBtn.addEventListener('click', () => monthPickerModal.classList.add('hidden'));
+        closeMonthPickerBtn.addEventListener('click', () => { monthPickerModal.classList.add('hidden'); });
         resetDataBtn.addEventListener('click', () => {
             confirmResetModal.classList.remove('hidden');
         });
@@ -1067,14 +1138,13 @@
             showMessage("All data has been reset.", 'success');
             updateView();
         });
-        // Add a keydown listener to the hourly activity input
         hourlyActivityInput.addEventListener('keydown', (event) => {
-            // Check if Enter is pressed without Shift
             if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault();
                 saveHourlyActivity();
             }
         });
+        dailyNoteInput.addEventListener('input', saveDailyNote); // New event listener
 
         function renderMonthPicker() {
             monthGrid.innerHTML = '';
@@ -1091,8 +1161,6 @@
                 button.addEventListener('click', () => {
                     currentMonth = new Date(pickerYear, index, 1);
                     selectedDate = new Date(pickerYear, index, selectedDate.getDate());
-                    // If the day doesn't exist in the new month (e.g., 31st), it will roll over.
-                    // Let's ensure it's a valid day in the new month.
                     const lastDayOfNewMonth = new Date(pickerYear, index + 1, 0).getDate();
                     if (selectedDate.getDate() > lastDayOfNewMonth) {
                         selectedDate.setDate(lastDayOfNewMonth);
@@ -1107,9 +1175,7 @@
 
         window.onload = function() {
             updateView();
-            // Check every minute for prompting
             setInterval(checkTimeAndPrompt, 60 * 1000);
-            // Initial check when the page loads
             checkTimeAndPrompt();
         };
 
