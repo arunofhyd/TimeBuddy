@@ -4,7 +4,6 @@ import { saveData, updateActivityOrder, deleteActivity, subscribeToData } from '
 // --- DOM Element References ---
 export let DOM = {};
 
-// This function will be called once the DOM is ready
 export function initUI() {
     DOM = {
         loginView: document.getElementById('login-view'),
@@ -47,14 +46,28 @@ export function setInputErrorState(inputElement, hasError) {
 // --- Button Loading State ---
 const spinner = `<svg class="animate-spin -ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
 
-export function setButtonLoadingState(button, isLoading, originalText) {
+export function setButtonLoadingState(button, isLoading) {
     if (isLoading) {
         button.disabled = true;
-        button.dataset.originalText = originalText || button.innerHTML;
-        button.innerHTML = `${spinner}<span>Processing...</span>`;
+        // Store original content
+        button.dataset.originalContent = button.innerHTML;
+        
+        // Get computed size and lock it
+        const rect = button.getBoundingClientRect();
+        button.style.width = `${rect.width}px`;
+        button.style.height = `${rect.height}px`;
+
+        // Set loading content. The inner div helps with centering.
+        button.innerHTML = `<div class="flex items-center justify-center w-full h-full">${spinner}<span>Processing...</span></div>`;
     } else {
         button.disabled = false;
-        button.innerHTML = button.dataset.originalText;
+        // Restore original content
+        if (button.dataset.originalContent) {
+            button.innerHTML = button.dataset.originalContent;
+        }
+        // Remove fixed size
+        button.style.width = '';
+        button.style.height = '';
     }
 }
 
@@ -64,7 +77,7 @@ export function showLoginView() {
     setTimeout(() => {
         DOM.appView.classList.add('hidden');
         DOM.loginView.classList.remove('hidden');
-        setTimeout(() => DOM.loginView.classList.remove('opacity-0', 'scale-95'), 50);
+        DOM.loginView.classList.remove('opacity-0', 'scale-95');
     }, 300);
 }
 
@@ -73,7 +86,7 @@ export function showAppView() {
     setTimeout(() => {
         DOM.loginView.classList.add('hidden');
         DOM.appView.classList.remove('hidden');
-        setTimeout(() => DOM.appView.classList.remove('opacity-0', 'scale-95'), 50);
+        DOM.appView.classList.remove('opacity-0', 'scale-95');
     }, 300);
 }
 
@@ -106,7 +119,7 @@ export function showMessage(msg, type = 'info') {
 
 // --- Main View Rendering ---
 export function updateView() {
-    if (DOM.appView.classList.contains('hidden') && DOM.loginView.classList.contains('hidden')) return;
+    if (!DOM.appView || (DOM.appView.classList.contains('hidden') && DOM.loginView.classList.contains('hidden'))) return;
 
     const isMonthView = state.currentView === 'month';
     DOM.monthViewBtn.classList.toggle('btn-primary', isMonthView);
