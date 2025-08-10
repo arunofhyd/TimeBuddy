@@ -1,7 +1,7 @@
 import { auth } from './firebase-config.js';
 import { initAuth, signUpWithEmail, signInWithEmail, resetPassword, signInWithGoogle, appSignOut } from './auth.js';
 import { saveData, loadOfflineData, resetAllData, downloadCSV, handleFileUpload } from './data.js';
-import { DOM, initUI, updateView, renderMonthPicker, setInputErrorState, setButtonLoadingState } from './ui.js';
+import { DOM, initUI, updateView, renderMonthPicker, setInputErrorState, setButtonLoadingState, showMessage } from './ui.js';
 
 // --- Global App State ---
 export let state = {
@@ -64,13 +64,25 @@ function setupEventListeners() {
         updateView();
     });
 
-    document.getElementById('today-btn').addEventListener('click', () => {
-        const today = new Date();
-        setState({
-            selectedDate: today,
-            currentMonth: new Date(today.getFullYear(), today.getMonth(), 1)
-        });
-        updateView();
+    const todayBtn = document.getElementById('today-btn');
+    todayBtn.addEventListener('click', async () => {
+        setButtonLoadingState(todayBtn, true);
+        try {
+            // Add a small delay to ensure the spinner is visible even on fast operations
+            await new Promise(resolve => setTimeout(resolve, 50));
+            
+            const today = new Date();
+            setState({
+                selectedDate: today,
+                currentMonth: new Date(today.getFullYear(), today.getMonth(), 1)
+            });
+            updateView();
+        } catch (error) {
+            console.error("Error navigating to today:", error);
+            showMessage("Could not navigate to today's date.", 'error');
+        } finally {
+            setButtonLoadingState(todayBtn, false);
+        }
     });
 
     // Modals
@@ -89,7 +101,7 @@ function setupEventListeners() {
     
     const addNewSlotBtn = document.getElementById('add-new-slot-btn');
     addNewSlotBtn.addEventListener('click', async () => {
-        setButtonLoadingState(addNewSlotBtn, true); // No longer need to pass the original text
+        setButtonLoadingState(addNewSlotBtn, true);
         try {
             await saveData({ type: 'ADD_SLOT' });
         } catch (error) {
