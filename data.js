@@ -13,14 +13,14 @@ export function subscribeToData(userId) {
             updateView();
         }
     });
-    // Store the unsubscribe function in the global state so we can call it on logout
     setState({ unsubscribeFromFirestore: unsubscribe });
 }
 
 // --- Unified Save Function ---
-export function saveData(action) {
+export async function saveData(action) {
     let dataCopy = JSON.parse(JSON.stringify(state.allStoredData));
     const dateKey = getYYYYMMDD(state.selectedDate);
+    let successMessage = null; // Variable to hold our success message
 
     const isNewDay = !dataCopy[dateKey] || (Object.keys(dataCopy[dateKey]).length === 0 && !dataCopy[dateKey]?._userCleared);
 
@@ -43,7 +43,7 @@ export function saveData(action) {
             } else {
                 delete dataCopy[dateKey].note;
             }
-            break;
+            break; // No success message needed for this one
         }
         case 'ADD_SLOT': {
             let newTimeKey = "00:00", counter = 0;
@@ -54,6 +54,7 @@ export function saveData(action) {
             const maxOrder = existingKeys.length > 0 ? Math.max(...Object.values(dataCopy[dateKey]).filter(v => typeof v === 'object').map(v => v.order || 0)) : -1;
             dataCopy[dateKey][newTimeKey] = { text: "", order: maxOrder + 1 };
             delete dataCopy[dateKey]._userCleared;
+            successMessage = "New slot added!"; // Set the message
             break;
         }
         case 'UPDATE_ACTIVITY_TEXT': {
@@ -64,7 +65,7 @@ export function saveData(action) {
                 dataCopy[dateKey][action.payload.timeKey] = { text: action.payload.newText, order };
             }
             delete dataCopy[dateKey]._userCleared;
-            showMessage("Activity updated!", 'success');
+            successMessage = "Activity updated!"; // Set the message
             break;
         }
         case 'UPDATE_TIME': {
@@ -82,17 +83,26 @@ export function saveData(action) {
                 delete dataCopy[dateKey][oldTimeKey];
                 dataCopy[dateKey][newTimeKey] = entry;
             }
-            showMessage("Time updated!", 'success');
+            successMessage = "Time updated!"; // Set the message
             break;
         }
     }
 
     if (state.isOnlineMode && state.userId) {
-        saveDataToFirestore(dataCopy);
+        await saveDataToFirestore(dataCopy);
     } else {
-        saveDataToLocalStorage(dataCopy);
-        setState({ allStoredData: dataCopy });
-        updateView();
+        // Wrap offline logic in a promise to ensure it's async and animation plays
+        await new Promise(resolve => {
+            saveDataToLocalStorage(dataCopy);
+            setState({ allStoredData: dataCopy });
+            updateView();
+            setTimeout(resolve, 50); // Small delay to ensure spinner is visible
+        });
+    }
+    
+    // Show the success message at the very end
+    if (successMessage) {
+        showMessage(successMessage, 'success');
     }
 }
 
@@ -133,8 +143,6 @@ export function loadOfflineData() {
     const data = loadDataFromLocalStorage();
     setState({ allStoredData: data, isOnlineMode: false, userId: null });
     showAppView();
-    
-    // FIX: Delay the updateView call slightly to allow the DOM to update first.
     setTimeout(updateView, 0);
 }
 
