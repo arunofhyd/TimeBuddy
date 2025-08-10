@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TimeBuddy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="main-container">
+    <div id="content-wrapper" class="w-full">
+        <!-- Message display is now a sibling to both views, so it's never hidden -->
+        <div id="message-display" role="alert">
+            <span id="message-text" class="block sm:inline font-medium"></span>
+        </div>
+
+        <!-- Login View -->
+        <div id="login-view" class="view-container w-full max-w-md mx-auto">
+            <div class="bg-white rounded-xl border border-gray-200 shadow-2xl p-8 text-center">
+                <h1 class="text-5xl font-extrabold text-gray-800 tracking-tight mb-4">TimeBuddy</h1>
+                <p class="text-gray-600 mb-6">Your Personal Time Tracker.</p>
+                
+                <div class="space-y-4 text-left mb-2">
+                    <input type="email" id="email-input" placeholder="Email" class="w-full px-4 py-2.5 text-base text-gray-800 bg-gray-50 border-2 border-gray-200 rounded-lg shadow-inner focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all">
+                    <input type="password" id="password-input" placeholder="Password" class="w-full px-4 py-2.5 text-base text-gray-800 bg-gray-50 border-2 border-gray-200 rounded-lg shadow-inner focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all">
+                </div>
+                <div class="text-right mb-4">
+                    <button id="forgot-password-btn" class="text-sm text-blue-600 hover:underline focus:outline-none">Forgot Password?</button>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <button id="email-signin-btn" class="w-full btn-primary py-3 rounded-lg font-semibold flex items-center justify-center">Sign In</button>
+                    <button id="email-signup-btn" class="w-full btn-secondary py-3 rounded-lg font-semibold flex items-center justify-center">Sign Up</button>
+                </div>
+
+                <div class="relative flex py-4 items-center">
+                    <div class="flex-grow border-t border-gray-300"></div>
+                    <span class="flex-shrink mx-4 text-gray-400 text-sm font-medium">OR</span>
+                    <div class="flex-grow border-t border-gray-300"></div>
+                </div>
+
+                <div class="space-y-4">
+                    <button id="google-signin-btn" class="w-full bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 py-3 px-4 rounded-lg flex items-center justify-center text-lg font-semibold transition-colors">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Google_Favicon_2025.svg" class="w-6 h-6 mr-3" alt="Google icon">
+                        Continue with Google
+                    </button>
+                    <button id="anon-continue-btn" class="w-full btn-secondary py-2 px-4 rounded-lg text-lg font-semibold">
+                        <div class="flex flex-col items-center">
+                            <span>Continue Offline</span>
+                            <span class="text-xs font-normal text-gray-500 mt-1">(Saves data only on this device)</span>
+                        </div>
+                    </button>
+                </div>
+                 <p id="user-id-display" class="text-xs text-gray-400 mt-6 break-all"></p>
+            </div>
+        </div>
+
+        <!-- Main App View (hidden by default) -->
+        <div id="app-view" class="view-container w-full max-w-4xl mx-auto hidden">
+             <div class="bg-white rounded-xl border border-gray-200 shadow-2xl p-6 md:p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <div class="w-10"></div> <!-- Spacer -->
+                    <h1 class="text-4xl font-extrabold text-gray-800 tracking-tight text-center">TimeBuddy</h1>
+                    <button id="sign-out-btn" class="icon-btn" title="Sign Out">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                    </button>
+                </div>
+                <div class="flex flex-col space-y-4 mb-8 w-full">
+                    <div class="flex space-x-4 w-full"><button id="month-view-btn" class="w-1/2 px-5 py-3 text-base font-bold btn-primary rounded-lg">Month View</button><button id="day-view-btn" class="w-1/2 px-5 py-3 text-base font-semibold btn-secondary rounded-lg">Day View</button></div>
+                    <div class="flex items-center justify-between w-full"><button id="prev-btn" class="btn-primary rounded-full flex items-center justify-center w-12 h-12"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg></button><h2 id="current-period-display" class="text-xl font-bold text-gray-800 text-center mx-2 cursor-pointer"></h2><button id="next-btn" class="btn-primary rounded-full flex items-center justify-center w-12 h-12"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg></button></div>
+                    <button id="today-btn" class="w-full px-5 py-3 text-base font-bold text-gray-700 bg-white border-2 border-gray-300 rounded-lg">Today</button><input type="file" id="upload-csv-input" accept=".csv" class="hidden">
+                </div>
+                <div id="main-content-area" class="w-full">
+                    <div id="calendar-view" class="grid grid-cols-7 gap-3"><div class="py-3 text-center text-sm font-semibold text-red-500">Sun</div><div class="py-3 text-center text-sm font-semibold text-gray-700">Mon</div><div class="py-3 text-center text-sm font-semibold text-gray-700">Tue</div><div class="py-3 text-center text-sm font-semibold text-gray-700">Wed</div><div class="py-3 text-center text-sm font-semibold text-gray-700">Thu</div><div class="py-3 text-center text-sm font-semibold text-gray-700">Fri</div><div class="py-3 text-center text-sm font-semibold text-gray-700">Sat</div></div>
+                    <div id="daily-view" class="hidden">
+                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                            <div class="sm:w-1/2"><input type="text" id="daily-note-input" maxlength="5" class="w-full px-4 py-2.5 text-lg font-semibold text-gray-800 bg-gray-50 border-2 border-gray-200 rounded-lg shadow-inner focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all placeholder:text-gray-400 placeholder:font-medium" placeholder="Daily Note (max 5 chars.)"></div>
+                            <button id="add-new-slot-btn" class="px-6 py-2.5 btn-primary rounded-lg w-full sm:w-1/2 whitespace-nowrap">Add New Slot <svg class="inline-block w-5 h-5 ml-2 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg></button>
+                        </div>
+                        <div id="daily-view-container"><table class="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden shadow-md"><thead class="bg-gray-50"><tr><th class="py-3 px-4 text-left text-sm font-semibold uppercase w-1/6">Time</th><th class="py-3 px-4 text-left text-sm font-semibold uppercase w-4/6">Activity</th><th class="py-3 px-4 text-center text-sm font-semibold uppercase w-1/6">Actions</th></tr></thead><tbody id="daily-activity-table-body" class="divide-y divide-gray-200"></tbody></table></div>
+                        <p id="no-daily-activities-message" class="text-center text-gray-500 italic mt-6 hidden">No activities recorded for this day.</p>
+                    </div>
+                    <div class="mt-8 pt-6 border-t border-gray-200 flex flex-col md:flex-row gap-4"><button id="upload-csv-btn" class="w-full md:w-1/2 px-5 py-3 btn-secondary rounded-lg flex items-center justify-center"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg> Import Data</button><button id="download-csv-btn" class="w-full md:w-1/2 px-5 py-3 btn-primary rounded-lg flex items-center justify-center"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg> Export Data</button></div>
+                    <div class="mt-4"><button id="reset-data-btn" class="w-full px-5 py-3 text-base font-semibold bg-white text-red-500 border-2 border-red-500 rounded-lg">Reset All Data</button></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="mt-10 text-center"><a href="mailto:arunthomas04042001@gmail.com" class="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-blue-600"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg><span>Reach out to the developer</span></a></footer>
+</div>
+
+<!-- Modals -->
+<div id="hourly-prompt-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 modal-backdrop">
+    <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md">
+        <h2 class="text-2xl font-bold mb-6 text-center">Time to Log Activity!</h2>
+        <p class="text-lg mb-4 text-center">What did you do in the last hour?</p>
+        <textarea id="hourly-activity-input" class="w-full p-3 border rounded-md min-h-[100px]"></textarea>
+        <div class="flex justify-end mt-6 space-x-3">
+            <button id="close-hourly-prompt-modal-btn" class="px-5 py-2 btn-secondary rounded-lg">Close</button>
+            <button id="save-hourly-activity-btn" class="px-5 py-2 btn-primary rounded-lg">Save</button>
+        </div>
+    </div>
+</div>
+<div id="month-picker-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 modal-backdrop">
+    <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md">
+        <div class="flex justify-between items-center mb-6">
+            <button id="prev-year-btn" class="p-2 btn-secondary rounded-full">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path></svg>
+            </button>
+            <h3 id="picker-year-display" class="text-2xl font-semibold">2023</h3>
+            <button id="next-year-btn" class="p-2 btn-secondary rounded-full">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M6 5l7 7-7 7"></path></svg>
+            </button>
+        </div>
+        <div id="month-grid" class="grid grid-cols-3 gap-3"></div>
+        <div class="flex justify-end mt-6">
+            <button id="close-month-picker-btn" class="px-5 py-2 btn-secondary rounded-lg">Close</button>
+        </div>
+    </div>
+</div>
+<div id="confirm-reset-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 modal-backdrop">
+    <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md">
+        <h2 class="text-2xl font-bold mb-4 text-center">Are you sure?</h2>
+        <p id="reset-modal-text" class="text-gray-700 mb-6 text-center"></p>
+        <div class="flex justify-end mt-6 space-x-3">
+            <button id="cancel-reset-btn" class="px-5 py-2 btn-secondary rounded-lg">Cancel</button>
+            <button id="confirm-reset-btn" class="px-5 py-2 btn-danger rounded-lg">Confirm Reset</button>
+        </div>
+    </div>
+</div>
+
+<script type="module" src="main.js"></script>
+</body>
+</html>
