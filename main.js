@@ -1,7 +1,7 @@
 import { auth } from './firebase-config.js';
 import { initAuth, signUpWithEmail, signInWithEmail, resetPassword, signInWithGoogle, appSignOut } from './auth.js';
 import { saveData, loadOfflineData, resetAllData, downloadCSV, handleFileUpload } from './data.js';
-import { DOM, initUI, updateView, renderMonthPicker, setInputErrorState } from './ui.js';
+import { DOM, initUI, updateView, renderMonthPicker, setInputErrorState, setButtonLoadingState } from './ui.js';
 
 // --- Global App State ---
 export let state = {
@@ -86,7 +86,19 @@ function setupEventListeners() {
 
     // Daily View Actions
     DOM.dailyNoteInput.addEventListener('input', (e) => saveData({ type: 'SAVE_NOTE', payload: e.target.value }));
-    document.getElementById('add-new-slot-btn').addEventListener('click', () => saveData({ type: 'ADD_SLOT' }));
+    
+    const addNewSlotBtn = document.getElementById('add-new-slot-btn');
+    addNewSlotBtn.addEventListener('click', async () => {
+        setButtonLoadingState(addNewSlotBtn, true); // No longer need to pass the original text
+        try {
+            await saveData({ type: 'ADD_SLOT' });
+        } catch (error) {
+            console.error("Error adding new slot:", error);
+            showMessage("Could not add new slot.", 'error');
+        } finally {
+            setButtonLoadingState(addNewSlotBtn, false);
+        }
+    });
     
     // Reset Data
     document.getElementById('reset-data-btn').addEventListener('click', () => {
@@ -110,10 +122,8 @@ function setupEventListeners() {
 
 // --- App Initialization ---
 function init() {
-    // Initialize UI references first, now that the DOM is loaded.
     initUI(); 
     setupEventListeners();
-    // initAuth handles the entire logic for deciding which screen to show on load
     initAuth();
 }
 
