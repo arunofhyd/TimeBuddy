@@ -10,21 +10,34 @@
         /* Custom styles for Inter font and general body */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f0f2f5; /* Soft light gray background */
-            color: #2d3748; /* Darker text for readability */
+            background-color: #f0f2f5;
+            color: #2d3748;
         }
-
-        /* Updated Calendar Cell Layout - Perfect squares on mobile */
+        /* Main container for app layout, ensuring it fills the screen */
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 100vh;
+            width: 100%;
+            align-items: center;
+            padding: 2rem 1rem;
+        }
+        /* View transition styles for a smooth fade-in/fade-out effect */
+        .view-container {
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+        /* Calendar day cell sizing and layout, ensuring a square aspect ratio on mobile */
         .calendar-day-cell {
             position: relative;
             height: 0;
-            padding-top: 100%; /* Creates perfect square aspect ratio */
+            padding-top: 100%; /* Creates a perfect square aspect ratio */
             cursor: pointer;
             border-radius: 8px;
             transition: all 0.2s ease-in-out;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
-
+        /* Content inside the calendar cell, positioned to fill the square */
         .calendar-day-content {
             position: absolute;
             top: 0;
@@ -37,7 +50,7 @@
             justify-content: flex-start;
             padding: 8px;
         }
-
+        /* Media query for larger screens (md and above) to adjust cell layout */
         @media (min-width: 768px) {
             .calendar-day-cell {
                 min-height: 100px;
@@ -46,10 +59,7 @@
                 padding: 12px;
                 display: flex;
                 flex-direction: column;
-                align-items: center;
-                justify-content: flex-start;
             }
-            
             .calendar-day-content {
                 position: static;
                 width: 100%;
@@ -57,323 +67,203 @@
                 padding: 0;
             }
         }
-
-        .calendar-day-cell.current-month {
-            background-color: #ffffff;
-            border: 1px solid #e2e8f0;
-        }
-        .calendar-day-cell.other-month {
-            background-color: #f8fafc;
-            color: #a0aec0;
-            border: 1px solid #edf2f7;
-        }
-        /* Edited days now only have the dot, no outline from this class */
-        .calendar-day-cell.has-activity {
-            /* Removed border: 2px solid #3b82f6; */
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        /* Current day gets the outline */
-        .calendar-day-cell.is-today {
-            border: 2px solid #3b82f6;
-        }
-        .calendar-day-cell.selected-day {
-            background-color: #eff6ff;
-            border: 2px solid #3b82f6;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 10px rgba(0,0,0,0.15);
-        }
-        .calendar-day-cell:hover {
-            background-color: #e2e8f0;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .day-number {
-            font-weight: 600;
-            font-size: 1.2em;
-            margin-bottom: 4px; /* Adjusted for note container */
-            color: #2d3748;
-        }
-        .calendar-day-cell.other-month .day-number {
-            color: #a0aec0;
-        }
-        .calendar-day-cell.is-sunday .day-number {
-            color: #ef4444;
-        }
-        .calendar-day-cell.is-today .day-number {
-            color: #3b82f6;
-            font-weight: 700;
-        }
-
-        /* New styles for the tiny text note */
-        .day-note-container {
-            height: 14px; /* Fixed height for the container */
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .day-note {
-            font-size: 0.65rem; /* Tiny text */
-            color: #6b7280; /* A muted gray */
-            line-height: 1;
-            font-weight: 500;
-            letter-spacing: 0.5px;
-            max-width: 100%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .activity-indicator {
-            width: 10px;
-            height: 10px;
-            background-color: #3b82f6;
-            border-radius: 50%;
-            margin-top: 4px; /* Adjusted for note container */
-        }
-
-        /* Responsive scrolling for daily view */
-        #daily-view-container {
-            overflow-x: auto;
-        }
-
-        /* Custom button styles for a more polished look */
-        .btn-primary {
-            background-color: #3b82f6;
-            color: #ffffff;
-            border: 1px solid #3b82f6;
-            transition: all 0.2s ease-in-out;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .btn-primary:hover {
-            background-color: #2563eb;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-        }
-        .btn-secondary {
-            background-color: #e2e8f0;
-            color: #4a5568;
-            border: 1px solid #e2e8f0;
-            transition: all 0.2s ease-in-out;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .btn-secondary:hover {
-            background-color: #cbd5e0;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .btn-danger {
-            background-color: #e53e3e;
-            color: #ffffff;
-            border: 1px solid #e53e3e;
-            transition: all 0.2s ease-in-out;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .btn-danger:hover {
-            background-color: #c53030;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-        }
-
-        /* Icon button specific styles */
-        .icon-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.5rem;
-            border-radius: 0.375rem;
-            transition: all 0.2s ease-in-out;
-            border: 1px solid transparent;
-            color: #4a5568;
-        }
-        .icon-btn:hover {
-            background-color: #e2e8f0;
-            border-color: #cbd5e0;
-        }
-        .icon-btn.edit:hover, .icon-btn.save:hover {
-            color: #3b82f6;
-        }
-        .icon-btn.delete:hover {
-            color: #e53e3e;
-        }
-
-        /* Disabled button styles */
-        .icon-btn:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-            pointer-events: none;
-        }
-
-        .pointer-events-none {
-            pointer-events: none;
-        }
-
-        /* Message popup styles */
-        #message-display {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
-        }
-        #message-display.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
+        /* Styling for different types of calendar days */
+        .calendar-day-cell.current-month { background-color: #ffffff; border: 1px solid #e2e8f0; }
+        .calendar-day-cell.other-month { background-color: #f8fafc; color: #a0aec0; border: 1px solid #edf2f7; }
+        .calendar-day-cell.has-activity { box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .calendar-day-cell.is-today { border: 2px solid #3b82f6; }
+        .calendar-day-cell.selected-day { background-color: #eff6ff; border: 2px solid #3b82f6; transform: translateY(-2px); box-shadow: 0 6px 10px rgba(0,0,0,0.15); }
+        .calendar-day-cell:hover { background-color: #e2e8f0; transform: translateY(-1px); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        /* Day number and note styling */
+        .day-number { font-weight: 600; font-size: 1.2em; margin-bottom: 4px; color: #2d3748; }
+        .calendar-day-cell.other-month .day-number { color: #a0aec0; }
+        .calendar-day-cell.is-sunday .day-number { color: #ef4444; }
+        .calendar-day-cell.is-today .day-number { color: #3b82f6; font-weight: 700; }
+        .day-note-container { height: 14px; width: 100%; display: flex; align-items: center; justify-content: center; }
+        .day-note { font-size: 0.65rem; color: #6b7280; line-height: 1; font-weight: 500; letter-spacing: 0.5px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .activity-indicator { width: 10px; height: 10px; background-color: #3b82f6; border-radius: 50%; margin-top: 4px; }
+        /* Daily view container scrolling */
+        #daily-view-container { overflow-x: auto; }
+        /* Button styles for a consistent look and feel */
+        .btn-primary { background-color: #3b82f6; color: #ffffff; border: 1px solid #3b82f6; transition: all 0.2s ease-in-out; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .btn-primary:hover { background-color: #2563eb; box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+        .btn-secondary { background-color: #e2e8f0; color: #4a5568; border: 1px solid #e2e8f0; transition: all 0.2s ease-in-out; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .btn-secondary:hover { background-color: #cbd5e0; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .btn-danger { background-color: #e53e3e; color: #ffffff; border: 1px solid #e53e3e; transition: all 0.2s ease-in-out; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .btn-danger:hover { background-color: #c53030; box-shadow: 4px 8px rgba(0,0,0,0.15); }
+        /* Icon button styles */
+        .icon-btn { display: inline-flex; align-items: center; justify-content: center; padding: 0.5rem; border-radius: 0.375rem; transition: all 0.2s ease-in-out; border: 1px solid transparent; color: #4a5568; }
+        .icon-btn:hover { background-color: #e2e8f0; border-color: #cbd5e0; }
+        .icon-btn.edit:hover, .icon-btn.save:hover { color: #3b82f6; }
+        .icon-btn.delete:hover { color: #e53e3e; }
+        .icon-btn:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+        /* Message popup styling */
+        #message-display { position: fixed; bottom: 20px; right: 20px; z-index: 1000; opacity: 0; visibility: hidden; transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out; }
+        #message-display.show { opacity: 1; visibility: visible; }
         /* Modal backdrop blur */
-        .modal-backdrop {
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
-        }
-
-        /* Inline editing specific styles - removed dashed border from time-editable */
-        .activity-text-editable, .time-editable {
-            min-height: 24px;
-            outline: none;
-            padding-bottom: 2px;
-            transition: border-color 0.2s ease-in-out, background-color 0.2s ease-in-out;
-            cursor: text;
-        }
-        
-        .activity-text-editable {
-            border-bottom: 1px dashed #a0aec0;
-        }
-        
-        .activity-text-editable:focus, .time-editable:focus {
-            border-bottom: 1px solid #3b82f6;
-            background-color: #f0f8ff;
-        }
-        .activity-text-editable.editing, .time-editable.editing {
-            background-color: #f0f8ff;
-        }
-
-        /* Drag and Drop styles */
-        .daily-activity-table-body tr.dragging {
-            opacity: 0.5;
-            background-color: #e0f2fe;
-            border: 1px dashed #3b82f6;
-        }
-        .daily-activity-table-body tr.drag-over-top {
-            border-top: 2px solid #3b82f6;
-        }
-        .daily-activity-table-body tr.drag-over-bottom {
-            border-bottom: 2px solid #3b82f6;
-        }
-
+        .modal-backdrop { backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); }
+        /* Inline editing styles for activity and time inputs */
+        .activity-text-editable, .time-editable { min-height: 24px; outline: none; padding-bottom: 2px; transition: border-color 0.2s ease-in-out, background-color 0.2s ease-in-out; cursor: text; }
+        .activity-text-editable { border-bottom: 1px dashed #a0aec0; }
+        .activity-text-editable:focus, .time-editable:focus { border-bottom: 1px solid #3b82f6; background-color: #f0f8ff; }
+        .activity-text-editable.editing, .time-editable.editing { background-color: #f0f8ff; }
+        /* Drag and Drop styles for reordering activities */
+        .daily-activity-table-body tr.dragging { opacity: 0.5; background-color: #e0f2fe; border: 1px dashed #3b82f6; }
+        .daily-activity-table-body tr.drag-over-top { border-top: 2px solid #3b82f6; }
+        .daily-activity-table-body tr.drag-over-bottom { border-bottom: 2px solid #3b82f6; }
         /* Responsive adjustments for smaller screens */
         @media (max-width: 767px) {
-            #calendar-view {
-                gap: 0.25rem;
-            }
-            .day-number {
-                font-size: 0.875em;
-                margin-bottom: 2px; /* Adjusted for mobile */
-            }
-            .activity-indicator {
-                width: 6px;
-                height: 6px;
-                margin-top: 2px; /* Adjusted for mobile */
-            }
-            .day-note-container {
-                height: 12px; /* Adjust height for mobile */
-            }
-            .day-note {
-                font-size: 0.6rem; /* Adjust font size for mobile */
-            }
-            .daily-activity-table-body td {
-                padding-left: 10px;
-                padding-right: 10px;
-            }
+            .main-container { padding: 1rem; }
+            #calendar-view { gap: 0.25rem; }
+            .day-number { font-size: 0.875em; margin-bottom: 2px; }
+            .activity-indicator { width: 6px; height: 6px; margin-top: 2px; }
+            .day-note-container { height: 12px; }
+            .day-note { font-size: 0.6rem; }
+            .daily-activity-table-body td { padding-left: 10px; padding-right: 10px; }
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center py-8 px-4">
+<body>
 
-    <div class="w-full max-w-4xl bg-white rounded-xl border border-gray-200 shadow-2xl p-6 md:p-8">
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-4xl font-extrabold text-gray-800 tracking-tight text-center w-full">TimeBuddy</h1>
-        </div>
+    <div class="main-container">
+        <div id="content-wrapper" class="w-full">
+            <!-- Login View -->
+            <div id="login-view" class="view-container w-full max-w-md mx-auto">
+                <div class="bg-white rounded-xl border border-gray-200 shadow-2xl p-8 text-center">
+                    <h1 class="text-5xl font-extrabold text-gray-800 tracking-tight mb-4">TimeBuddy</h1>
+                    <p class="text-gray-600 mb-6">Your Personal time tracker tool.</p>
 
-        <div id="message-display" role="alert">
-            <span id="message-text" class="block sm:inline font-medium"></span>
-        </div>
-
-        <div class="flex flex-col space-y-4 mb-8 w-full">
-            <div class="flex space-x-4 w-full">
-                <button id="month-view-btn" class="w-1/2 px-5 py-3 text-base font-bold btn-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Month View</button>
-                <button id="day-view-btn" class="w-1/2 px-5 py-3 text-base font-semibold btn-secondary rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Day View</button>
-            </div>
-            <div class="flex items-center justify-between w-full">
-                <button id="prev-btn" class="btn-primary rounded-full flex items-center justify-center w-12 h-12 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
-                </button>
-                <h2 id="current-period-display" class="text-xl font-bold text-gray-800 text-center mx-2 cursor-pointer hover:text-blue-600 transition-colors duration-200"></h2>
-                <button id="next-btn" class="btn-primary rounded-full flex items-center justify-center w-12 h-12 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
-                </button>
-            </div>
-            <button id="today-btn" class="w-full px-5 py-3 text-base font-bold text-gray-700 bg-white border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 hover:bg-gray-50">Today</button>
-            <input type="file" id="upload-csv-input" accept=".csv" class="hidden">
-        </div>
-
-        <div id="main-content-area" class="w-full">
-            <div id="calendar-view" class="grid grid-cols-7 gap-3">
-                <div class="py-3 text-center text-sm font-semibold text-red-500 rounded-lg">Sun</div>
-                <div class="py-3 text-center text-sm font-semibold text-gray-700 rounded-lg">Mon</div>
-                <div class="py-3 text-center text-sm font-semibold text-gray-700 rounded-lg">Tue</div>
-                <div class="py-3 text-center text-sm font-semibold text-gray-700 rounded-lg">Wed</div>
-                <div class="py-3 text-center text-sm font-semibold text-gray-700 rounded-lg">Thu</div>
-                <div class="py-3 text-center text-sm font-semibold text-gray-700 rounded-lg">Fri</div>
-                <div class="py-3 text-center text-sm font-semibold text-gray-700 rounded-lg">Sat</div>
-            </div>
-            <div id="daily-view" class="hidden">
-                <!-- Daily controls section -->
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-                    <!-- Daily Note Input on the left -->
-                    <div class="sm:w-1/2">
-                        <input type="text" id="daily-note-input" maxlength="5" class="w-full px-4 py-2.5 text-lg font-semibold text-gray-800 bg-gray-50 border-2 border-gray-200 rounded-lg shadow-inner focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all placeholder:text-gray-400 placeholder:font-medium" placeholder="Daily Note (max 5 chars.)">
+                    <div class="space-y-4 text-left mb-2">
+                        <input type="email" id="email-input" placeholder="Email" class="w-full px-4 py-2.5 text-base text-gray-800 bg-gray-50 border-2 border-gray-200 rounded-lg shadow-inner focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all">
+                        <input type="password" id="password-input" placeholder="Password" class="w-full px-4 py-2.5 text-base text-gray-800 bg-gray-50 border-2 border-gray-200 rounded-lg shadow-inner focus:ring-2 focus:ring-blue-500 focus:focus:border-blue-500 focus:bg-white transition-all">
                     </div>
-                    <!-- Add New Slot Button on the right -->
-                    <button id="add-new-slot-btn" class="px-6 py-2.5 btn-primary rounded-lg w-full sm:w-1/2 whitespace-nowrap text-base font-semibold">
-                        Add New Slot
-                        <svg class="inline-block w-5 h-5 ml-2 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                    </button>
+                    <div class="text-right mb-4">
+                        <button id="forgot-password-btn" class="text-sm text-blue-600 hover:underline focus:outline-none">Forgot Password?</button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <button id="email-signin-btn" class="w-full btn-primary py-3 rounded-lg font-semibold">Sign In</button>
+                        <button id="email-signup-btn" class="w-full btn-secondary py-3 rounded-lg font-semibold">Sign Up</button>
+                    </div>
+
+                    <div class="relative flex py-4 items-center">
+                        <div class="flex-grow border-t border-gray-300"></div>
+                        <span class="flex-shrink mx-4 text-gray-400 text-sm font-medium">OR</span>
+                        <div class="flex-grow border-t border-gray-300"></div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <button id="google-signin-btn" class="w-full bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 py-3 px-4 rounded-lg flex items-center justify-center text-lg font-semibold transition-colors">
+                            <svg class="w-6 h-6 mr-3" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"></path><path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C16.318 4 9.656 8.337 6.306 14.691z"></path><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"></path><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19-5.238C42.012 36.49 44 30.823 44 24c0-1.341-.138-2.65-.389-3.917z"></path></svg>
+                            Continue with Google
+                        </button>
+                        <button id="anon-continue-btn" class="w-full btn-secondary py-2 px-4 rounded-lg text-lg font-semibold">
+                            <div class="flex flex-col items-center">
+                                <span>Continue Offline</span>
+                                <span class="text-xs font-normal text-gray-500 mt-1">(Saves data only on this device)</span>
+                            </div>
+                        </button>
+                    </div>
+                    <p id="user-id-display" class="text-xs text-gray-400 mt-6 break-all"></p>
                 </div>
-                <div id="daily-view-container">
-                    <table class="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden shadow-md daily-activity-table">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200 w-1/6">Time</th>
-                                <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200 w-4/6">Activity</th>
-                                <th class="py-3 px-4 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200 w-1/6">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="daily-activity-table-body" class="divide-y divide-gray-200 daily-activity-table-body"></tbody>
-                    </table>
+            </div>
+
+            <!-- Main App View (Initially Hidden) -->
+            <div id="app-view" class="view-container w-full max-w-4xl mx-auto hidden opacity-0 scale-95">
+                <div class="bg-white rounded-xl border border-gray-200 shadow-2xl p-6 md:p-8">
+                    <div class="flex justify-between items-center mb-6">
+                        <div class="w-10"></div> <!-- Spacer -->
+                        <h1 class="text-5xl font-extrabold text-gray-800 tracking-tight text-center">TimeBuddy</h1>
+                        <button id="sign-out-btn" class="icon-btn" title="Sign Out">
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                        </button>
+                    </div>
+
+                    <!-- Rest of the app UI from the original code -->
+                    <div id="message-display" role="alert">
+                        <span id="message-text" class="block sm:inline font-medium"></span>
+                    </div>
+                    <div class="flex flex-col space-y-4 mb-8 w-full">
+                        <div class="flex space-x-4 w-full">
+                            <button id="month-view-btn" class="w-1/2 px-5 py-3 text-base font-bold btn-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Month View</button>
+                            <button id="day-view-btn" class="w-1/2 px-5 py-3 text-base font-semibold btn-secondary rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Day View</button>
+                        </div>
+                        <div class="flex items-center justify-between w-full">
+                            <button id="prev-btn" class="btn-primary rounded-full flex items-center justify-center w-12 h-12 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
+                            </button>
+                            <h2 id="current-period-display" class="text-xl font-bold text-gray-800 text-center mx-2 cursor-pointer hover:text-blue-600 transition-colors duration-200"></h2>
+                            <button id="next-btn" class="btn-primary rounded-full flex items-center justify-center w-12 h-12 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
+                            </button>
+                        </div>
+                        <button id="today-btn" class="w-full px-5 py-3 text-base font-bold text-gray-700 bg-white border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 hover:bg-gray-50">Today</button>
+                        <input type="file" id="upload-csv-input" accept=".csv" class="hidden">
+                    </div>
+                    <div id="main-content-area" class="w-full">
+                        <div id="calendar-view" class="grid grid-cols-7 gap-3">
+                            <div class="py-3 text-center text-sm font-semibold text-red-500 rounded-lg">Sun</div>
+                            <div class="py-3 text-center text-sm font-semibold text-gray-700 rounded-lg">Mon</div>
+                            <div class="py-3 text-center text-sm font-semibold text-gray-700 rounded-lg">Tue</div>
+                            <div class="py-3 text-center text-sm font-semibold text-gray-700 rounded-lg">Wed</div>
+                            <div class="py-3 text-center text-sm font-semibold text-gray-700 rounded-lg">Thu</div>
+                            <div class="py-3 text-center text-sm font-semibold text-gray-700 rounded-lg">Fri</div>
+                            <div class="py-3 text-center text-sm font-semibold text-gray-700 rounded-lg">Sat</div>
+                        </div>
+                        <div id="daily-view" class="hidden">
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                                <div class="sm:w-1/2">
+                                    <input type="text" id="daily-note-input" maxlength="5" class="w-full px-4 py-2.5 text-lg font-semibold text-gray-800 bg-gray-50 border-2 border-gray-200 rounded-lg shadow-inner focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all placeholder:text-gray-400 placeholder:font-medium" placeholder="Daily Note (max 5 chars.)">
+                                </div>
+                                <button id="add-new-slot-btn" class="px-6 py-2.5 btn-primary rounded-lg w-full sm:w-1/2 whitespace-nowrap text-base font-semibold">
+                                    Add New Slot
+                                    <svg class="inline-block w-5 h-5 ml-2 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                                </button>
+                            </div>
+                            <div id="daily-view-container">
+                                <table class="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden shadow-md daily-activity-table">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200 w-1/6">Time</th>
+                                            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200 w-4/6">Activity</th>
+                                            <th class="py-3 px-4 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200 w-1/6">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="daily-activity-table-body" class="divide-y divide-gray-200 daily-activity-table-body"></tbody>
+                                </table>
+                            </div>
+                            <p id="no-daily-activities-message" class="text-center text-gray-500 italic mt-6 hidden">No activities recorded for this day.</p>
+                        </div>
+                        <div class="mt-8 pt-6 border-t border-gray-200 flex flex-col md:flex-row gap-4">
+                            <button id="upload-csv-btn" class="w-full md:w-1/2 px-5 py-3 btn-secondary rounded-lg flex flex-col items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                                <div class="flex items-center">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m0 0l-4-4m4 4l4-4"></path></svg> <span class="font-semibold">Import Data</span>
+                                </div>
+                            </button>
+                            <button id="download-csv-btn" class="w-full md:w-1/2 px-5 py-3 btn-primary rounded-lg flex flex-col items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                                <div class="flex items-center">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19V5m0 0l-4 4m4-4l4 4"></path></svg> <span class="font-semibold">Export Data</span>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="mt-4">
+                            <button id="reset-data-btn" class="w-full px-5 py-3 text-base font-semibold bg-white text-red-500 border-2 border-red-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 hover:bg-red-50">
+                                Reset All Data
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <p id="no-daily-activities-message" class="text-center text-gray-500 italic mt-6 hidden">No activities recorded for this day.</p>
-            </div>
-            <div class="mt-8 pt-6 border-t border-gray-200 flex flex-col md:flex-row gap-4">
-                <button id="upload-csv-btn" class="w-full md:w-1/2 px-5 py-3 btn-secondary rounded-lg flex flex-col items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                    <div class="flex items-center">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m0 0l-4-4m4 4l4-4"></path></svg> <span class="font-semibold">Import Data</span>
-                    </div>
-                </button>
-                <button id="download-csv-btn" class="w-full md:w-1/2 px-5 py-3 btn-primary rounded-lg flex flex-col items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                    <div class="flex items-center">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19V5m0 0l-4 4m4-4l4 4"></path></svg> <span class="font-semibold">Export Data</span>
-                    </div>
-                </button>
-            </div>
-            <div class="mt-4">
-                <button id="reset-data-btn" class="w-full px-5 py-3 text-base font-semibold bg-white text-red-500 border-2 border-red-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 hover:bg-red-50">
-                    Reset All Data
-                </button>
             </div>
         </div>
+
+        <footer class="mt-10 text-center">
+            <a href="mailto:arunthomas04042001@gmail.com" class="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-blue-600 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                <span>Reach out to the developer</span>
+            </a>
+        </footer>
     </div>
-
+    
+    <!-- MODALS -->
     <div id="hourly-prompt-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 modal-backdrop">
         <div class="bg-white rounded-xl border border-gray-200 shadow-2xl p-6 md:p-8 w-full max-w-md transform transition-all duration-300 scale-100">
             <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Time to Log Activity!</h2>
@@ -385,7 +275,6 @@
             </div>
         </div>
     </div>
-
     <div id="month-picker-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 modal-backdrop">
         <div class="bg-white rounded-xl border border-gray-200 shadow-2xl p-6 md:p-8 w-full max-w-md transform transition-all duration-300 scale-100">
             <div class="flex justify-between items-center mb-6">
@@ -403,11 +292,10 @@
             </div>
         </div>
     </div>
-
     <div id="confirm-reset-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 modal-backdrop">
         <div class="bg-white rounded-xl border border-gray-200 shadow-2xl p-6 md:p-8 w-full max-w-md transform transition-all duration-300 scale-100">
             <h2 class="text-2xl font-bold text-gray-900 mb-4 text-center">Are you sure?</h2>
-            <p class="text-gray-700 mb-6 text-center">This will permanently delete all your activity data. This action cannot be undone.</p>
+            <p id="reset-modal-text" class="text-gray-700 mb-6 text-center"></p>
             <div class="flex justify-end mt-6 space-x-3">
                 <button id="cancel-reset-btn" class="px-5 py-2 btn-secondary rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Cancel</button>
                 <button id="confirm-reset-btn" class="px-5 py-2 btn-danger rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">Confirm Reset</button>
@@ -415,26 +303,59 @@
         </div>
     </div>
 
-    <div class="mt-10 text-center">
-        <a href="mailto:arunthomas04042001@gmail.com" class="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-            <span>Reach out to the developer</span>
-        </a>
-    </div>
+    <script type="module">
+        // This is the code for the ONLINE version of the app. It will only run when served from a web server.
+        // It relies on Firebase modules and won't work in a local HTML file due to browser security restrictions.
+        // The offline-only version is below in a separate <script> tag.
+        
+        // Import Firebase modules for authentication and database
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, onAuthStateChanged, GoogleAuthProvider, EmailAuthProvider,
+            signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, 
+            signOut, linkWithCredential, fetchSignInMethodsForEmail,
+            sendPasswordResetEmail
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, onSnapshot, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    <script>
-        // Global state variables
+        // --- Firebase Setup ---
+        // Your specific Firebase project configuration, now hardcoded for Vercel deployment.
+        const firebaseConfig = {
+          apiKey: "AIzaSyAe3dgAsfpwNEw-QC6DuqLeQ8PtuZWIKfQ",
+          authDomain: "timebuddyaoh.firebaseapp.com",
+          projectId: "timebuddyaoh",
+          storageBucket: "timebuddyaoh.firebasestorage.app",
+          messagingSenderId: "799969115640",
+          appId: "1:799969115640:web:023d09796cd565e98fea0d"
+        };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // --- Global State ---
         let currentMonth = new Date();
         let selectedDate = new Date();
-        let currentPromptHour = '';
-        let lastPromptedHour = null;
-        let lastPromptedDate = null;
         let currentView = 'month';
-        let editingInlineTimeKey = null;
-        let draggedItem = null;
-        let pickerYear = new Date().getFullYear();
+        let allStoredData = {};
+        let userId = null;
+        let isOnlineMode = false;
+        let unsubscribeFromFirestore = null;
+        let currentPromptHour = '', lastPromptedHour = null, lastPromptedDate = null;
+        let editingInlineTimeKey = null, draggedItem = null, pickerYear = new Date().getFullYear();
 
-        // DOM Elements
+        // --- DOM Elements ---
+        const loginView = document.getElementById('login-view');
+        const appView = document.getElementById('app-view');
+        const googleSigninBtn = document.getElementById('google-signin-btn');
+        const anonContinueBtn = document.getElementById('anon-continue-btn');
+        const emailSigninBtn = document.getElementById('email-signin-btn');
+        const emailSignupBtn = document.getElementById('email-signup-btn');
+        const emailInput = document.getElementById('email-input');
+        const passwordInput = document.getElementById('password-input');
+        const forgotPasswordBtn = document.getElementById('forgot-password-btn');
+        const signOutBtn = document.getElementById('sign-out-btn');
+        const userIdDisplay = document.getElementById('user-id-display');
+        const resetModalText = document.getElementById('reset-modal-text');
         const messageDisplay = document.getElementById('message-display');
         const messageText = document.getElementById('message-text');
         const currentPeriodDisplay = document.getElementById('current-period-display');
@@ -445,7 +366,7 @@
         const todayBtn = document.getElementById('today-btn');
         const calendarView = document.getElementById('calendar-view');
         const dailyView = document.getElementById('daily-view');
-        const dailyNoteInput = document.getElementById('daily-note-input'); // New element
+        const dailyNoteInput = document.getElementById('daily-note-input');
         const addNewSlotBtn = document.getElementById('add-new-slot-btn');
         const dailyActivityTableBody = document.getElementById('daily-activity-table-body');
         const noDailyActivitiesMessage = document.getElementById('no-daily-activities-message');
@@ -467,657 +388,328 @@
         const cancelResetBtn = document.getElementById('cancel-reset-btn');
         const confirmResetBtn = document.getElementById('confirm-reset-btn');
 
-        // --- Helper Functions ---
+        // --- Authentication & App State Management ---
 
-        function showMessage(msg, type = 'info') {
-            messageText.textContent = msg;
-            messageDisplay.className = 'fixed bottom-5 right-5 z-50 px-4 py-3 rounded-lg shadow-md transition-opacity duration-300';
-            if (type === 'error') {
-                messageDisplay.classList.add('bg-red-100', 'border', 'border-red-400', 'text-red-700');
-            } else {
-                messageDisplay.classList.add('bg-blue-100', 'border', 'border-blue-400', 'text-blue-700');
-            }
-            messageDisplay.classList.add('show');
-            clearTimeout(messageDisplay.dataset.timeoutId);
-            const timeoutId = setTimeout(() => messageDisplay.classList.remove('show'), 2000);
-            messageDisplay.dataset.timeoutId = timeoutId;
+        function showLoginView() {
+            // First, load local data in case the user has been working offline
+            isOnlineMode = false;
+            allStoredData = loadDataFromLocalStorage();
+            updateView();
+            // Then show the login view
+            appView.classList.add('opacity-0', 'scale-95');
+            setTimeout(() => {
+                appView.classList.add('hidden');
+                loginView.classList.remove('hidden');
+                setTimeout(() => loginView.classList.remove('opacity-0', 'scale-95'), 50);
+            }, 300);
         }
 
-        function loadActivityDataFromLocalStorage() {
-            try {
-                const storedData = localStorage.getItem('activityTrackerData');
-                const parsedData = storedData ? JSON.parse(storedData) : {};
-                for (const dateKey in parsedData) {
-                    if (typeof parsedData[dateKey] !== 'object' || parsedData[dateKey] === null) continue;
-                    for (const timeKey in parsedData[dateKey]) {
-                        if (timeKey === '_userCleared' || timeKey === 'note') continue; // Ignore note field here
-                        if (typeof parsedData[dateKey][timeKey] === 'string') {
-                            parsedData[dateKey][timeKey] = { text: parsedData[dateKey][timeKey], order: 0 };
-                        }
-                        if (parsedData[dateKey][timeKey].order === undefined) {
-                            parsedData[dateKey][timeKey].order = 0;
-                        }
+        function showAppView() {
+            loginView.classList.add('opacity-0', 'scale-95');
+            setTimeout(() => {
+                loginView.classList.add('hidden');
+                appView.classList.remove('hidden');
+                setTimeout(() => appView.classList.remove('opacity-0', 'scale-95'), 50);
+            }, 300);
+        }
+        
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                isOnlineMode = true;
+                userId = user.uid;
+                userIdDisplay.textContent = `User ID: ${userId}`;
+                
+                if (unsubscribeFromFirestore) unsubscribeFromFirestore();
+                
+                const userDocRef = doc(db, "artifacts", firebaseConfig.projectId, "users", userId);
+                
+                // If the user has data in local storage, migrate it to Firestore
+                const localData = loadDataFromLocalStorage();
+                if (Object.keys(localData).length > 0) {
+                    try {
+                        await setDoc(userDocRef, localData, { merge: true });
+                        localStorage.removeItem('activityTrackerData');
+                        showMessage("Local data has been migrated to your account.", 'success');
+                    } catch (error) {
+                        console.error("Error migrating local data:", error);
+                        showMessage("Failed to migrate local data. Please try again.", 'error');
                     }
                 }
-                return parsedData;
-            } catch (error) {
-                console.error("Error loading data from local storage:", error);
-                showMessage("Error: Could not load data.", 'error');
-                return {};
+                
+                // Start listening to the cloud data
+                unsubscribeFromFirestore = onSnapshot(userDocRef, (doc) => {
+                    allStoredData = doc.exists() ? doc.data() : {};
+                    if (isOnlineMode) updateView();
+                });
+                
+                showAppView();
+            } else {
+                handleUserLogout();
+            }
+        });
+
+        function handleUserLogout() {
+            if (unsubscribeFromFirestore) unsubscribeFromFirestore();
+            userId = null;
+            showLoginView();
+        }
+
+        anonContinueBtn.addEventListener('click', () => {
+            // This is the true offline mode. No Firebase is used.
+            isOnlineMode = false;
+            allStoredData = loadDataFromLocalStorage();
+            userId = 'offline-user';
+            userIdDisplay.textContent = `User ID: ${userId}`;
+            showAppView();
+            updateView();
+        });
+        
+        // --- Data Handling (Unified) ---
+
+        function saveData(data) {
+            if (isOnlineMode) {
+                saveDataToFirestore(data);
+            } else {
+                saveDataToLocalStorage(data);
             }
         }
 
-        function saveActivityDataToLocalStorage(data) {
+        function loadDataFromLocalStorage() {
+            try {
+                const storedData = localStorage.getItem('activityTrackerData');
+                return storedData ? JSON.parse(storedData) : {};
+            } catch (error) { console.error("Error loading local data:", error); return {}; }
+        }
+
+        function saveDataToLocalStorage(data) {
             try {
                 localStorage.setItem('activityTrackerData', JSON.stringify(data));
-            } catch (error) {
-                console.error("Error saving data to local storage:", error);
-                showMessage("Error: Could not save data.", 'error');
-            }
+            } catch (error) { console.error("Error saving local data:", error); }
         }
 
-        function getYYYYMMDD(date) {
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
+        async function saveDataToFirestore(data) {
+            if (!userId) return;
+            try {
+                // Now using the hardcoded projectId for the Firestore path
+                await setDoc(doc(db, "artifacts", firebaseConfig.projectId, "users", userId), data);
+            } catch (error) { console.error("Error saving to Firestore:", error); showMessage("Error: Could not save data to the cloud.", 'error'); }
         }
 
-        function formatDateForDisplay(dateString) {
-            const date = new Date(dateString + 'T00:00:00');
-            return date.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' });
-        }
+        // --- Email/Password/Google Auth Logic ---
 
-        function parseDisplayDateToYYYYMMDD(displayDateStr) {
-            const parts = displayDateStr.split(', ');
-            if (parts.length < 3) return null;
-            const date = new Date(`${parts[1]} ${parts[2]}`);
-            return isNaN(date.getTime()) ? null : getYYYYMMDD(date);
-        }
-        
-        // Helper to convert newline characters to <br> for HTML display
-        function formatTextForDisplay(text) {
-            return text.replace(/\n/g, '<br>');
-        }
-
-        // --- View Rendering ---
-
-        function renderCalendar() {
-            while (calendarView.children.length > 7) calendarView.removeChild(calendarView.lastChild);
-            const year = currentMonth.getFullYear();
-            const month = currentMonth.getMonth();
-            const firstDayOfMonth = new Date(year, month, 1);
-            const lastDayOfMonth = new Date(year, month + 1, 0);
-            const allStoredData = loadActivityDataFromLocalStorage();
-            const today = new Date();
-            
-            for (let i = 0; i < firstDayOfMonth.getDay(); i++) {
-                const emptyCell = document.createElement('div');
-                emptyCell.className = 'calendar-day-cell other-month';
-                emptyCell.innerHTML = '<div class="calendar-day-content"></div>';
-                calendarView.appendChild(emptyCell);
-            }
-
-            for (let day = 1; day <= lastDayOfMonth.getDate(); day++) {
-                const date = new Date(year, month, day);
-                const dateKey = getYYYYMMDD(date);
-                const dayData = allStoredData[dateKey] || {};
-                const noteText = dayData.note || ''; // Get note text if it exists
-
-                let hasActivity = false;
-                if (dayData) {
-                    hasActivity = Object.keys(dayData)
-                        .some(key => key !== '_userCleared' && key !== 'note' && dayData[key].text?.trim());
-                }
-                const dayCell = document.createElement('div');
-                dayCell.className = 'calendar-day-cell current-month';
-                if (date.getDay() === 0) dayCell.classList.add('is-sunday');
-                
-                if (hasActivity) dayCell.classList.add('has-activity');
-                
-                if (getYYYYMMDD(date) === getYYYYMMDD(today)) dayCell.classList.add('is-today');
-
-                if (getYYYYMMDD(date) === getYYYYMMDD(selectedDate) && currentView === 'day') dayCell.classList.add('selected-day');
-                
-                dayCell.innerHTML = `
-                    <div class="calendar-day-content">
-                        <div class="day-number">${day}</div>
-                        <div class="day-note-container">
-                             ${noteText ? `<span class="day-note">${noteText}</span>` : ''}
-                        </div>
-                        ${hasActivity ? '<div class="activity-indicator"></div>' : ''}
-                    </div>
-                `;
-                
-                dayCell.dataset.date = dateKey;
-                dayCell.addEventListener('click', () => {
-                    selectedDate = date;
-                    currentView = 'day';
-                    updateView();
-                });
-                calendarView.appendChild(dayCell);
-            }
-
-            const totalCells = firstDayOfMonth.getDay() + lastDayOfMonth.getDate();
-            for (let i = 0; i < (7 - (totalCells % 7)) % 7; i++) {
-                const emptyCell = document.createElement('div');
-                emptyCell.className = 'calendar-day-cell other-month';
-                emptyCell.innerHTML = '<div class="calendar-day-content"></div>';
-                calendarView.appendChild(emptyCell);
-            }
-        }
-
-        function renderDailyActivities() {
-            dailyActivityTableBody.innerHTML = '';
-            const dateKey = getYYYYMMDD(selectedDate);
-            const allStoredData = loadActivityDataFromLocalStorage();
-            const dailyActivitiesMap = allStoredData[dateKey] || {};
-            let dailyActivitiesArray = [];
-
-            // Populate the daily note input
-            dailyNoteInput.value = dailyActivitiesMap.note || '';
-
-            const isUserCleared = dailyActivitiesMap._userCleared === true;
-            const hasStoredActivities = Object.keys(dailyActivitiesMap).filter(key => key !== '_userCleared' && key !== 'note').length > 0;
-            const isSunday = selectedDate.getDay() === 0;
-
-            if (hasStoredActivities) {
-                dailyActivitiesArray = Object.keys(dailyActivitiesMap)
-                    .filter(timeKey => timeKey !== '_userCleared' && timeKey !== 'note')
-                    .map(timeKey => ({ time: timeKey, ...dailyActivitiesMap[timeKey] }))
-                    .sort((a, b) => a.order - b.order);
-            } else if (!isUserCleared && !isSunday) {
-                 for (let h = 8; h <= 17; h++) {
-                    const timeKey = `${String(h).padStart(2, '0')}:00-${String(h + 1).padStart(2, '0')}:00`;
-                    dailyActivitiesArray.push({ time: timeKey, text: "", order: h - 8 });
-                }
-            }
-            
-            noDailyActivitiesMessage.classList.toggle('hidden', dailyActivitiesArray.length > 0);
-            if (dailyActivitiesArray.length > 0) {
-                dailyActivitiesArray.forEach((activity, index) => {
-                    const row = document.createElement('tr');
-                    row.className = 'hover:bg-gray-100 transition-colors duration-150';
-                    row.draggable = true;
-                    row.dataset.time = activity.time;
-                    
-                    const isFirst = index === 0;
-                    const isLast = index === dailyActivitiesArray.length - 1;
-                    
-                    row.innerHTML = `
-                        <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-900 border-b border-gray-100 cursor-text time-editable" data-time="${activity.time}" contenteditable="true">${activity.time}</td>
-                        <td class="py-3 px-4 text-sm text-gray-900 border-b border-gray-100">
-                            <div class="activity-text-editable" data-time="${activity.time}" contenteditable="true">${formatTextForDisplay(activity.text)}</div>
-                        </td>
-                        <td class="py-3 px-4 text-sm flex space-x-1 justify-center items-center" data-time="${activity.time}">
-                            <button class="icon-btn move-up-btn" aria-label="Move Up" data-time="${activity.time}" ${isFirst ? 'disabled' : ''}>
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
-                            </button>
-                            <button class="icon-btn move-down-btn" aria-label="Move Down" data-time="${activity.time}" ${isLast ? 'disabled' : ''}>
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                            </button>
-                            <button class="icon-btn delete-btn" aria-label="Delete" data-time="${activity.time}">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                            </button>
-                        </td>`;
-                    dailyActivityTableBody.appendChild(row);
-                });
-                attachDailyActivityEventListeners();
-                attachDragAndDropListeners();
-            }
-        }
-
-        // --- Event Handling & Actions ---
-
-        function attachDailyActivityEventListeners() {
-            dailyActivityTableBody.querySelectorAll('.activity-text-editable, .time-editable').forEach(el => {
-                el.addEventListener('click', handleInlineEditClick);
-                el.addEventListener('blur', handleInlineEditBlur);
-                el.addEventListener('keydown', handleInlineEditKeydown);
-            });
-            dailyActivityTableBody.querySelectorAll('.move-up-btn').forEach(btn => btn.addEventListener('click', handleMoveUpClick));
-            dailyActivityTableBody.querySelectorAll('.move-down-btn').forEach(btn => btn.addEventListener('click', handleMoveDownClick));
-            dailyActivityTableBody.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', handleDeleteButtonClick));
-        }
-
-        function handleMoveUpClick(event) {
-            const currentRow = event.currentTarget.closest('tr');
-            const previousRow = currentRow.previousElementSibling;
-            if (previousRow) {
-                dailyActivityTableBody.insertBefore(currentRow, previousRow);
-                updateActivityOrderInLocalStorage();
-            }
-        }
-
-        function handleMoveDownClick(event) {
-            const currentRow = event.currentTarget.closest('tr');
-            const nextRow = currentRow.nextElementSibling;
-            if (nextRow) {
-                dailyActivityTableBody.insertBefore(nextRow, currentRow);
-                updateActivityOrderInLocalStorage();
-            }
-        }
-
-        function handleInlineEditClick(event) {
-            const targetElement = event.currentTarget;
-            const time = targetElement.dataset.time;
-            if (editingInlineTimeKey && editingInlineTimeKey !== time) {
-                const prevEl = dailyActivityTableBody.querySelector(`[data-time="${editingInlineTimeKey}"]`);
-                prevEl?.blur();
-            }
-            targetElement.classList.add('editing');
-            editingInlineTimeKey = time;
-        }
-
-        function handleInlineEditBlur(event) {
-            const targetElement = event.currentTarget;
-            if (editingInlineTimeKey === targetElement.dataset.time) {
-                if (targetElement.classList.contains('time-editable')) {
-                    saveInlineTime(targetElement.dataset.time, targetElement.innerText.trim());
+        emailSignupBtn.addEventListener('click', async () => {
+            const email = emailInput.value;
+            const password = passwordInput.value;
+            if (!email || password.length < 6) return showMessage("Email and a password of at least 6 characters are required.", 'error');
+            try {
+                // Initialize Firebase services before attempting auth
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                await createUserWithEmailAndPassword(auth, email, password);
+                showMessage("Account created! You are now logged in.", 'success');
+            } catch (error) { 
+                if (error.code === 'auth/email-already-in-use') {
+                    showMessage("An account already exists with this email. Please sign in instead.", 'error');
                 } else {
-                    saveInlineActivityText(targetElement.dataset.time, targetElement.innerText.trim());
+                    showMessage(`Sign-up failed: ${error.message}`, 'error');
                 }
             }
-            targetElement.classList.remove('editing');
-            renderDailyActivities(); 
-        }
+        });
 
-        function handleInlineEditKeydown(event) {
-            if (event.key === 'Enter' && !event.shiftKey) {
-                event.preventDefault();
-                event.currentTarget.blur();
+        emailSigninBtn.addEventListener('click', async () => {
+            const email = emailInput.value;
+            const password = passwordInput.value;
+            if (!email || !password) return showMessage("Email and password are required.", 'error');
+            try {
+                // Initialize Firebase services before attempting auth
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                await signInWithEmailAndPassword(auth, email, password);
+                showMessage("Signed in successfully!", 'success');
+            } catch (error) {
+                if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+                    showMessage("Incorrect email or password. Please try again or sign up.", 'error');
+                } else {
+                    showMessage(`Sign-in failed: ${error.message}`, 'error');
+                }
             }
-        }
+        });
 
-        function handleDeleteButtonClick(event) {
-            deleteActivity(getYYYYMMDD(selectedDate), event.currentTarget.dataset.time);
-        }
-        
-        function updateActivityOrderInLocalStorage() {
-            const dateKey = getYYYYMMDD(selectedDate);
-            const allStoredData = loadActivityDataFromLocalStorage();
-            let dailyActivitiesMap = allStoredData[dateKey] || {};
-            const orderedTimeKeys = Array.from(dailyActivityTableBody.children).map(row => row.dataset.time);
-            let newDailyActivitiesMap = {};
-            
-            if (dailyActivitiesMap.note) {
-                newDailyActivitiesMap.note = dailyActivitiesMap.note;
+        googleSigninBtn.addEventListener('click', async () => {
+            const provider = new GoogleAuthProvider();
+            try {
+                // Initialize Firebase services before attempting auth
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                await signInWithPopup(auth, provider);
+                showMessage("Signed in with Google successfully!", 'success');
+            } catch (error) {
+                if (error.code === 'auth/account-exists-with-different-credential') {
+                    const email = error.customData.email;
+                    const credential = GoogleAuthProvider.credentialFromError(error);
+                    const methods = await fetchSignInMethodsForEmail(auth, email);
+                    if (methods.includes(EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD)) {
+                         // Instead of `prompt`, show a modal or custom UI. For this example, we'll use a message.
+                        showMessage(`An account already exists for ${email}. Please sign in with your email/password.`, 'info');
+                    }
+                } else { showMessage(`Google sign-in failed: ${error.message}`, 'error'); }
             }
+        });
 
-            orderedTimeKeys.forEach((timeKey, index) => {
-                const originalEntry = dailyActivitiesMap[timeKey] || { text: dailyActivityTableBody.querySelector(`[data-time="${timeKey}"] .activity-text-editable`).innerText };
-                newDailyActivitiesMap[timeKey] = { text: originalEntry.text, order: index };
-            });
-            if (dailyActivitiesMap._userCleared) newDailyActivitiesMap._userCleared = true;
-            allStoredData[dateKey] = newDailyActivitiesMap;
-            saveActivityDataToLocalStorage(allStoredData);
-            showMessage("Activities reordered!", 'success');
-            renderDailyActivities();
-        }
+        forgotPasswordBtn.addEventListener('click', async () => {
+            const email = emailInput.value;
+            if (!email) return showMessage("Please enter your email address to reset your password.", 'info');
+            try {
+                // Initialize Firebase services before attempting auth
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                await sendPasswordResetEmail(auth, email);
+                showMessage("Password reset email sent! Please check your inbox.", 'success');
+            } catch (error) { showMessage(`Error sending reset email: ${error.message}`, 'error'); }
+        });
 
-        // --- Core Logic & Data Manipulation ---
-        
+        signOutBtn.addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+            } catch (error) { showMessage(`Sign-out failed: ${error.message}`, 'error'); }
+        });
+
+        // --- Core App Logic ---
         function saveDailyNote() {
             const dateKey = getYYYYMMDD(selectedDate);
             const noteText = dailyNoteInput.value.substring(0, 5);
-
-            const allStoredData = loadActivityDataFromLocalStorage();
-            if (!allStoredData[dateKey]) {
-                allStoredData[dateKey] = {};
-            }
-
-            if (noteText) {
-                allStoredData[dateKey].note = noteText;
-            } else {
-                delete allStoredData[dateKey].note;
-            }
-
-            saveActivityDataToLocalStorage(allStoredData);
-            // The calendar will update automatically when the user switches back to month view.
+            const dataCopy = JSON.parse(JSON.stringify(allStoredData));
+            if (!dataCopy[dateKey]) dataCopy[dateKey] = {};
+            if (noteText) dataCopy[dateKey].note = noteText;
+            else delete dataCopy[dateKey].note;
+            saveData(dataCopy);
         }
-
-        function initializeDayWithDefaults(dateKey) {
-            const dayData = {};
-            const date = new Date(dateKey + 'T00:00:00');
-            if (date.getDay() !== 0) { // Not Sunday
-                for (let h = 8; h <= 17; h++) {
-                    const timeKey = `${String(h).padStart(2, '0')}:00-${String(h + 1).padStart(2, '0')}:00`;
-                    dayData[timeKey] = { text: "", order: h - 8 };
-                }
-            }
-            return dayData;
+        function updateActivityOrder() {
+            const dateKey = getYYYYMMDD(selectedDate);
+            let dailyActivitiesMap = allStoredData[dateKey] || {};
+            const orderedTimeKeys = Array.from(dailyActivityTableBody.children).map(row => row.dataset.time);
+            let newDailyActivitiesMap = {};
+            if (dailyActivitiesMap.note) newDailyActivitiesMap.note = dailyActivitiesMap.note;
+            orderedTimeKeys.forEach((timeKey, index) => {
+                const originalEntry = dailyActivitiesMap[timeKey] || { text: '' };
+                newDailyActivitiesMap[timeKey] = { text: originalEntry.text, order: index };
+            });
+            if (dailyActivitiesMap._userCleared) newDailyActivitiesMap._userCleared = true;
+            const updatedData = { ...allStoredData, [dateKey]: newDailyActivitiesMap };
+            saveData(updatedData);
+            showMessage("Activities reordered!", 'success');
         }
-
-        function updateView() {
-            const isMonthView = currentView === 'month';
-            
-            // Month Button Styling
-            monthViewBtn.classList.toggle('btn-primary', isMonthView);
-            monthViewBtn.classList.toggle('btn-secondary', !isMonthView);
-            monthViewBtn.classList.toggle('font-bold', isMonthView);
-            monthViewBtn.classList.toggle('font-semibold', !isMonthView);
-
-            // Day Button Styling
-            dayViewBtn.classList.toggle('btn-primary', !isMonthView);
-            dayViewBtn.classList.toggle('btn-secondary', isMonthView);
-            dayViewBtn.classList.toggle('font-bold', !isMonthView);
-            dayViewBtn.classList.toggle('font-semibold', isMonthView);
-
-            calendarView.classList.toggle('hidden', !isMonthView);
-            dailyView.classList.toggle('hidden', isMonthView);
-            currentPeriodDisplay.classList.add('cursor-pointer');
-
-            if (isMonthView) {
-                currentPeriodDisplay.textContent = currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-                renderCalendar();
-            } else {
-                currentPeriodDisplay.textContent = formatDateForDisplay(getYYYYMMDD(selectedDate));
-                renderDailyActivities();
-            }
-        }
-        
-        function checkTimeAndPrompt() {
-            const now = new Date();
-            if (lastPromptedDate !== getYYYYMMDD(now)) {
-                lastPromptedHour = null;
-                lastPromptedDate = getYYYYMMDD(now);
-            }
-            if (now.getDay() >= 1 && now.getDay() <= 5 && now.getHours() >= 8 && now.getHours() <= 18 && now.getMinutes() === 0 && lastPromptedHour !== now.getHours()) {
-                const promptHour = `${String(now.getHours()).padStart(2, '0')}:00`;
-                hourlyActivityInput.value = '';
-                hourlyPromptModal.classList.remove('hidden');
-                currentPromptHour = promptHour;
-                lastPromptedHour = now.getHours();
-            }
-        }
-
-        function saveHourlyActivity() {
-            const dateKey = getYYYYMMDD(new Date());
-            const activityText = hourlyActivityInput.value.trim();
-            if (!activityText) return showMessage("Activity cannot be empty.", 'error');
-
-            const allStoredData = loadActivityDataFromLocalStorage();
-            
-            if (!allStoredData[dateKey] || allStoredData[dateKey]._userCleared) {
-                allStoredData[dateKey] = initializeDayWithDefaults(dateKey);
-            }
-
-            const promptEndHour = parseInt(currentPromptHour.split(':')[0]);
-            const targetTimeKey = `${String(promptEndHour - 1).padStart(2, '0')}:00-${String(promptEndHour).padStart(2, '0')}:00`;
-            const existingEntry = allStoredData[dateKey][targetTimeKey];
-
-            if (existingEntry) {
-                const existingText = existingEntry.text.trim();
-                existingEntry.text = existingText ? `${existingText}\n${activityText}` : activityText;
-            } else {
-                const existingKeys = Object.keys(allStoredData[dateKey]).filter(k => k !== '_userCleared' && k !== 'note');
-                const maxOrder = existingKeys.length > 0 ? Math.max(...Object.values(allStoredData[dateKey]).map(v => v.order || 0)) : -1;
-                allStoredData[dateKey][targetTimeKey] = { text: activityText, order: maxOrder + 1 };
-            }
-            
-            delete allStoredData[dateKey]._userCleared;
-            saveActivityDataToLocalStorage(allStoredData);
-            showMessage("Activity saved!", 'success');
-            hourlyPromptModal.classList.add('hidden');
-            if (dateKey === getYYYYMMDD(selectedDate)) updateView();
-        }
-
         function saveInlineActivityText(timeKey, newActivityText) {
             const dateKey = getYYYYMMDD(selectedDate);
-            const allStoredData = loadActivityDataFromLocalStorage();
-            
-            if (!allStoredData[dateKey] || allStoredData[dateKey]._userCleared) {
-                allStoredData[dateKey] = initializeDayWithDefaults(dateKey);
-                 allStoredData[dateKey]._userCleared = true;
-            }
-
-            if (allStoredData[dateKey][timeKey]) {
-                allStoredData[dateKey][timeKey].text = newActivityText;
-            } else {
-                const existingKeys = Object.keys(allStoredData[dateKey]).filter(k => k !== '_userCleared' && k !== 'note');
-                const maxOrder = existingKeys.length > 0 ? Math.max(...Object.values(allStoredData[dateKey]).map(v => v.order || 0)) : -1;
-                allStoredData[dateKey][timeKey] = { text: newActivityText, order: maxOrder + 1 };
-            }
-            
-            delete allStoredData[dateKey]._userCleared;
-            saveActivityDataToLocalStorage(allStoredData);
+            const dataCopy = JSON.parse(JSON.stringify(allStoredData));
+            if (!dataCopy[dateKey] || dataCopy[dateKey]._userCleared) { dataCopy[dateKey] = initializeDayWithDefaults(dateKey); dataCopy[dateKey]._userCleared = true; }
+            if (dataCopy[dateKey][timeKey]) { dataCopy[dateKey][timeKey].text = newActivityText; }
+            else { const maxOrder = Object.keys(dataCopy[dateKey]).filter(k => k !== '_userCleared' && k !== 'note').length; dataCopy[dateKey][timeKey] = { text: newActivityText, order: maxOrder }; }
+            delete dataCopy[dateKey]._userCleared;
+            saveData(dataCopy);
             showMessage("Activity updated!", 'success');
             editingInlineTimeKey = null;
-            updateView();
         }
-
         function saveInlineTime(oldTimeKey, newTimeKey) {
             const dateKey = getYYYYMMDD(selectedDate);
-            const allStoredData = loadActivityDataFromLocalStorage();
-            if (!newTimeKey) {
-                showMessage("Time cannot be empty.", 'error');
-                return updateView();
-            }
-            if (!allStoredData[dateKey]) allStoredData[dateKey] = {};
-            if (allStoredData[dateKey][newTimeKey] && oldTimeKey !== newTimeKey) {
-                showMessage(`Time "${newTimeKey}" already exists.`, 'error');
-                return updateView();
-            }
-            const entry = allStoredData[dateKey][oldTimeKey];
-            if (entry) {
-                delete allStoredData[dateKey][oldTimeKey];
-                allStoredData[dateKey][newTimeKey] = entry;
-            }
-            saveActivityDataToLocalStorage(allStoredData);
+            const dataCopy = JSON.parse(JSON.stringify(allStoredData));
+            if (!newTimeKey) { showMessage("Time cannot be empty.", 'error'); return renderDailyActivities(); }
+            if (!dataCopy[dateKey]) dataCopy[dateKey] = {};
+            if (dataCopy[dateKey][newTimeKey] && oldTimeKey !== newTimeKey) { showMessage(`Time "${newTimeKey}" already exists.`, 'error'); return renderDailyActivities(); }
+            const entry = dataCopy[dateKey][oldTimeKey];
+            if (entry) { delete dataCopy[dateKey][oldTimeKey]; dataCopy[dateKey][newTimeKey] = entry; }
+            saveData(dataCopy);
             showMessage("Time updated!", 'success');
             editingInlineTimeKey = null;
-            updateView();
         }
-
         function deleteActivity(dateKey, timeKey) {
-            const allStoredData = loadActivityDataFromLocalStorage();
-            if (allStoredData[dateKey]?.[timeKey]) {
-                delete allStoredData[dateKey][timeKey];
-                if (Object.keys(allStoredData[dateKey]).filter(k => k !== '_userCleared' && k !== 'note').length === 0) {
-                    allStoredData[dateKey]._userCleared = true;
-                }
-                saveActivityDataToLocalStorage(allStoredData);
+            const dataCopy = JSON.parse(JSON.stringify(allStoredData));
+            if (dataCopy[dateKey]?.[timeKey]) {
+                delete dataCopy[dateKey][timeKey];
+                if (Object.keys(dataCopy[dateKey]).filter(k => k !== '_userCleared' && k !== 'note').length === 0) { dataCopy[dateKey]._userCleared = true; }
+                saveData(dataCopy);
                 showMessage("Activity deleted.", 'success');
-                updateView();
             }
         }
-        
-        function downloadCSV() {
-            const allStoredData = loadActivityDataFromLocalStorage();
-            let activitiesToExport = [];
-            Object.keys(allStoredData)
-                .forEach(dateKey => {
-                    const dailyEntries = Object.keys(allStoredData[dateKey])
-                        .filter(timeKey => timeKey !== '_userCleared' && timeKey !== 'note' && allStoredData[dateKey][timeKey].text?.trim())
-                        .map(timeKey => ({ date: dateKey, time: timeKey, ...allStoredData[dateKey][timeKey] }));
-                    activitiesToExport.push(...dailyEntries);
-                });
-
-            if (activitiesToExport.length === 0) return showMessage("No activities found to export.", 'info');
-
-            activitiesToExport.sort((a, b) => a.date.localeCompare(b.date) || a.order - b.order);
-            let csvContent = "data:text/csv;charset=utf-8,Date,Time,Activity\n";
-            csvContent += activitiesToExport.map(entry => {
-                const activity = `"${entry.text.replace(/"/g, '""')}"`;
-                return `"${formatDateForDisplay(entry.date)}","${entry.time}",${activity}`;
-            }).join("\n");
-            
-            const link = document.createElement("a");
-            link.href = encodeURI(csvContent);
-            link.download = `TimeBuddy_Export.csv`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        function handleFileUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => parseAndImportCSV(e.target.result);
-            reader.onerror = () => showMessage("Error reading file.", 'error');
-            reader.readAsText(file);
-        }
-
         function parseAndImportCSV(csvContent) {
             const lines = csvContent.split('\n').filter(line => line.trim());
             if (lines.length <= 1) return showMessage("CSV file is empty or has no data.", 'error');
-            
-            const allExistingData = loadActivityDataFromLocalStorage();
+            const dataCopy = JSON.parse(JSON.stringify(allStoredData));
             const importedDays = {};
-
             lines.slice(1).forEach(line => {
                 const row = parseCsvLine(line);
                 if (row.length < 3) return;
                 const [displayDateStr, time, activityText] = row;
                 const dateKey = parseDisplayDateToYYYYMMDD(displayDateStr);
-                if (!dateKey) {
-                    console.warn(`Skipping row with invalid date: ${displayDateStr}`);
-                    return;
-                }
-                
-                if (!allExistingData[dateKey]) allExistingData[dateKey] = {};
+                if (!dateKey) return;
+                if (!dataCopy[dateKey]) dataCopy[dateKey] = {};
                 importedDays[dateKey] = true;
-
-                const existingEntry = allExistingData[dateKey][time];
+                const existingEntry = dataCopy[dateKey][time];
                 const importedText = activityText.trim();
-
                 if (existingEntry) {
                     const existingText = existingEntry.text.trim();
-                    // If the imported text is not an exact match, merge it.
-                    if (existingText !== importedText) {
-                         existingEntry.text = existingText ? `${existingText}\n${importedText}` : importedText;
-                    }
-                    // If it is an exact match, do nothing.
+                    if (existingText !== importedText) { existingEntry.text = existingText ? `${existingText}\n${importedText}` : importedText; }
                 } else {
-                    // If the entry doesn't exist, create a new one.
-                    const order = Object.keys(allExistingData[dateKey]).filter(k => k !== '_userCleared' && k !== 'note').length;
-                    allExistingData[dateKey][time] = { text: importedText, order };
+                    const order = Object.keys(dataCopy[dateKey]).filter(k => k !== '_userCleared' && k !== 'note').length;
+                    dataCopy[dateKey][time] = { text: importedText, order };
                 }
             });
-            
             Object.keys(importedDays).forEach(dateKey => {
-                let dayArray = Object.keys(allExistingData[dateKey])
-                    .filter(key => key !== '_userCleared' && key !== 'note')
-                    .map(timeKey => ({ time: timeKey, ...allExistingData[dateKey][timeKey] }))
-                    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+                let dayArray = Object.keys(dataCopy[dateKey]).filter(key => key !== '_userCleared' && key !== 'note').map(timeKey => ({ time: timeKey, ...dataCopy[dateKey][timeKey] })).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
                 let reorderedMap = {};
-                
-                if (allExistingData[dateKey].note) {
-                    reorderedMap.note = allExistingData[dateKey].note;
-                }
-
-                dayArray.forEach((activity, index) => {
-                    reorderedMap[activity.time] = { text: activity.text, order: index };
-                });
-                if (allExistingData[dateKey]._userCleared) reorderedMap._userCleared = true;
-                allExistingData[dateKey] = reorderedMap;
+                if (dataCopy[dateKey].note) reorderedMap.note = dataCopy[dateKey].note;
+                dayArray.forEach((activity, index) => { reorderedMap[activity.time] = { text: activity.text, order: index }; });
+                if (dataCopy[dateKey]._userCleared) reorderedMap._userCleared = true;
+                dataCopy[dateKey] = reorderedMap;
             });
-
-            saveActivityDataToLocalStorage(allExistingData);
+            saveData(dataCopy);
             showMessage("CSV data imported and merged!", 'success');
-            updateView();
         }
-
-        function parseCsvLine(line) {
-            const result = [];
-            let inQuote = false, field = '';
-            for (let i = 0; i < line.length; i++) {
-                const char = line[i];
-                if (char === '"') {
-                    if (inQuote && line[i + 1] === '"') { field += '"'; i++; } else { inQuote = !inQuote; }
-                } else if (char === ',' && !inQuote) {
-                    result.push(field); field = '';
-                } else {
-                    field += char;
-                }
-            }
-            result.push(field);
-            return result.map(f => f.trim().replace(/^"|"$/g, ''));
+        function showMessage(msg, type = 'info') {
+            messageText.textContent = msg;
+            messageDisplay.className = 'fixed bottom-5 right-5 z-50 px-4 py-3 rounded-lg shadow-md transition-opacity duration-300';
+            if (type === 'error') { messageDisplay.classList.add('bg-red-100', 'border', 'border-red-400', 'text-red-700'); }
+            else { messageDisplay.classList.add('bg-blue-100', 'border', 'border-blue-400', 'text-blue-700'); }
+            messageDisplay.classList.add('show');
+            clearTimeout(messageDisplay.dataset.timeoutId);
+            messageDisplay.dataset.timeoutId = setTimeout(() => messageDisplay.classList.remove('show'), 3000);
         }
-        
-        function attachDragAndDropListeners() {
-            dailyActivityTableBody.querySelectorAll('tr').forEach(row => {
-                row.addEventListener('dragstart', handleDragStart); row.addEventListener('dragover', handleDragOver);
-                row.addEventListener('dragleave', handleDragLeave); row.addEventListener('drop', handleDrop);
-                row.addEventListener('dragend', handleDragEnd);
-            });
-        }
-        function handleDragStart(e) {
-            draggedItem = e.target.closest('tr');
-            e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/plain', draggedItem.dataset.time);
-            draggedItem.classList.add('dragging');
-        }
-        function handleDragOver(e) {
-            e.preventDefault();
-            const targetRow = e.target.closest('tr');
-            if (targetRow && targetRow !== draggedItem) {
-                dailyActivityTableBody.querySelectorAll('.drag-over-top, .drag-over-bottom').forEach(row => row.classList.remove('drag-over-top', 'drag-over-bottom'));
-                const rect = targetRow.getBoundingClientRect();
-                targetRow.classList.add(e.clientY - rect.top < rect.height / 2 ? 'drag-over-top' : 'drag-over-bottom');
-            }
-        }
+        function getYYYYMMDD(date) { const year = date.getFullYear(); const month = String(date.getMonth() + 1).padStart(2, '0'); const day = String(date.getDate()).padStart(2, '0'); return `${year}-${month}-${day}`; }
+        function formatDateForDisplay(dateString) { const date = new Date(dateString + 'T00:00:00'); return date.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' }); }
+        function parseDisplayDateToYYYYMMDD(displayDateStr) { const parts = displayDateStr.split(', '); if (parts.length < 3) return null; const date = new Date(`${parts[1]} ${parts[2]}`); return isNaN(date.getTime()) ? null : getYYYYMMDD(date); }
+        function formatTextForDisplay(text) { return (text || "").replace(/\n/g, '<br>'); }
+        function renderCalendar() { while (calendarView.children.length > 7) calendarView.removeChild(calendarView.lastChild); const year = currentMonth.getFullYear(); const month = currentMonth.getMonth(); const firstDayOfMonth = new Date(year, month, 1); const lastDayOfMonth = new Date(year, month + 1, 0); const today = new Date(); for (let i = 0; i < firstDayOfMonth.getDay(); i++) { const emptyCell = document.createElement('div'); emptyCell.className = 'calendar-day-cell other-month'; emptyCell.innerHTML = '<div class="calendar-day-content"></div>'; calendarView.appendChild(emptyCell); } for (let day = 1; day <= lastDayOfMonth.getDate(); day++) { const date = new Date(year, month, day); const dateKey = getYYYYMMDD(date); const dayData = allStoredData[dateKey] || {}; const noteText = dayData.note || ''; let hasActivity = Object.keys(dayData).some(key => key !== '_userCleared' && key !== 'note' && dayData[key].text?.trim()); const dayCell = document.createElement('div'); dayCell.className = 'calendar-day-cell current-month'; if (date.getDay() === 0) dayCell.classList.add('is-sunday'); if (hasActivity) dayCell.classList.add('has-activity'); if (getYYYYMMDD(date) === getYYYYMMDD(today)) dayCell.classList.add('is-today'); if (getYYYYMMDD(date) === getYYYYMMDD(selectedDate) && currentView === 'day') dayCell.classList.add('selected-day'); dayCell.innerHTML = `<div class="calendar-day-content"><div class="day-number">${day}</div><div class="day-note-container">${noteText ? `<span class="day-note">${noteText}</span>` : ''}</div>${hasActivity ? '<div class="activity-indicator"></div>' : ''}</div>`; dayCell.dataset.date = dateKey; dayCell.addEventListener('click', () => { selectedDate = date; currentView = 'day'; updateView(); }); calendarView.appendChild(dayCell); } const totalCells = firstDayOfMonth.getDay() + lastDayOfMonth.getDate(); for (let i = 0; i < (7 - (totalCells % 7)) % 7; i++) { const emptyCell = document.createElement('div'); emptyCell.className = 'calendar-day-cell other-month'; emptyCell.innerHTML = '<div class="calendar-day-content"></div>'; calendarView.appendChild(emptyCell); } }
+        function renderDailyActivities() { dailyActivityTableBody.innerHTML = ''; const dateKey = getYYYYMMDD(selectedDate); const dailyActivitiesMap = allStoredData[dateKey] || {}; let dailyActivitiesArray = []; dailyNoteInput.value = dailyActivitiesMap.note || ''; const hasStoredActivities = Object.keys(dailyActivitiesMap).filter(key => key !== '_userCleared' && key !== 'note').length > 0; if (hasStoredActivities) { dailyActivitiesArray = Object.keys(dailyActivitiesMap).filter(timeKey => timeKey !== '_userCleared' && timeKey !== 'note').map(timeKey => ({ time: timeKey, ...dailyActivitiesMap[timeKey] })).sort((a, b) => a.order - b.order); } else if (dailyActivitiesMap._userCleared !== true && selectedDate.getDay() !== 0) { for (let h = 8; h <= 17; h++) { dailyActivitiesArray.push({ time: `${String(h).padStart(2, '0')}:00-${String(h + 1).padStart(2, '0')}:00`, text: "", order: h - 8 }); } } noDailyActivitiesMessage.classList.toggle('hidden', dailyActivitiesArray.length > 0); dailyActivitiesArray.forEach((activity, index) => { const row = document.createElement('tr'); row.className = 'hover:bg-gray-100 transition-colors duration-150'; row.draggable = true; row.dataset.time = activity.time; row.innerHTML = `<td class="py-3 px-4 whitespace-nowrap text-sm text-gray-900 border-b border-gray-100 cursor-text time-editable" data-time="${activity.time}" contenteditable="true">${activity.time}</td><td class="py-3 px-4 text-sm text-gray-900 border-b border-gray-100"><div class="activity-text-editable" data-time="${activity.time}" contenteditable="true">${formatTextForDisplay(activity.text)}</div></td><td class="py-3 px-4 text-sm flex space-x-1 justify-center items-center" data-time="${activity.time}"><button class="icon-btn move-up-btn" ${index === 0 ? 'disabled' : ''}><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg></button><button class="icon-btn move-down-btn" ${index === dailyActivitiesArray.length - 1 ? 'disabled' : ''}><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button><button class="icon-btn delete-btn"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></td>`; dailyActivityTableBody.appendChild(row); }); attachDailyActivityEventListeners(); attachDragAndDropListeners(); }
+        function attachDailyActivityEventListeners() { dailyActivityTableBody.querySelectorAll('.activity-text-editable, .time-editable').forEach(el => { el.addEventListener('click', handleInlineEditClick); el.addEventListener('blur', handleInlineEditBlur); el.addEventListener('keydown', handleInlineEditKeydown); }); dailyActivityTableBody.querySelectorAll('.move-up-btn').forEach(btn => btn.addEventListener('click', handleMoveUpClick)); dailyActivityTableBody.querySelectorAll('.move-down-btn').forEach(btn => btn.addEventListener('click', handleMoveDownClick)); dailyActivityTableBody.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', handleDeleteButtonClick)); }
+        function handleMoveUpClick(event) { const currentRow = event.currentTarget.closest('tr'); if (currentRow.previousElementSibling) { dailyActivityTableBody.insertBefore(currentRow, currentRow.previousElementSibling); updateActivityOrder(); } }
+        function handleMoveDownClick(event) { const currentRow = event.closest('tr'); if (currentRow.nextElementSibling) { dailyActivityTableBody.insertBefore(currentRow.nextElementSibling, currentRow); updateActivityOrder(); } }
+        function handleInlineEditClick(event) { const target = event.currentTarget; if (editingInlineTimeKey && editingInlineTimeKey !== target.dataset.time) { dailyActivityTableBody.querySelector(`[data-time="${editingInlineTimeKey}"]`)?.blur(); } target.classList.add('editing'); editingInlineTimeKey = target.dataset.time; }
+        function handleInlineEditBlur(event) { const target = event.currentTarget; if (editingInlineTimeKey === target.dataset.time) { if (target.classList.contains('time-editable')) { saveInlineTime(target.dataset.time, target.innerText.trim()); } else { saveInlineActivityText(target.dataset.time, target.innerText.trim()); } } target.classList.remove('editing'); }
+        function handleInlineEditKeydown(event) { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); event.currentTarget.blur(); } }
+        function handleDeleteButtonClick(event) { deleteActivity(getYYYYMMDD(selectedDate), event.currentTarget.closest('tr').dataset.time); }
+        function initializeDayWithDefaults(dateKey) { const dayData = {}; for (let h = 8; h <= 17; h++) { dayData[`${String(h).padStart(2, '0')}:00-${String(h + 1).padStart(2, '0')}:00`] = { text: "", order: h - 8 }; } return dayData; }
+        function updateView() { if (appView.classList.contains('hidden') && loginView.classList.contains('hidden')) return; const isMonthView = currentView === 'month'; monthViewBtn.classList.toggle('btn-primary', isMonthView); monthViewBtn.classList.toggle('btn-secondary', !isMonthView); dayViewBtn.classList.toggle('btn-primary', !isMonthView); dayViewBtn.classList.toggle('btn-secondary', isMonthView); calendarView.classList.toggle('hidden', !isMonthView); dailyView.classList.toggle('hidden', isMonthView); if (isMonthView) { currentPeriodDisplay.textContent = currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }); renderCalendar(); } else { currentPeriodDisplay.textContent = formatDateForDisplay(getYYYYMMDD(selectedDate)); renderDailyActivities(); } }
+        function checkTimeAndPrompt() { const now = new Date(); if (lastPromptedDate !== getYYYYMMDD(now)) { lastPromptedHour = null; lastPromptedDate = getYYYYMMDD(now); } if (now.getDay() >= 1 && now.getDay() <= 5 && now.getHours() >= 8 && now.getHours() <= 18 && now.getMinutes() === 0 && lastPromptedHour !== now.getHours()) { hourlyActivityInput.value = ''; hourlyPromptModal.classList.remove('hidden'); currentPromptHour = `${String(now.getHours()).padStart(2, '0')}:00`; lastPromptedHour = now.getHours(); } }
+        function saveHourlyActivity() { const dateKey = getYYYYMMDD(new Date()); const activityText = hourlyActivityInput.value.trim(); if (!activityText) return showMessage("Activity cannot be empty.", 'error'); const dataCopy = JSON.parse(JSON.stringify(allStoredData)); if (!dataCopy[dateKey] || dataCopy[dateKey]._userCleared) { dataCopy[dateKey] = initializeDayWithDefaults(dateKey); } const promptEndHour = parseInt(currentPromptHour.split(':')[0]); const targetTimeKey = `${String(promptEndHour - 1).padStart(2, '0')}:00-${String(promptEndHour).padStart(2, '0')}:00`; const existingEntry = dataCopy[dateKey][targetTimeKey]; if (existingEntry) { existingEntry.text = existingEntry.text.trim() ? `${existingEntry.text.trim()}\n${activityText}` : activityText; } else { const maxOrder = Object.keys(dataCopy[dateKey]).filter(k => k !== '_userCleared' && k !== 'note').length; dataCopy[dateKey][targetTimeKey] = { text: activityText, order: maxOrder }; } delete dataCopy[dateKey]._userCleared; saveData(dataCopy); showMessage("Activity saved!", 'success'); hourlyPromptModal.classList.add('hidden'); }
+        function downloadCSV() { let activities = []; Object.keys(allStoredData).forEach(dateKey => { Object.keys(allStoredData[dateKey]).filter(timeKey => timeKey !== '_userCleared' && timeKey !== 'note' && allStoredData[dateKey][timeKey].text?.trim()).forEach(timeKey => activities.push({ date: dateKey, time: timeKey, ...allStoredData[dateKey][timeKey] })); }); if (activities.length === 0) return showMessage("No activities found to export.", 'info'); activities.sort((a, b) => a.date.localeCompare(b.date) || a.order - b.order); let csv = "data:text/csv;charset=utf-8,Date,Time,Activity\n" + activities.map(e => `"${formatDateForDisplay(e.date)}","${e.time}","${e.text.replace(/"/g, '""')}"`).join("\n"); const link = document.createElement("a"); link.href = encodeURI(csv); link.download = `TimeBuddy_Export.csv`; document.body.appendChild(link); link.click(); document.body.removeChild(link); }
+        function handleFileUpload(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (e) => parseAndImportCSV(e.target.result); reader.readAsText(file); }
+        function parseCsvLine(line) { const result = []; let inQuote = false, field = ''; for (let i = 0; i < line.length; i++) { const char = line[i]; if (char === '"') { if (inQuote && line[i + 1] === '"') { field += '"'; i++; } else { inQuote = !inQuote; } } else if (char === ',' && !inQuote) { result.push(field); field = ''; } else { field += char; } } result.push(field); return result.map(f => f.trim().replace(/^"|"$/g, '')); }
+        function attachDragAndDropListeners() { dailyActivityTableBody.querySelectorAll('tr').forEach(row => { row.addEventListener('dragstart', handleDragStart); row.addEventListener('dragover', handleDragOver); row.addEventListener('dragleave', handleDragLeave); row.addEventListener('drop', handleDrop); row.addEventListener('dragend', handleDragEnd); }); }
+        function handleDragStart(e) { draggedItem = e.target.closest('tr'); e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', draggedItem.dataset.time); draggedItem.classList.add('dragging'); }
+        function handleDragOver(e) { e.preventDefault(); const targetRow = e.target.closest('tr'); if (targetRow && targetRow !== draggedItem) { dailyActivityTableBody.querySelectorAll('.drag-over-top, .drag-over-bottom').forEach(row => row.classList.remove('drag-over-top', 'drag-over-bottom')); const rect = targetRow.getBoundingClientRect(); targetRow.classList.add(e.clientY - rect.top < rect.height / 2 ? 'drag-over-top' : 'drag-over-bottom'); } }
         function handleDragLeave(e) { e.target.closest('tr')?.classList.remove('drag-over-top', 'drag-over-bottom'); }
-        function handleDrop(e) {
-            e.preventDefault();
-            const targetRow = e.target.closest('tr');
-            if (!targetRow || targetRow === draggedItem) return;
-            const rect = targetRow.getBoundingClientRect();
-            dailyActivityTableBody.querySelectorAll('.drag-over-top, .drag-over-bottom').forEach(row => row.classList.remove('drag-over-top', 'drag-over-bottom'));
-            dailyActivityTableBody.insertBefore(draggedItem, e.clientY - rect.top < rect.height / 2 ? targetRow : targetRow.nextSibling);
-            updateActivityOrderInLocalStorage();
-        }
-        function handleDragEnd() {
-            draggedItem?.classList.remove('dragging');
-            draggedItem = null;
-            dailyActivityTableBody.querySelectorAll('.drag-over-top, .drag-over-bottom').forEach(row => row.classList.remove('drag-over-top', 'drag-over-bottom'));
-        }
-
-        // --- Event Listeners & Initialization ---
-        
+        function handleDrop(e) { e.preventDefault(); const targetRow = e.target.closest('tr'); if (!targetRow || targetRow === draggedItem) return; dailyActivityTableBody.insertBefore(draggedItem, e.clientY - targetRow.getBoundingClientRect().top < targetRow.offsetHeight / 2 ? targetRow : targetRow.nextSibling); updateActivityOrder(); }
+        function handleDragEnd() { draggedItem?.classList.remove('dragging'); draggedItem = null; dailyActivityTableBody.querySelectorAll('.drag-over-top, .drag-over-bottom').forEach(row => row.classList.remove('drag-over-top', 'drag-over-bottom')); }
         monthViewBtn.addEventListener('click', () => { currentView = 'month'; updateView(); });
         dayViewBtn.addEventListener('click', () => { currentView = 'day'; updateView(); });
-        prevBtn.addEventListener('click', () => {
-            if (currentView === 'month') currentMonth.setMonth(currentMonth.getMonth() - 1);
-            else selectedDate.setDate(selectedDate.getDate() - 1);
-            updateView();
-        });
-        nextBtn.addEventListener('click', () => {
-            if (currentView === 'month') currentMonth.setMonth(currentMonth.getMonth() + 1);
-            else selectedDate.setDate(selectedDate.getDate() + 1);
-            updateView();
-        });
-        todayBtn.addEventListener('click', () => {
-            const today = new Date();
-            selectedDate = today;
-            currentMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-            updateView();
-        });
-        currentPeriodDisplay.addEventListener('click', () => {
-            pickerYear = currentView === 'month' ? currentMonth.getFullYear() : selectedDate.getFullYear();
-            renderMonthPicker();
-            monthPickerModal.classList.remove('hidden');
-        });
-        addNewSlotBtn.addEventListener('click', () => {
-            const dateKey = getYYYYMMDD(selectedDate);
-            const allStoredData = loadActivityDataFromLocalStorage();
-            
-            if (!allStoredData[dateKey] || allStoredData[dateKey]._userCleared) {
-                allStoredData[dateKey] = initializeDayWithDefaults(dateKey);
-                 allStoredData[dateKey]._userCleared = true;
-            }
-
-            let newTimeKey = "00:00", counter = 0;
-            while (allStoredData[dateKey][newTimeKey]) newTimeKey = `00:00-${++counter}`;
-            const existingKeys = Object.keys(allStoredData[dateKey]).filter(k => k !== '_userCleared' && k !== 'note');
-            const maxOrder = existingKeys.length > 0 ? Math.max(...Object.values(allStoredData[dateKey]).map(v => v.order || 0)) : -1;
-            allStoredData[dateKey][newTimeKey] = { text: "", order: maxOrder + 1 };
-            delete allStoredData[dateKey]._userCleared;
-            saveActivityDataToLocalStorage(allStoredData);
-            updateView();
-            setTimeout(() => dailyActivityTableBody.querySelector(`.activity-text-editable[data-time="${newTimeKey}"]`)?.click(), 0);
-        });
+        prevBtn.addEventListener('click', () => { if (currentView === 'month') currentMonth.setMonth(currentMonth.getMonth() - 1); else selectedDate.setDate(selectedDate.getDate() - 1); updateView(); });
+        nextBtn.addEventListener('click', () => { if (currentView === 'month') currentMonth.setMonth(currentMonth.getMonth() + 1); else selectedDate.setDate(selectedDate.getDate() + 1); updateView(); });
+        todayBtn.addEventListener('click', () => { const today = new Date(); selectedDate = today; currentMonth = new Date(today.getFullYear(), today.getMonth(), 1); updateView(); });
+        currentPeriodDisplay.addEventListener('click', () => { pickerYear = currentView === 'month' ? currentMonth.getFullYear() : selectedDate.getFullYear(); renderMonthPicker(); monthPickerModal.classList.remove('hidden'); });
+        addNewSlotBtn.addEventListener('click', () => { const dateKey = getYYYYMMDD(selectedDate); const dataCopy = JSON.parse(JSON.stringify(allStoredData)); if (!dataCopy[dateKey] || dataCopy[dateKey]._userCleared) { dataCopy[dateKey] = initializeDayWithDefaults(dateKey); dataCopy[dateKey]._userCleared = true; } let newTimeKey = "00:00", counter = 0; while (dataCopy[dateKey][newTimeKey]) newTimeKey = `00:00-${++counter}`; const maxOrder = Object.keys(dataCopy[dateKey]).filter(k => k !== '_userCleared' && k !== 'note').length; dataCopy[dateKey][newTimeKey] = { text: "", order: maxOrder }; delete dataCopy[dateKey]._userCleared; saveData(dataCopy); setTimeout(() => dailyActivityTableBody.querySelector(`.activity-text-editable[data-time="${newTimeKey}"]`)?.click(), 100); });
         saveHourlyActivityBtn.addEventListener('click', saveHourlyActivity);
         closeHourlyPromptModalBtn.addEventListener('click', () => hourlyPromptModal.classList.add('hidden'));
         downloadCsvBtn.addEventListener('click', downloadCSV);
@@ -1126,56 +718,16 @@
         prevYearBtn.addEventListener('click', () => { pickerYear--; renderMonthPicker(); });
         nextYearBtn.addEventListener('click', () => { pickerYear++; renderMonthPicker(); });
         closeMonthPickerBtn.addEventListener('click', () => { monthPickerModal.classList.add('hidden'); });
-        resetDataBtn.addEventListener('click', () => {
-            confirmResetModal.classList.remove('hidden');
-        });
-        cancelResetBtn.addEventListener('click', () => {
-            confirmResetModal.classList.add('hidden');
-        });
-        confirmResetBtn.addEventListener('click', () => {
-            localStorage.removeItem('activityTrackerData');
-            confirmResetModal.classList.add('hidden');
-            showMessage("All data has been reset.", 'success');
-            updateView();
-        });
-        hourlyActivityInput.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter' && !event.shiftKey) {
-                event.preventDefault();
-                saveHourlyActivity();
-            }
-        });
-        dailyNoteInput.addEventListener('input', saveDailyNote); // New event listener
-
-        function renderMonthPicker() {
-            monthGrid.innerHTML = '';
-            pickerYearDisplay.textContent = pickerYear;
-            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-            monthNames.forEach((name, index) => {
-                const button = document.createElement('button');
-                button.className = 'px-4 py-3 rounded-lg font-medium text-gray-800 bg-gray-100 hover:bg-blue-100 hover:text-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500';
-                button.textContent = name;
-                if (pickerYear === currentMonth.getFullYear() && index === currentMonth.getMonth()) {
-                    button.classList.add('bg-blue-500', 'text-white');
-                    button.classList.remove('bg-gray-100', 'text-gray-800');
-                }
-                button.addEventListener('click', () => {
-                    currentMonth = new Date(pickerYear, index, 1);
-                    selectedDate = new Date(pickerYear, index, selectedDate.getDate());
-                    const lastDayOfNewMonth = new Date(pickerYear, index + 1, 0).getDate();
-                    if (selectedDate.getDate() > lastDayOfNewMonth) {
-                        selectedDate.setDate(lastDayOfNewMonth);
-                    }
-                    
-                    updateView();
-                    monthPickerModal.classList.add('hidden');
-                });
-                monthGrid.appendChild(button);
-            });
-        }
-
-        window.onload = function() {
-            updateView();
-            setInterval(checkTimeAndPrompt, 60 * 1000);
+        resetDataBtn.addEventListener('click', () => { resetModalText.textContent = isOnlineMode ? "This will permanently delete all your activity data from the cloud. This action cannot be undone." : "This will permanently delete all your local activity data. This action cannot be undone."; confirmResetModal.classList.remove('hidden'); });
+        cancelResetBtn.addEventListener('click', () => { confirmResetModal.classList.add('hidden'); });
+        confirmResetBtn.addEventListener('click', async () => { if (isOnlineMode) { if (!userId) return; try { await deleteDoc(doc(db, "artifacts", firebaseConfig.projectId, "users", userId)); showMessage("All cloud data has been reset.", 'success'); } catch (error) { showMessage("Failed to reset cloud data.", 'error'); } } else { localStorage.removeItem('activityTrackerData'); allStoredData = {}; updateView(); showMessage("All local data has been reset.", 'success'); } confirmResetModal.classList.add('hidden'); });
+        hourlyActivityInput.addEventListener('keydown', (event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); saveHourlyActivity(); } });
+        dailyNoteInput.addEventListener('input', saveDailyNote);
+        function renderMonthPicker() { monthGrid.innerHTML = ''; pickerYearDisplay.textContent = pickerYear; const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]; monthNames.forEach((name, index) => { const button = document.createElement('button'); button.className = 'px-4 py-3 rounded-lg font-medium text-gray-800 bg-gray-100 hover:bg-blue-100 hover:text-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500'; button.textContent = name; if (pickerYear === currentMonth.getFullYear() && index === currentMonth.getMonth()) { button.classList.add('bg-blue-500', 'text-white'); button.classList.remove('bg-gray-100', 'text-gray-800'); } button.addEventListener('click', () => { currentMonth = new Date(pickerYear, index, 1); const lastDayOfNewMonth = new Date(pickerYear, index + 1, 0).getDate(); if (selectedDate.getDate() > lastDayOfNewMonth) selectedDate.setDate(lastDayOfNewMonth); updateView(); monthPickerModal.classList.add('hidden'); }); monthGrid.appendChild(button); }); }
+        window.onload = async function() {
+            // No automatic sign-in on page load. Let user choose their login method.
+            showLoginView();
+            setInterval(checkTimeAndPrompt, 60 * 1000); 
             checkTimeAndPrompt();
         };
 
