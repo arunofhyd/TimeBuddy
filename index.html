@@ -61,7 +61,11 @@
         <div id="app-view" class="view-container w-full max-w-4xl mx-auto hidden">
              <div class="bg-white rounded-xl border border-gray-200 shadow-2xl p-6 md:p-8">
                 <div class="flex justify-between items-center mb-6">
-                    <div class="w-10"></div> <!-- Spacer -->
+                    <!-- Theme Toggle Button -->
+                    <button id="theme-toggle-btn" class="icon-btn" title="Toggle Theme">
+                        <svg id="theme-icon-light" class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        <svg id="theme-icon-dark" class="w-7 h-7 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </button>
                     <h1 class="text-4xl font-extrabold text-gray-800 tracking-tight text-center">TimeBuddy</h1>
                     <button id="sign-out-btn" class="icon-btn" title="Sign Out">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
@@ -77,7 +81,7 @@
                     <div id="daily-view" class="hidden">
                          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                             <div class="sm:w-1/2"><input type="text" id="daily-note-input" maxlength="5" class="w-full px-4 py-2.5 text-lg font-semibold text-gray-800 bg-gray-50 border-2 border-gray-200 rounded-lg shadow-inner focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all placeholder:text-gray-400 placeholder:font-medium" placeholder="Daily Note (max 5 chars.)"></div>
-                            <button id="add-new-slot-btn" class="px-6 py-2.5 btn-primary rounded-lg w-full sm:w-1/2 whitespace-nowrap">Add New Slot <svg class="inline-block w-5 h-5 ml-2 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg></button>
+                            <button id="add-new-slot-btn" class="px-6 py-2.5 btn-primary rounded-lg w-full sm:w-1/2 whitespace-nowrap flex items-center justify-center">Add New Slot <svg class="inline-block w-5 h-5 ml-2 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg></button>
                         </div>
                         <div id="daily-view-container"><table class="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden shadow-md"><thead class="bg-gray-50"><tr><th class="py-3 px-4 text-left text-sm font-semibold uppercase w-1/6">Time</th><th class="py-3 px-4 text-left text-sm font-semibold uppercase w-4/6">Activity</th><th class="py-3 px-4 text-center text-sm font-semibold uppercase w-1/6">Actions</th></tr></thead><tbody id="daily-activity-table-body" class="divide-y divide-gray-200"></tbody></table></div>
                         <p id="no-daily-activities-message" class="text-center text-gray-500 italic mt-6 hidden">No activities recorded for this day.</p>
