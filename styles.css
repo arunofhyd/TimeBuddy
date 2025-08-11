@@ -206,7 +206,7 @@ body {
     cursor: text;
 }
 .activity-text-editable {
-    border-bottom: 1px dashed #e2e8f0;
+    border-bottom: 1px dashed #a0aec0;
 }
 .activity-text-editable:focus, .time-editable:focus {
     border-bottom: 1px solid #3b82f6;
@@ -256,23 +256,23 @@ body {
 
 /* --- DARK MODE STYLES --- */
 body.dark {
-    background-color: #000000;
+    background-color: #000000; /* AMOLED Black */
     color: #e2e8f0;
 }
 body.dark .bg-white {
-    background-color: #111827;
+    background-color: #111827; /* Very dark gray, slightly off-black */
     border-color: #374151;
 }
 body.dark .text-gray-800, body.dark .text-gray-900 {
-    color: #f9fafb;
+    color: #f9fafb; /* Off-white */
 }
 body.dark .text-gray-600, body.dark .text-gray-700 {
-    color: #9ca3af;
+    color: #9ca3af; /* Lighter gray */
 }
 body.dark .text-gray-400 {
     color: #6b7280;
 }
-body.dark .border-gray-300 {
+body.dark .border-gray-200, body.dark .border-gray-300 {
     border-color: #4b5563;
 }
 body.dark .bg-gray-50 {
@@ -306,7 +306,7 @@ body.dark .calendar-day-cell:hover {
     background-color: #374151;
 }
 body.dark .calendar-day-cell.selected-day {
-    background-color: #2563eb;
+    background-color: #2563eb; /* Keep brand blue for selected */
 }
 body.dark .day-number {
     color: #e2e8f0;
@@ -321,21 +321,11 @@ body.dark .icon-btn:hover {
     background-color: #374151;
     border-color: #6b7280;
 }
-
-/* FINAL FIX #1: Forcefully overriding the table row divider color. */
-body.dark .divide-gray-200 > :not([hidden]) ~ :not([hidden]) {
-    border-color: #4b5563 !important;
+body.dark .divide-y > :not([hidden]) ~ :not([hidden]) {
+    border-color: #374151;
 }
-
-/* FINAL FIX #2: Specifically targeting the daily note input in dark mode. */
-body.dark #daily-note-input {
-    background-color: #1f2937;
-    border-color: #4b5563;
-    color: #f9fafb;
-}
-
 body.dark .activity-text-editable:focus, body.dark .time-editable:focus {
-    background-color: #1e40af;
+    background-color: #1e40af; /* Darker blue for focus */
 }
 body.dark .hover\:bg-gray-100:hover {
     background-color: #1f2937;
@@ -346,6 +336,8 @@ body.dark footer a {
 body.dark footer a:hover {
     color: #f9fafb;
 }
+
+/* Month Picker Modal Dark Mode Fixes */
 body.dark #month-grid .bg-gray-100 {
     background-color: #374151;
     color: #f9fafb;
@@ -357,16 +349,15 @@ body.dark #month-grid .bg-blue-500 {
     background-color: #2563eb;
     color: #ffffff;
 }
+
+/* Additional Dark Mode Visibility Fixes */
 body.dark thead th {
-    color: #f9fafb;
+    color: #f9fafb; /* Make table headers white */
 }
 body.dark #google-signin-btn {
-    color: #f9fafb;
+    color: #f9fafb; /* Make Google button text white */
     background-color: #1f2937;
 }
 body.dark #google-signin-btn:hover {
     background-color: #374151;
-}
-body.dark .activity-text-editable {
-    border-bottom-color: #4b5563;
 }
