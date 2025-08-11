@@ -22,6 +22,41 @@ export function setState(newState) {
     state = { ...state, ...newState };
 }
 
+// --- Theme Management ---
+function applyTheme(theme) {
+    const lightIcon = document.getElementById('theme-icon-light');
+    const darkIcon = document.getElementById('theme-icon-dark');
+    if (theme === 'dark') {
+        document.body.classList.add('dark');
+        lightIcon.classList.add('hidden');
+        darkIcon.classList.remove('hidden');
+    } else {
+        document.body.classList.remove('dark');
+        lightIcon.classList.remove('hidden');
+        darkIcon.classList.add('hidden');
+    }
+}
+
+function toggleTheme() {
+    const isDark = document.body.classList.contains('dark');
+    const newTheme = isDark ? 'light' : 'dark';
+    localStorage.setItem('theme', newTheme);
+    applyTheme(newTheme);
+}
+
+function loadTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    if (savedTheme) {
+        applyTheme(savedTheme);
+    } else if (systemPrefersDark) {
+        applyTheme('dark');
+    } else {
+        applyTheme('light');
+    }
+}
+
 // --- Event Listener Setup ---
 function setupEventListeners() {
     // Auth Buttons
@@ -37,6 +72,9 @@ function setupEventListeners() {
     // Add input listeners to remove error state on typing
     emailInput.addEventListener('input', () => setInputErrorState(emailInput, false));
     passwordInput.addEventListener('input', () => setInputErrorState(passwordInput, false));
+
+    // Theme Toggle
+    document.getElementById('theme-toggle-btn').addEventListener('click', toggleTheme);
 
     // View Navigation
     DOM.monthViewBtn.addEventListener('click', () => { setState({ currentView: 'month' }); updateView(); });
@@ -68,7 +106,6 @@ function setupEventListeners() {
     todayBtn.addEventListener('click', async () => {
         setButtonLoadingState(todayBtn, true);
         try {
-            // Add a small delay to ensure the spinner is visible even on fast operations
             await new Promise(resolve => setTimeout(resolve, 50));
             
             const today = new Date();
@@ -136,6 +173,7 @@ function setupEventListeners() {
 function init() {
     initUI(); 
     setupEventListeners();
+    loadTheme(); // Load the theme before initializing auth
     initAuth();
 }
 
