@@ -215,17 +215,7 @@ body {
 .activity-text-editable.editing, .time-editable.editing {
     background-color: #f0f8ff;
 }
-.daily-activity-table-body tr.dragging {
-    opacity: 0.5;
-    background-color: #e0f2fe;
-    border: 1px dashed #3b82f6;
-}
-.daily-activity-table-body tr.drag-over-top {
-    border-top: 2px solid #3b82f6;
-}
-.daily-activity-table-body tr.drag-over-bottom {
-    border-bottom: 2px solid #3b82f6;
-}
+
 @media (max-width: 767px) {
     .main-container {
         padding: 1rem;
