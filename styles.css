@@ -308,6 +308,12 @@ body.dark .calendar-day-cell:hover {
 body.dark .calendar-day-cell.selected-day {
     background-color: #2563eb; /* Keep brand blue for selected */
 }
+body.dark .calendar-day-cell.is-today {
+    border: 2px solid #3b82f6;/* Fix for today's date outline in dark mode */
+}
+body.dark .calendar-day-cell.has-activity {
+    box-shadow: 0 4px 10px rgba(200, 220, 255, 0.08);/* Adds a subtle "glow" shadow to edited days in dark mode */
+}
 body.dark .day-number {
     color: #e2e8f0;
 }
