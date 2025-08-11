@@ -312,7 +312,7 @@ body.dark .calendar-day-cell.is-today {
     border: 2px solid #3b82f6;/* Fix for today's date outline in dark mode */
 }
 body.dark .calendar-day-cell.has-activity {
-    box-shadow: 0 4px 6px rgba(255, 255, 255, 0.08);/* Creates a similar "raised" effect for dark mode */
+    box-shadow: 0 4px 6px rgba(255, 255, 255, 0.15);/* Creates a similar "raised" effect for dark mode */
 }
 body.dark .day-number {
     color: #e2e8f0;
