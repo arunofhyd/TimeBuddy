@@ -49,23 +49,16 @@ const spinner = `<svg class="animate-spin -ml-1 mr-3 h-5 w-5" xmlns="http://www.
 export function setButtonLoadingState(button, isLoading) {
     if (isLoading) {
         button.disabled = true;
-        // Store original content
         button.dataset.originalContent = button.innerHTML;
-        
-        // Get computed size and lock it
         const rect = button.getBoundingClientRect();
         button.style.width = `${rect.width}px`;
         button.style.height = `${rect.height}px`;
-
-        // Set loading content. The inner div helps with centering.
         button.innerHTML = `<div class="flex items-center justify-center w-full h-full">${spinner}<span>Processing...</span></div>`;
     } else {
         button.disabled = false;
-        // Restore original content
         if (button.dataset.originalContent) {
             button.innerHTML = button.dataset.originalContent;
         }
-        // Remove fixed size
         button.style.width = '';
         button.style.height = '';
     }
@@ -226,9 +219,10 @@ function renderDailyActivities() {
         const isFirst = index === 0;
         const isLast = index === dailyActivitiesArray.length - 1;
 
+        // FIX: Removed the conflicting border-b and border-gray-100 classes from the TDs
         row.innerHTML = `
-            <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-900 border-b border-gray-100 cursor-text time-editable" data-time="${activity.time}" contenteditable="true">${activity.time}</td>
-            <td class="py-3 px-4 text-sm text-gray-900 border-b border-gray-100">
+            <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-900 cursor-text time-editable" data-time="${activity.time}" contenteditable="true">${activity.time}</td>
+            <td class="py-3 px-4 text-sm text-gray-900">
                 <div class="activity-text-editable" data-time="${activity.time}" contenteditable="true">${formatTextForDisplay(activity.text)}</div>
             </td>
             <td class="py-3 px-4 text-sm flex space-x-1 justify-center items-center">
