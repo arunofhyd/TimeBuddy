@@ -3,6 +3,7 @@ body {
     font-family: 'Inter', sans-serif;
     background-color: #f0f2f5;
     color: #2d3748;
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
 }
 .main-container {
     display: flex;
@@ -12,6 +13,10 @@ body {
     width: 100%;
     align-items: center;
     padding: 2rem 1rem;
+}
+/* Smooth transitions for all elements */
+* {
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out, border-color 0.3s ease-in-out;
 }
 /* View transition styles */
 .view-container {
@@ -23,7 +28,6 @@ body {
     padding-top: 100%;
     cursor: pointer;
     border-radius: 8px;
-    transition: all 0.2s ease-in-out;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 .calendar-day-content {
@@ -128,7 +132,6 @@ body {
     background-color: #3b82f6;
     color: #ffffff;
     border: 1px solid #3b82f6;
-    transition: all 0.2s ease-in-out;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 .btn-primary:hover {
@@ -139,7 +142,6 @@ body {
     background-color: #e2e8f0;
     color: #4a5568;
     border: 1px solid #e2e8f0;
-    transition: all 0.2s ease-in-out;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 .btn-secondary:hover {
@@ -150,7 +152,6 @@ body {
     background-color: #e53e3e;
     color: #ffffff;
     border: 1px solid #e53e3e;
-    transition: all 0.2s ease-in-out;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 .btn-danger:hover {
@@ -163,7 +164,6 @@ body {
     justify-content: center;
     padding: 0.5rem;
     border-radius: 0.375rem;
-    transition: all 0.2s ease-in-out;
     border: 1px solid transparent;
     color: #4a5568;
 }
@@ -203,7 +203,6 @@ body {
     min-height: 24px;
     outline: none;
     padding-bottom: 2px;
-    transition: border-color 0.2s ease-in-out, background-color 0.2s ease-in-out;
     cursor: text;
 }
 .activity-text-editable {
@@ -253,4 +252,112 @@ body {
         padding-left: 10px;
         padding-right: 10px;
     }
+}
+
+/* --- DARK MODE STYLES --- */
+body.dark {
+    background-color: #000000; /* AMOLED Black */
+    color: #e2e8f0;
+}
+body.dark .bg-white {
+    background-color: #111827; /* Very dark gray, slightly off-black */
+    border-color: #374151;
+}
+body.dark .text-gray-800, body.dark .text-gray-900 {
+    color: #f9fafb; /* Off-white */
+}
+body.dark .text-gray-600, body.dark .text-gray-700 {
+    color: #9ca3af; /* Lighter gray */
+}
+body.dark .text-gray-400 {
+    color: #6b7280;
+}
+body.dark .border-gray-200, body.dark .border-gray-300 {
+    border-color: #4b5563;
+}
+body.dark .bg-gray-50 {
+    background-color: #1f2937;
+}
+body.dark .btn-secondary {
+    background-color: #374151;
+    color: #e2e8f0;
+    border-color: #4b5563;
+}
+body.dark .btn-secondary:hover {
+    background-color: #4b5563;
+}
+body.dark #today-btn {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: #e2e8f0;
+}
+body.dark #today-btn:hover {
+    background-color: #4b5563;
+}
+body.dark .calendar-day-cell.current-month {
+    background-color: #1f2937;
+    border-color: #374151;
+}
+body.dark .calendar-day-cell.other-month {
+    background-color: #111827;
+    border-color: #1f2937;
+}
+body.dark .calendar-day-cell:hover {
+    background-color: #374151;
+}
+body.dark .calendar-day-cell.selected-day {
+    background-color: #2563eb; /* Keep brand blue for selected */
+}
+body.dark .day-number {
+    color: #e2e8f0;
+}
+body.dark .day-note {
+    color: #9ca3af;
+}
+body.dark .icon-btn {
+    color: #9ca3af;
+}
+body.dark .icon-btn:hover {
+    background-color: #374151;
+    border-color: #6b7280;
+}
+body.dark .divide-y > :not([hidden]) ~ :not([hidden]) {
+    border-color: #374151;
+}
+body.dark .activity-text-editable:focus, body.dark .time-editable:focus {
+    background-color: #1e40af; /* Darker blue for focus */
+}
+body.dark .hover\:bg-gray-100:hover {
+    background-color: #1f2937;
+}
+body.dark footer a {
+    color: #9ca3af;
+}
+body.dark footer a:hover {
+    color: #f9fafb;
+}
+
+/* Month Picker Modal Dark Mode Fixes */
+body.dark #month-grid .bg-gray-100 {
+    background-color: #374151;
+    color: #f9fafb;
+}
+body.dark #month-grid .hover\:bg-blue-100:hover {
+    background-color: #4b5563;
+}
+body.dark #month-grid .bg-blue-500 {
+    background-color: #2563eb;
+    color: #ffffff;
+}
+
+/* Additional Dark Mode Visibility Fixes */
+body.dark thead th {
+    color: #f9fafb; /* Make table headers white */
+}
+body.dark #google-signin-btn {
+    color: #f9fafb; /* Make Google button text white */
+    background-color: #1f2937;
+}
+body.dark #google-signin-btn:hover {
+    background-color: #374151;
 }
