@@ -69,6 +69,23 @@ function setupEventListeners() {
     document.getElementById('anon-continue-btn').addEventListener('click', loadOfflineData);
     document.getElementById('sign-out-btn').addEventListener('click', appSignOut);
 
+    // Password Visibility Toggle
+    const passwordToggleBtn = document.getElementById('password-toggle-btn');
+    const eyeIconOpen = document.getElementById('eye-icon-open');
+    const eyeIconClosed = document.getElementById('eye-icon-closed');
+
+    passwordToggleBtn.addEventListener('click', () => {
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            eyeIconOpen.classList.add('hidden');
+            eyeIconClosed.classList.remove('hidden');
+        } else {
+            passwordInput.type = 'password';
+            eyeIconOpen.classList.remove('hidden');
+            eyeIconClosed.classList.add('hidden');
+        }
+    });
+    
     // Add input listeners to remove error state on typing
     emailInput.addEventListener('input', () => setInputErrorState(emailInput, false));
     passwordInput.addEventListener('input', () => setInputErrorState(passwordInput, false));
