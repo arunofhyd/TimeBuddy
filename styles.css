@@ -206,8 +206,8 @@ body {
     cursor: text;
 }
 .activity-text-editable {
-    /* FIX (Light Mode): Changed color to match the common border color for consistency. */
-    border-bottom: 1px dashed #e2e8f0; 
+    /* FIX (Light Mode): Changed color to match common border color for consistency. */
+    border-bottom: 1px dashed #e2e8f0;
 }
 .activity-text-editable:focus, .time-editable:focus {
     border-bottom: 1px solid #3b82f6;
@@ -273,7 +273,8 @@ body.dark .text-gray-600, body.dark .text-gray-700 {
 body.dark .text-gray-400 {
     color: #6b7280;
 }
-body.dark .border-gray-200, body.dark .border-gray-300 {
+/* This rule for border-gray-300 remains, as it's used elsewhere (e.g., login page divider) */
+body.dark .border-gray-300 {
     border-color: #4b5563;
 }
 body.dark .bg-gray-50 {
@@ -322,10 +323,15 @@ body.dark .icon-btn:hover {
     background-color: #374151;
     border-color: #6b7280;
 }
-/* FIX (Dark Mode): Changed color to match the dashed editable line color. This fixes the bright white line issue. */
-body.dark .divide-y > :not([hidden]) ~ :not([hidden]) {
-    border-color: #4b5563; 
+
+/* FINAL FIX (Dark Mode): This rule specifically targets the Tailwind class `divide-gray-200`
+   used in your HTML to create the table row dividers. It overrides the default light
+   color, fixing the bright white line and making it consistent with other elements.
+*/
+body.dark .divide-gray-200 > :not([hidden]) ~ :not([hidden]) {
+    border-color: #4b5563;
 }
+
 body.dark .activity-text-editable:focus, body.dark .time-editable:focus {
     background-color: #1e40af; /* Darker blue for focus */
 }
