@@ -213,13 +213,12 @@ function renderDailyActivities() {
     dailyActivitiesArray.forEach((activity, index) => {
         const row = document.createElement('tr');
         row.className = 'hover:bg-gray-100 transition-colors duration-150';
-        row.draggable = true;
+        // row.draggable = true; // <-- THIS LINE IS REMOVED
         row.dataset.time = activity.time;
 
         const isFirst = index === 0;
         const isLast = index === dailyActivitiesArray.length - 1;
 
-        // FIX: Removed the conflicting border-b and border-gray-100 classes from the TDs
         row.innerHTML = `
             <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-900 cursor-text time-editable" data-time="${activity.time}" contenteditable="true">${activity.time}</td>
             <td class="py-3 px-4 text-sm text-gray-900">
@@ -240,9 +239,7 @@ function renderDailyActivities() {
     });
 
     attachDailyActivityEventListeners();
-    attachDragAndDropListeners();
 }
-
 
 // --- Daily Activity Event Handlers ---
 function attachDailyActivityEventListeners() {
@@ -303,58 +300,6 @@ function handleInlineEditKeydown(event) {
 function handleDeleteButtonClick(event) {
     const timeKey = event.currentTarget.closest('tr').dataset.time;
     deleteActivity(getYYYYMMDD(state.selectedDate), timeKey);
-}
-
-// --- Drag and Drop Handlers ---
-function attachDragAndDropListeners() {
-    DOM.dailyActivityTableBody.querySelectorAll('tr').forEach(row => {
-        row.addEventListener('dragstart', handleDragStart);
-        row.addEventListener('dragover', handleDragOver);
-        row.addEventListener('dragleave', handleDragLeave);
-        row.addEventListener('drop', handleDrop);
-        row.addEventListener('dragend', handleDragEnd);
-    });
-}
-
-function handleDragStart(e) {
-    setState({ draggedItem: e.target.closest('tr') });
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/plain', state.draggedItem.dataset.time);
-    state.draggedItem.classList.add('dragging');
-}
-
-function handleDragOver(e) {
-    e.preventDefault();
-    const targetRow = e.target.closest('tr');
-    if (targetRow && targetRow !== state.draggedItem) {
-        DOM.dailyActivityTableBody.querySelectorAll('.drag-over-top, .drag-over-bottom').forEach(row => row.classList.remove('drag-over-top', 'drag-over-bottom'));
-        const rect = targetRow.getBoundingClientRect();
-        targetRow.classList.add(e.clientY - rect.top < rect.height / 2 ? 'drag-over-top' : 'drag-over-bottom');
-    }
-}
-
-function handleDragLeave(e) {
-    e.target.closest('tr')?.classList.remove('drag-over-top', 'drag-over-bottom');
-}
-
-function handleDrop(e) {
-    e.preventDefault();
-    const targetRow = e.target.closest('tr');
-    if (!targetRow || targetRow === state.draggedItem) return;
-
-    const rect = targetRow.getBoundingClientRect();
-    const dropBefore = e.clientY - rect.top < rect.height / 2;
-    
-    DOM.dailyActivityTableBody.querySelectorAll('.drag-over-top, .drag-over-bottom').forEach(row => row.classList.remove('drag-over-top', 'drag-over-bottom'));
-    DOM.dailyActivityTableBody.insertBefore(state.draggedItem, dropBefore ? targetRow : targetRow.nextSibling);
-    
-    updateActivityOrder();
-}
-
-function handleDragEnd() {
-    state.draggedItem?.classList.remove('dragging');
-    setState({ draggedItem: null });
-    DOM.dailyActivityTableBody.querySelectorAll('.drag-over-top, .drag-over-bottom').forEach(row => row.classList.remove('drag-over-top', 'drag-over-bottom'));
 }
 
 // --- Month Picker ---
