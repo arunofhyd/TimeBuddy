@@ -321,8 +321,9 @@ body.dark .icon-btn:hover {
     background-color: #374151;
     border-color: #6b7280;
 }
+/* FIX: This rule targets the divider lines between table rows */
 body.dark .divide-y > :not([hidden]) ~ :not([hidden]) {
-    border-color: #374151;
+    border-color: #2d3748; /* A more subtle, darker gray */
 }
 body.dark .activity-text-editable:focus, body.dark .time-editable:focus {
     background-color: #1e40af; /* Darker blue for focus */
