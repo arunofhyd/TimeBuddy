@@ -206,7 +206,7 @@ body {
     cursor: text;
 }
 .activity-text-editable {
-    border-bottom: 1px dashed #a0aec0;
+    border-bottom: 1px dashed #d1d5db; /* Lighter, consistent dotted line for light mode */
 }
 .activity-text-editable:focus, .time-editable:focus {
     border-bottom: 1px solid #3b82f6;
@@ -321,9 +321,6 @@ body.dark .icon-btn:hover {
     background-color: #374151;
     border-color: #6b7280;
 }
-body.dark .divide-y > :not([hidden]) ~ :not([hidden]) {
-    border-color: #374151;
-}
 body.dark .activity-text-editable:focus, body.dark .time-editable:focus {
     background-color: #1e40af; /* Darker blue for focus */
 }
@@ -360,4 +357,18 @@ body.dark #google-signin-btn {
 }
 body.dark #google-signin-btn:hover {
     background-color: #374151;
+}
+
+/* --- FIX FOR DIVIDER LINES --- */
+/* This targets the tbody with the divide-y class, which Tailwind uses for row dividers */
+.divide-y > :not([hidden]) ~ :not([hidden]) {
+    border-color: #e5e7eb; /* A nice, subtle gray for light mode */
+}
+body.dark .divide-y > :not([hidden]) ~ :not([hidden]) {
+    border-color: #374151; /* A matching subtle gray for dark mode */
+}
+
+/* Lighter dotted line for dark mode */
+body.dark .activity-text-editable {
+    border-bottom-color: #4b5563; /* More subtle gray */
 }
