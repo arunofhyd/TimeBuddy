@@ -368,3 +368,8 @@ body.dark .divide-y > :not([hidden]) ~ :not([hidden]) {
 body.dark .activity-text-editable {
     border-bottom-color: #4b5563; /* More subtle gray */
 }
+/* This makes the text selection highlight blue in dark mode */
+body.dark ::selection {
+    background-color: #3b82f6; /* The app's primary blue color */
+    color: #ffffff; /* White text for contrast */
+}
