@@ -69,23 +69,17 @@ function setupEventListeners() {
     document.getElementById('anon-continue-btn').addEventListener('click', loadOfflineData);
     document.getElementById('sign-out-btn').addEventListener('click', appSignOut);
 
-    // --- Password Visibility Toggle ---
-        const passwordInput = document.getElementById('password-input');
-        const passwordToggleBtn = document.getElementById('password-toggle-btn');
-        const passwordToggleIcon = document.getElementById('password-toggle-icon');
-        
-        passwordToggleBtn.addEventListener('click', () => {
-            // Check the current type of the input field
-            const isPassword = passwordInput.type === 'password';
-        
-            // Toggle the input type
-            passwordInput.type = isPassword ? 'text' : 'password';
-        
-            // Toggle the Font Awesome icon classes
-            passwordToggleIcon.classList.toggle('fa-eye-slash', !isPassword);
-            passwordToggleIcon.classList.toggle('fa-eye', isPassword);
-        });
-    
+    // Password Visibility Toggle
+    const passwordToggleBtn = document.getElementById('password-toggle-btn');
+    const passwordToggleIcon = document.getElementById('password-toggle-icon');
+
+    passwordToggleBtn.addEventListener('click', () => {
+        const isPassword = passwordInput.type === 'password';
+        passwordInput.type = isPassword ? 'text' : 'password';
+        passwordToggleIcon.classList.toggle('fa-eye-slash', !isPassword);
+        passwordToggleIcon.classList.toggle('fa-eye', isPassword);
+    });
+
     // Add input listeners to remove error state on typing
     emailInput.addEventListener('input', () => setInputErrorState(emailInput, false));
     passwordInput.addEventListener('input', () => setInputErrorState(passwordInput, false));
@@ -190,7 +184,7 @@ function setupEventListeners() {
 function init() {
     initUI(); 
     setupEventListeners();
-    loadTheme(); // Load the theme before initializing auth
+    loadTheme();
     initAuth();
 }
 
