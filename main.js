@@ -69,21 +69,21 @@ function setupEventListeners() {
     document.getElementById('anon-continue-btn').addEventListener('click', loadOfflineData);
     document.getElementById('sign-out-btn').addEventListener('click', appSignOut);
 
-    // Password Visibility Toggle
+    // --- Password Visibility Toggle ---
+        const passwordInput = document.getElementById('password-input');
         const passwordToggleBtn = document.getElementById('password-toggle-btn');
-        const eyeIconOpen = document.getElementById('eye-icon-open');
-        const eyeIconClosed = document.getElementById('eye-icon-closed');
-    
+        const passwordToggleIcon = document.getElementById('password-toggle-icon');
+        
         passwordToggleBtn.addEventListener('click', () => {
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                eyeIconOpen.classList.add('hidden');
-                eyeIconClosed.classList.remove('hidden');
-            } else {
-                passwordInput.type = 'password';
-                eyeIconOpen.classList.remove('hidden');
-                eyeIconClosed.classList.add('hidden');
-            }
+            // Check the current type of the input field
+            const isPassword = passwordInput.type === 'password';
+        
+            // Toggle the input type
+            passwordInput.type = isPassword ? 'text' : 'password';
+        
+            // Toggle the Font Awesome icon classes
+            passwordToggleIcon.classList.toggle('fa-eye-slash', !isPassword);
+            passwordToggleIcon.classList.toggle('fa-eye', isPassword);
         });
     
     // Add input listeners to remove error state on typing
