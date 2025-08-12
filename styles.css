@@ -318,7 +318,7 @@ body.dark .icon-btn:hover {
     border-color: #6b7280;
 }
 body.dark .activity-text-editable:focus, body.dark .time-editable:focus {
-    background-color: #3b82f6; /* blue for focus */
+    background-color: #374151; /* subtle gray for focus */
 }
 body.dark .hover\:bg-gray-100:hover {
     background-color: #1f2937;
