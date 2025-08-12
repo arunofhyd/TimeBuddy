@@ -349,5 +349,7 @@ function formatDateForDisplay(dateString) {
 }
 
 function formatTextForDisplay(text) {
-    return (text || "").replace(/\n/g, '<br>');
+    const tempDiv = document.createElement('div');
+    tempDiv.textContent = text || '';
+    return tempDiv.innerHTML.replace(/\n/g, '<br>');
 }
