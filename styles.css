@@ -373,3 +373,7 @@ body.dark ::selection {
     background-color: #3b82f6; /* The app's primary blue color */
     color: #ffffff; /* White text for contrast */
 }
+/* Centers the login box vertically on the page */
+.main-container.is-login {
+    justify-content: center;
+}
