@@ -5,14 +5,18 @@ body {
     color: #2d3748;
     transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
 }
+/* Find and replace the .main-container rule */
 .main-container {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: center; /* This is now the default */
     min-height: 100vh;
-    width: 100%;
-    align-items: center;
-    padding: 2rem 1rem;
+    padding: 1rem;
+}
+
+/* This new rule will align the main app to the top */
+.main-container.is-app-view {
+    justify-content: space-between;
 }
 /* Smooth transitions for all elements */
 * {
