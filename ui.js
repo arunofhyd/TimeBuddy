@@ -66,6 +66,7 @@ export function setButtonLoadingState(button, isLoading) {
 
 // --- View Management with Fading Transitions ---
 export function showLoginView() {
+    document.querySelector('.main-container').classList.add('is-login'); // Add this line
     DOM.appView.classList.add('opacity-0', 'scale-95');
     setTimeout(() => {
         DOM.appView.classList.add('hidden');
@@ -75,6 +76,7 @@ export function showLoginView() {
 }
 
 export function showAppView() {
+    document.querySelector('.main-container').classList.remove('is-login'); // Add this line
     DOM.loginView.classList.add('opacity-0', 'scale-95');
     setTimeout(() => {
         DOM.loginView.classList.add('hidden');
