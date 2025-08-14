@@ -76,7 +76,7 @@ export function showLoginView() {
 }
 
 export function showAppView() {
-    loginView.classList.add('opacity-0', 'scale-95');
+    DOM.loginView.classList.add('opacity-0', 'scale-95');
     setTimeout(() => {
         document.querySelector('.main-container').classList.add('is-app-view');
         DOM.loginView.classList.add('hidden');
@@ -176,7 +176,7 @@ function renderCalendar() {
             setState({ selectedDate: date, currentView: 'day' });
             updateView();
         });
-        DOM.calendarView.appendChild(dayCell);
+        DOM.calendarView.appendChild(emptyCell);
     }
 
     const totalCells = firstDayOfMonth.getDay() + lastDayOfMonth.getDate();
