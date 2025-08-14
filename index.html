@@ -96,6 +96,18 @@
         .activity-text-editable, .time-editable { min-height: 24px; outline: none; padding-bottom: 2px; cursor: text; border-bottom: 1px dashed #d1d5db; }
         .activity-text-editable:focus, .time-editable:focus { border-bottom: 1px solid #3b82f6; background-color: #f0f8ff; }
 
+        /* --- Double-Click Confirmation Style --- */
+        .confirm-action {
+            background-color: #fef2f2 !important; /* light red */
+            border-color: #ef4444 !important; /* red */
+            color: #ef4444 !important;
+        }
+        body.dark .confirm-action {
+            background-color: #3f1a1a !important;
+            border-color: #ef4444 !important;
+            color: #fca5a5 !important;
+        }
+
         @media (max-width: 767px) {
             .main-container { padding: 1rem; }
             #calendar-view { gap: 0.25rem; }
@@ -305,6 +317,7 @@
         unsubscribeFromFirestore: null,
         editingInlineTimeKey: null,
         pickerYear: new Date().getFullYear(),
+        confirmAction: {}, // For double-click confirmation
     };
 
     // --- State Management ---
@@ -948,12 +961,10 @@
                     DOM.appView.style.opacity = '1';
                     updateView();
                 } else {
-                    // This path is for a fresh visit with no user logged in.
                     DOM.loginView.classList.remove('hidden');
                     DOM.loginView.style.opacity = '1';
                 }
             }
-            // Fade in the whole page content now that auth is resolved
             DOM.contentWrapper.style.opacity = '1';
             DOM.footer.style.opacity = '1';
         });
@@ -1098,8 +1109,42 @@
         }
     }
 
+    // --- Double-Click Confirmation Helper ---
+    function setupDoubleClickConfirm(element, actionKey, message, callback) {
+        element.addEventListener('click', (e) => {
+            if (state.confirmAction[actionKey]) {
+                callback(e);
+                delete state.confirmAction[actionKey];
+                element.classList.remove('confirm-action');
+            } else {
+                Object.keys(state.confirmAction).forEach(key => {
+                    const el = state.confirmAction[key].element;
+                    if (el) el.classList.remove('confirm-action');
+                });
+                state.confirmAction = {};
+
+                state.confirmAction[actionKey] = {
+                    element: element,
+                    timeoutId: setTimeout(() => {
+                        element.classList.remove('confirm-action');
+                        delete state.confirmAction[actionKey];
+                    }, 3000)
+                };
+                element.classList.add('confirm-action');
+                showMessage(message, 'info');
+            }
+        });
+    }
+
     // --- Daily Activity Event Handlers ---
     function attachDailyActivityEventListeners() {
+        DOM.dailyActivityTableBody.innerHTML = ''; // Clear previous listeners by clearing content
+        const dateKey = getYYYYMMDD(state.selectedDate);
+        const dailyActivitiesMap = state.allStoredData[dateKey] || {};
+        
+        // Re-render rows to ensure event listeners are fresh
+        renderDailyActivities();
+
         DOM.dailyActivityTableBody.querySelectorAll('.activity-text-editable, .time-editable').forEach(el => {
             el.addEventListener('click', handleInlineEditClick);
             el.addEventListener('blur', handleInlineEditBlur);
@@ -1107,7 +1152,15 @@
         });
         DOM.dailyActivityTableBody.querySelectorAll('.move-up-btn').forEach(btn => btn.addEventListener('click', handleMoveUpClick));
         DOM.dailyActivityTableBody.querySelectorAll('.move-down-btn').forEach(btn => btn.addEventListener('click', handleMoveDownClick));
-        DOM.dailyActivityTableBody.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', handleDeleteButtonClick));
+        DOM.dailyActivityTableBody.querySelectorAll('.delete-btn').forEach(btn => {
+            const timeKey = btn.closest('tr').dataset.time;
+            setupDoubleClickConfirm(
+                btn,
+                `delete-${timeKey}`,
+                'Double-click to confirm deletion.',
+                () => deleteActivity(getYYYYMMDD(state.selectedDate), timeKey)
+            );
+        });
     }
 
     function handleMoveUpClick(event) {
@@ -1154,11 +1207,6 @@
         }
     }
 
-    function handleDeleteButtonClick(event) {
-        const timeKey = event.currentTarget.closest('tr').dataset.time;
-        deleteActivity(getYYYYMMDD(state.selectedDate), timeKey);
-    }
-
     // --- Event Listener Setup ---
     function setupEventListeners() {
         const emailInput = document.getElementById('email-input');
@@ -1168,7 +1216,13 @@
         DOM.forgotPasswordBtn.addEventListener('click', () => resetPassword(emailInput.value));
         DOM.googleSigninBtn.addEventListener('click', signInWithGoogle);
         document.getElementById('anon-continue-btn').addEventListener('click', loadOfflineData);
-        document.getElementById('sign-out-btn').addEventListener('click', appSignOut);
+        
+        setupDoubleClickConfirm(
+            document.getElementById('sign-out-btn'),
+            'signOut',
+            'Double-click to confirm sign out.',
+            appSignOut
+        );
 
         const passwordToggleBtn = document.getElementById('password-toggle-btn');
         const passwordToggleIcon = document.getElementById('password-toggle-icon');
