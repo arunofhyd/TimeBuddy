@@ -36,11 +36,6 @@
             transition: opacity 0.3s ease-in-out;
         }
         
-        /* Disable transitions on initial page load to prevent flash */
-        body.pre-load .view-container {
-            transition: none;
-        }
-
         /* --- Calendar Styles --- */
         .calendar-day-cell {
             position: relative;
@@ -159,7 +154,7 @@
         body.dark ::selection { background-color: #3b82f6; color: #ffffff; }
     </style>
 </head>
-<body class="pre-load">
+<body>
 
 <div class="main-container">
     <div id="content-wrapper" class="w-full">
@@ -167,7 +162,7 @@
             <span id="message-text" class="block sm:inline font-medium"></span>
         </div>
 
-        <div id="login-view" class="view-container w-full max-w-md mx-auto hidden">
+        <div id="login-view" class="view-container w-full max-w-md mx-auto hidden" style="opacity: 0;">
             <div class="bg-white rounded-xl border border-gray-200 shadow-2xl p-8 text-center">
                 <h1 class="text-5xl font-extrabold text-gray-800 tracking-tight mb-4">TimeBuddy</h1>
                 <p class="text-gray-600 mb-6">Your Personal Time Tracker.</p>
@@ -212,7 +207,7 @@
             </div>
         </div>
 
-        <div id="app-view" class="view-container w-full max-w-4xl mx-auto hidden">
+        <div id="app-view" class="view-container w-full max-w-4xl mx-auto hidden" style="opacity: 0;">
              <div class="bg-white rounded-xl border border-gray-200 shadow-2xl p-6 md:p-8">
                 <div class="flex justify-between items-center mb-6">
                     <button id="theme-toggle-btn" class="icon-btn" title="Toggle Theme">
@@ -321,6 +316,7 @@
         editingInlineTimeKey: null,
         draggedItem: null,
         pickerYear: new Date().getFullYear(),
+        isInitialDataLoaded: false,
     };
 
     // --- State Management ---
@@ -420,6 +416,7 @@
             button.disabled = false;
             if (button.dataset.originalContent) {
                 button.innerHTML = button.dataset.originalContent;
+                delete button.dataset.originalContent;
             }
             button.style.width = '';
             button.style.height = '';
@@ -474,7 +471,7 @@
     
     // --- Main View Rendering ---
     function updateView() {
-        if (!DOM.appView || (DOM.appView.classList.contains('hidden') && DOM.loginView.classList.contains('hidden'))) return;
+        if (!DOM.appView || !state.isInitialDataLoaded) return;
 
         const isMonthView = state.currentView === 'month';
         DOM.monthViewBtn.classList.toggle('btn-primary', isMonthView);
@@ -701,8 +698,10 @@
         const unsubscribe = onSnapshot(userDocRef, (doc) => {
             const data = doc.exists() ? doc.data() : {};
             setState({ allStoredData: data });
-            if (state.isOnlineMode) {
-                updateView();
+            
+            if (!state.isInitialDataLoaded) {
+                setState({ isInitialDataLoaded: true });
+                updateView(); // Render the view for the first time after data is loaded
             }
         });
         setState({ unsubscribeFromFirestore: unsubscribe });
@@ -831,7 +830,7 @@
     function loadOfflineData() {
         localStorage.setItem('sessionMode', 'offline');
         const data = loadDataFromLocalStorage();
-        setState({ allStoredData: data, isOnlineMode: false, userId: null });
+        setState({ allStoredData: data, isOnlineMode: false, userId: null, isInitialDataLoaded: true });
         showAppView();
         setTimeout(updateView, 0);
     }
@@ -1023,7 +1022,7 @@
         if (state.unsubscribeFromFirestore) {
             state.unsubscribeFromFirestore();
         }
-        setState({ userId: user.uid, isOnlineMode: true });
+        setState({ userId: user.uid, isOnlineMode: true, isInitialDataLoaded: false });
         DOM.userIdDisplay.textContent = `User ID: ${user.uid}`;
         subscribeToData(user.uid);
         showAppView();
@@ -1039,15 +1038,15 @@
             allStoredData: {},
             userId: null,
             isOnlineMode: false,
-            unsubscribeFromFirestore: null
+            unsubscribeFromFirestore: null,
+            isInitialDataLoaded: false,
         });
 
         showLoginView();
     }
 
     function initAuth() {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            unsubscribe(); 
+        onAuthStateChanged(auth, (user) => {
             if (user) {
                 handleUserLogin(user);
             } else {
@@ -1055,14 +1054,9 @@
                 if (sessionMode === 'offline') {
                     loadOfflineData();
                 } else {
-                    // Show login view without transition on initial load
-                    document.querySelector('.main-container').classList.remove('is-app-view');
-                    DOM.loginView.classList.remove('hidden');
-                    DOM.loginView.style.opacity = '1';
+                    handleUserLogout();
                 }
             }
-            // Remove pre-load class to enable transitions for subsequent actions
-            setTimeout(() => document.body.classList.remove('pre-load'), 50);
         });
     }
 
@@ -1083,8 +1077,7 @@
 
         setButtonLoadingState(button, true);
         try {
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            // onAuthStateChanged will handle the login flow
+            await createUserWithEmailAndPassword(auth, email, password);
         } catch (error) {
             if (error.code === 'auth/email-already-in-use') {
                 showMessage("An account already exists with this email. Please sign in instead.", 'error');
@@ -1113,8 +1106,7 @@
 
         setButtonLoadingState(button, true);
         try {
-            const userCredential = await signInWithEmailAndPassword(auth, email, password);
-            // onAuthStateChanged will handle the login flow
+            await signInWithEmailAndPassword(auth, email, password);
         } catch (error) {
             if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
                 showMessage("Incorrect email or password. Please try again.", 'error');
@@ -1148,8 +1140,7 @@
         const button = DOM.googleSigninBtn;
         setButtonLoadingState(button, true);
         try {
-            const result = await signInWithPopup(auth, provider);
-            // onAuthStateChanged will handle the login flow
+            await signInWithPopup(auth, provider);
         } catch (error) {
             showMessage(`Google sign-in failed: ${error.message}`, 'error');
         } finally {
@@ -1158,15 +1149,10 @@
     }
 
     async function appSignOut() {
-        if (state.isOnlineMode) {
-            try {
-                await signOut(auth);
-                // onAuthStateChanged will handle the logout flow
-            } catch (error) {
-                showMessage(`Sign-out failed: ${error.message}`, 'error');
-            }
-        } else {
-            handleUserLogout();
+        try {
+            await signOut(auth);
+        } catch (error) {
+            showMessage(`Sign-out failed: ${error.message}`, 'error');
         }
     }
 
