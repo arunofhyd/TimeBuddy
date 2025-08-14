@@ -335,6 +335,7 @@
             footer: document.querySelector('footer'),
             loginView: document.getElementById('login-view'),
             appView: document.getElementById('app-view'),
+            loadingView: document.getElementById('loading-view'),
             userIdDisplay: document.getElementById('user-id-display'),
             messageDisplay: document.getElementById('message-display'),
             messageText: document.getElementById('message-text'),
@@ -420,8 +421,10 @@
         }
         setState({ userId: user.uid, isOnlineMode: true });
         DOM.userIdDisplay.textContent = `User ID: ${user.uid}`;
-        subscribeToData(user.uid);
-        switchView(DOM.appView, DOM.loginView);
+        switchView(DOM.loadingView, DOM.loginView);
+        subscribeToData(user.uid, () => {
+            switchView(DOM.appView, DOM.loadingView, updateView);
+        });
     }
 
     function showMessage(msg, type = 'info') {
@@ -617,12 +620,18 @@
     }
 
     // --- Data Functions ---
-    function subscribeToData(userId) {
+    async function subscribeToData(userId, callback) {
         const userDocRef = doc(db, "users", userId);
         const unsubscribe = onSnapshot(userDocRef, (doc) => {
             const data = doc.exists() ? doc.data() : {};
             setState({ allStoredData: data });
-            updateView();
+            
+            updateView(); 
+            
+            if (callback) {
+                callback();
+                callback = null;
+            }
         });
         setState({ unsubscribeFromFirestore: unsubscribe });
     }
@@ -748,7 +757,7 @@
         localStorage.setItem('sessionMode', 'offline');
         const data = loadDataFromLocalStorage();
         setState({ allStoredData: data, isOnlineMode: false, userId: null });
-        switchView(DOM.appView, DOM.loginView, updateView);
+        switchView(DOM.appView, DOM.loginView);
     }
 
     async function resetAllData() {
@@ -948,7 +957,7 @@
 
     function initAuth() {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
-            unsubscribe(); 
+            unsubscribe();
             if (user) {
                 handleUserLogin(user);
             } else {
@@ -1305,7 +1314,7 @@
 
     // --- App Initialization ---
     function init() {
-        initUI(); 
+        initUI();
         setupEventListeners();
         loadTheme();
         initAuth();
