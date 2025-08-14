@@ -44,37 +44,45 @@ export function setInputErrorState(inputElement, hasError) {
 }
 
 // --- Button Loading State ---
-const spinner = `<svg class="animate-spin -ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
-
 export function setButtonLoadingState(button, isLoading) {
+    const spinner = button.querySelector('.fa-spinner');
+    const content = button.querySelector('.button-content');
+    const googleIcon = button.querySelector('.google-icon');
+
     if (isLoading) {
-        button.disabled = true;
-        button.dataset.originalContent = button.innerHTML;
-        const rect = button.getBoundingClientRect();
-        button.style.width = `${rect.width}px`;
-        button.style.height = `${rect.height}px`;
-        button.innerHTML = `<div class="flex items-center justify-center w-full h-full">${spinner}<span>Processing...</span></div>`;
-    } else {
-        button.disabled = false;
-        if (button.dataset.originalContent) {
-            button.innerHTML = button.dataset.originalContent;
+        if (content) content.classList.add('hidden');
+        if (googleIcon && button.id !== 'google-signin-btn') {
+            googleIcon.classList.add('hidden');
         }
-        button.style.width = '';
-        button.style.height = '';
+        if (spinner) spinner.classList.remove('hidden');
+        button.disabled = true;
+    } else {
+        if (content) content.classList.remove('hidden');
+        if (googleIcon) googleIcon.classList.remove('hidden');
+        if (spinner) spinner.classList.add('hidden');
+        button.disabled = false;
     }
 }
 
 // --- View Management with Fading Transitions ---
 export function showLoginView() {
-    document.querySelector('.main-container').classList.remove('is-app-view'); // Remove the app view class
-    DOM.appView.classList.add('hidden');
-    DOM.loginView.classList.remove('hidden');
+    document.querySelector('.main-container').classList.remove('is-app-view');
+    DOM.appView.classList.add('opacity-0', 'scale-95');
+    setTimeout(() => {
+        DOM.appView.classList.add('hidden');
+        DOM.loginView.classList.remove('hidden');
+        DOM.loginView.classList.remove('opacity-0', 'scale-95');
+    }, 300);
 }
 
 export function showAppView() {
-    document.querySelector('.main-container').classList.add('is-app-view'); // Add the app view class
-    DOM.loginView.classList.add('hidden');
-    DOM.appView.classList.remove('hidden');
+    loginView.classList.add('opacity-0', 'scale-95');
+    setTimeout(() => {
+        document.querySelector('.main-container').classList.add('is-app-view');
+        DOM.loginView.classList.add('hidden');
+        DOM.appView.classList.remove('hidden');
+        DOM.appView.classList.remove('opacity-0', 'scale-95');
+    }, 300);
 }
 
 export function handleUserLogin(user) {
@@ -207,7 +215,6 @@ function renderDailyActivities() {
     dailyActivitiesArray.forEach((activity, index) => {
         const row = document.createElement('tr');
         row.className = 'hover:bg-gray-100 transition-colors duration-150';
-        // row.draggable = true; // <-- THIS LINE IS REMOVED
         row.dataset.time = activity.time;
 
         const isFirst = index === 0;
@@ -234,6 +241,7 @@ function renderDailyActivities() {
 
     attachDailyActivityEventListeners();
 }
+
 
 // --- Daily Activity Event Handlers ---
 function attachDailyActivityEventListeners() {
