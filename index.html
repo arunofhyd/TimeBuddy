@@ -7,13 +7,19 @@
     <title>TimeBuddy</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Link to the Font Awesome library -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
 <div class="main-container">
-    <main id="content-wrapper">
+    <div id="content-wrapper" class="w-full">
+        <!-- Message display is now a sibling to both views, so it's never hidden -->
+        <div id="message-display" role="alert">
+            <span id="message-text" class="block sm:inline font-medium"></span>
+        </div>
+
         <!-- Login View -->
         <div id="login-view" class="view-container w-full max-w-md mx-auto">
             <div class="bg-white rounded-xl border border-gray-200 shadow-2xl p-8 text-center">
@@ -22,9 +28,11 @@
                 
                 <div class="space-y-4 text-left mb-2">
                     <input type="email" id="email-input" placeholder="Email" class="w-full px-4 py-2.5 text-base text-gray-800 bg-gray-50 border-2 border-gray-200 rounded-lg shadow-inner focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all">
+                    
                     <div class="relative">
                         <input type="password" id="password-input" placeholder="Password" class="w-full px-4 py-2.5 text-base text-gray-800 bg-gray-50 border-2 border-gray-200 rounded-lg shadow-inner focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all">
                         <button type="button" id="password-toggle-btn" class="absolute inset-y-0 right-0 flex items-center px-4 text-gray-600">
+                            <!-- This is the new icon that will be toggled -->
                             <i id="password-toggle-icon" class="fas fa-eye"></i>
                         </button>
                     </div>
@@ -33,14 +41,8 @@
                     <button id="forgot-password-btn" class="text-sm text-blue-600 hover:underline focus:outline-none">Forgot Password?</button>
                 </div>
                 <div class="grid grid-cols-2 gap-4 mb-4">
-                    <button id="email-signin-btn" class="w-full btn-primary py-3 rounded-lg font-semibold flex items-center justify-center">
-                        <i class="fas fa-spinner fa-spin hidden"></i>
-                        <span class="button-content">Sign In</span>
-                    </button>
-                    <button id="email-signup-btn" class="w-full btn-secondary py-3 rounded-lg font-semibold flex items-center justify-center">
-                        <i class="fas fa-spinner fa-spin hidden"></i>
-                        <span class="button-content">Sign Up</span>
-                    </button>
+                    <button id="email-signin-btn" class="w-full btn-primary py-3 rounded-lg font-semibold flex items-center justify-center">Sign In</button>
+                    <button id="email-signup-btn" class="w-full btn-secondary py-3 rounded-lg font-semibold flex items-center justify-center">Sign Up</button>
                 </div>
 
                 <div class="relative flex py-4 items-center">
@@ -51,11 +53,8 @@
 
                 <div class="space-y-4">
                     <button id="google-signin-btn" class="w-full bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 py-3 px-4 rounded-lg flex items-center justify-center text-lg font-semibold transition-colors">
-                        <div class="button-content flex items-center justify-center">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Google_Favicon_2025.svg" class="w-6 h-6 mr-3 google-icon">
-                            <span>Continue with Google</span>
-                        </div>
-                        <i class="fas fa-spinner fa-spin hidden"></i>
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Google_Favicon_2025.svg" class="w-6 h-6 mr-3" alt="Google icon">
+                        Continue with Google
                     </button>
                     <button id="anon-continue-btn" class="w-full btn-secondary py-2 px-4 rounded-lg text-lg font-semibold">
                         <div class="flex flex-col items-center">
@@ -72,6 +71,7 @@
         <div id="app-view" class="view-container w-full max-w-4xl mx-auto hidden">
              <div class="bg-white rounded-xl border border-gray-200 shadow-2xl p-6 md:p-8">
                 <div class="flex justify-between items-center mb-6">
+                    <!-- Theme Toggle Button -->
                     <button id="theme-toggle-btn" class="icon-btn" title="Toggle Theme">
                         <svg id="theme-icon-light" class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                         <svg id="theme-icon-dark" class="w-7 h-7 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
@@ -101,17 +101,48 @@
                 </div>
             </div>
         </div>
-    </main>
-    <footer class="py-4 text-center">
-        <a href="mailto:arunthomas04042001@gmail.com" class="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-blue-600">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-            <span>Reach out to the developer</span>
-        </a>
-    </footer>
+    </div>
+    <footer class="mt-10 text-center"><a href="mailto:arunthomas04042001@gmail.com" class="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-blue-600"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg><span>Reach out to the developer</span></a></footer>
 </div>
 
-<div id="message-display" role="alert">
-    <span id="message-text" class="block sm:inline font-medium"></span>
+<!-- Modals -->
+<div id="hourly-prompt-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 modal-backdrop">
+    <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md">
+        <h2 class="text-2xl font-bold mb-6 text-center">Time to Log Activity!</h2>
+        <p class="text-lg mb-4 text-center">What did you do in the last hour?</p>
+        <textarea id="hourly-activity-input" class="w-full p-3 border rounded-md min-h-[100px]"></textarea>
+        <div class="flex justify-end mt-6 space-x-3">
+            <button id="close-hourly-prompt-modal-btn" class="px-5 py-2 btn-secondary rounded-lg">Close</button>
+            <button id="save-hourly-activity-btn" class="px-5 py-2 btn-primary rounded-lg">Save</button>
+        </div>
+    </div>
+</div>
+<div id="month-picker-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 modal-backdrop">
+    <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md">
+        <div class="flex justify-between items-center mb-6">
+            <button id="prev-year-btn" class="p-2 btn-secondary rounded-full">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path></svg>
+            </button>
+            <h3 id="picker-year-display" class="text-2xl font-semibold">2023</h3>
+            <button id="next-year-btn" class="p-2 btn-secondary rounded-full">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M6 5l7 7-7 7"></path></svg>
+            </button>
+        </div>
+        <div id="month-grid" class="grid grid-cols-3 gap-3"></div>
+        <div class="flex justify-end mt-6">
+            <button id="close-month-picker-btn" class="px-5 py-2 btn-secondary rounded-lg">Close</button>
+        </div>
+    </div>
+</div>
+<div id="confirm-reset-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 modal-backdrop">
+    <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md">
+        <h2 class="text-2xl font-bold mb-4 text-center">Are you sure?</h2>
+        <p id="reset-modal-text" class="text-gray-700 mb-6 text-center"></p>
+        <div class="flex justify-end mt-6 space-x-3">
+            <button id="cancel-reset-btn" class="px-5 py-2 btn-secondary rounded-lg">Cancel</button>
+            <button id="confirm-reset-btn" class="px-5 py-2 btn-danger rounded-lg">Confirm Reset</button>
+        </div>
+    </div>
 </div>
 
 <script type="module" src="main.js"></script>
