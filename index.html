@@ -379,7 +379,7 @@
         }
     }
 
-    function switchView(viewToShow, viewToHide) {
+    function switchView(viewToShow, viewToHide, callback) {
         const mainContainer = document.querySelector('.main-container');
         
         viewToHide.style.opacity = '0';
@@ -395,6 +395,7 @@
             
             setTimeout(() => {
                 viewToShow.style.opacity = '1';
+                if (callback) callback();
             }, 20);
         }, 300);
     }
@@ -734,8 +735,7 @@
         localStorage.setItem('sessionMode', 'offline');
         const data = loadDataFromLocalStorage();
         setState({ allStoredData: data, isOnlineMode: false, userId: null });
-        switchView(DOM.appView, DOM.loginView);
-        setTimeout(updateView, 0);
+        switchView(DOM.appView, DOM.loginView, updateView);
     }
 
     async function resetAllData() {
@@ -941,7 +941,12 @@
             } else {
                 const sessionMode = localStorage.getItem('sessionMode');
                 if (sessionMode === 'offline') {
-                    loadOfflineData();
+                    const data = loadDataFromLocalStorage();
+                    setState({ allStoredData: data, isOnlineMode: false, userId: null });
+                    document.querySelector('.main-container').classList.add('is-app-view');
+                    DOM.appView.classList.remove('hidden');
+                    DOM.appView.style.opacity = '1';
+                    updateView();
                 } else {
                     // This path is for a fresh visit with no user logged in.
                     DOM.loginView.classList.remove('hidden');
