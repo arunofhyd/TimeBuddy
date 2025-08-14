@@ -76,7 +76,7 @@ export function showLoginView() {
 }
 
 export function showAppView() {
-    DOM.loginView.classList.add('opacity-0', 'scale-95');
+    loginView.classList.add('opacity-0', 'scale-95');
     setTimeout(() => {
         document.querySelector('.main-container').classList.add('is-app-view');
         DOM.loginView.classList.add('hidden');
