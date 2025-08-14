@@ -33,7 +33,7 @@
         
         /* --- View Transitions --- */
         .view-container {
-            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+            transition: opacity 0.3s ease-in-out;
         }
         
         /* --- Calendar Styles --- */
@@ -162,7 +162,7 @@
             <span id="message-text" class="block sm:inline font-medium"></span>
         </div>
 
-        <div id="login-view" class="view-container w-full max-w-md mx-auto hidden">
+        <div id="login-view" class="view-container w-full max-w-md mx-auto hidden" style="opacity: 0;">
             <div class="bg-white rounded-xl border border-gray-200 shadow-2xl p-8 text-center">
                 <h1 class="text-5xl font-extrabold text-gray-800 tracking-tight mb-4">TimeBuddy</h1>
                 <p class="text-gray-600 mb-6">Your Personal Time Tracker.</p>
@@ -207,7 +207,7 @@
             </div>
         </div>
 
-        <div id="app-view" class="view-container w-full max-w-4xl mx-auto hidden">
+        <div id="app-view" class="view-container w-full max-w-4xl mx-auto hidden" style="opacity: 0;">
              <div class="bg-white rounded-xl border border-gray-200 shadow-2xl p-6 md:p-8">
                 <div class="flex justify-between items-center mb-6">
                     <button id="theme-toggle-btn" class="icon-btn" title="Toggle Theme">
@@ -388,15 +388,25 @@
     }
 
     function showLoginView() {
-        document.querySelector('.main-container').classList.remove('is-app-view');
-        DOM.appView.classList.add('hidden');
-        DOM.loginView.classList.remove('hidden');
+        const mainContainer = document.querySelector('.main-container');
+        DOM.appView.style.opacity = '0';
+        setTimeout(() => {
+            DOM.appView.classList.add('hidden');
+            mainContainer.classList.remove('is-app-view');
+            DOM.loginView.classList.remove('hidden');
+            setTimeout(() => { DOM.loginView.style.opacity = '1'; }, 20);
+        }, 300);
     }
 
     function showAppView() {
-        document.querySelector('.main-container').classList.add('is-app-view');
-        DOM.loginView.classList.add('hidden');
-        DOM.appView.classList.remove('hidden');
+        const mainContainer = document.querySelector('.main-container');
+        DOM.loginView.style.opacity = '0';
+        setTimeout(() => {
+            DOM.loginView.classList.add('hidden');
+            mainContainer.classList.add('is-app-view');
+            DOM.appView.classList.remove('hidden');
+            setTimeout(() => { DOM.appView.style.opacity = '1'; }, 20);
+        }, 300);
     }
 
     function handleUserLogin(user) {
