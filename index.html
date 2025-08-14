@@ -21,7 +21,7 @@
         .main-container {
             display: flex;
             flex-direction: column;
-            justify-content: center; /* Default for login */
+            justify-content: center; /* Default for login and loading */
             min-height: 100vh;
             padding: 1rem;
         }
@@ -164,6 +164,12 @@
             <span id="message-text" class="block sm:inline font-medium"></span>
         </div>
 
+        <div id="loading-view" class="view-container w-full max-w-md mx-auto text-center">
+            <div class="flex flex-col items-center justify-center min-h-[50vh]">
+                <i class="fas fa-spinner fa-spin text-4xl text-blue-500"></i>
+            </div>
+        </div>
+
         <div id="login-view" class="view-container w-full max-w-md mx-auto hidden">
             <div class="bg-white rounded-xl border border-gray-200 shadow-2xl p-8 text-center">
                 <h1 class="text-5xl font-extrabold text-gray-800 tracking-tight mb-4">TimeBuddy</h1>
@@ -206,12 +212,6 @@
                     </button>
                 </div>
                  <p id="user-id-display" class="text-xs text-gray-400 mt-6 break-all"></p>
-            </div>
-        </div>
-
-        <div id="loading-view" class="view-container w-full max-w-md mx-auto hidden text-center">
-            <div class="flex flex-col items-center justify-center min-h-[50vh]">
-                <i class="fas fa-spinner fa-spin text-4xl text-blue-500"></i>
             </div>
         </div>
         
@@ -401,10 +401,15 @@
     function switchView(viewToShow, viewToHide, callback) {
         const mainContainer = document.querySelector('.main-container');
         
-        viewToHide.style.opacity = '0';
+        if (viewToHide) {
+            viewToHide.style.opacity = '0';
+        }
 
         setTimeout(() => {
-            viewToHide.classList.add('hidden');
+            if (viewToHide) {
+                viewToHide.classList.add('hidden');
+            }
+
             if (viewToShow === DOM.appView) {
                 mainContainer.classList.add('is-app-view');
             } else {
@@ -426,7 +431,9 @@
         }
         setState({ userId: user.uid, isOnlineMode: true });
         DOM.userIdDisplay.textContent = `User ID: ${user.uid}`;
+        
         switchView(DOM.loadingView, DOM.loginView);
+
         subscribeToData(user.uid, () => {
             switchView(DOM.appView, DOM.loadingView, updateView);
         });
@@ -762,7 +769,14 @@
         localStorage.setItem('sessionMode', 'offline');
         const data = loadDataFromLocalStorage();
         setState({ allStoredData: data, isOnlineMode: false, userId: null });
-        switchView(DOM.appView, DOM.loginView);
+        
+        // Show loading spinner for offline data load
+        switchView(DOM.loadingView, DOM.loginView);
+
+        // Simulate a small delay for a smooth transition before showing app
+        setTimeout(() => {
+            switchView(DOM.appView, DOM.loadingView, updateView);
+        }, 500); // 500ms delay to give a "loading" feel
     }
 
     async function resetAllData() {
@@ -961,6 +975,9 @@
     }
 
     function initAuth() {
+        // Initially show the loading spinner until we determine the session state
+        DOM.loadingView.classList.remove('hidden');
+
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             unsubscribe();
             if (user) {
@@ -971,12 +988,9 @@
                     const data = loadDataFromLocalStorage();
                     setState({ allStoredData: data, isOnlineMode: false, userId: null });
                     document.querySelector('.main-container').classList.add('is-app-view');
-                    DOM.appView.classList.remove('hidden');
-                    DOM.appView.style.opacity = '1';
-                    updateView();
+                    switchView(DOM.appView, DOM.loadingView, updateView);
                 } else {
-                    DOM.loginView.classList.remove('hidden');
-                    DOM.loginView.style.opacity = '1';
+                    switchView(DOM.loginView, DOM.loadingView);
                 }
             }
             DOM.contentWrapper.style.opacity = '1';
