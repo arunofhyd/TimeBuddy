@@ -51,9 +51,11 @@
 
                 <div class="space-y-4">
                     <button id="google-signin-btn" class="w-full bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 py-3 px-4 rounded-lg flex items-center justify-center text-lg font-semibold transition-colors">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Google_Favicon_2025.svg" class="w-6 h-6 mr-3 google-icon">
-                        <span class="button-content">Continue with Google</span>
-                        <i class="fas fa-spinner fa-spin hidden ml-auto"></i>
+                        <div class="button-content flex items-center justify-center">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Google_Favicon_2025.svg" class="w-6 h-6 mr-3 google-icon">
+                            <span>Continue with Google</span>
+                        </div>
+                        <i class="fas fa-spinner fa-spin hidden"></i>
                     </button>
                     <button id="anon-continue-btn" class="w-full btn-secondary py-2 px-4 rounded-lg text-lg font-semibold">
                         <div class="flex flex-col items-center">
@@ -79,7 +81,6 @@
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                     </button>
                 </div>
-                <div id="message-display" role="alert"><span id="message-text" class="block sm:inline font-medium"></span></div>
                 <div class="flex flex-col space-y-4 mb-8 w-full">
                     <div class="flex space-x-4 w-full"><button id="month-view-btn" class="w-1/2 px-5 py-3 text-base font-bold btn-primary rounded-lg">Month View</button><button id="day-view-btn" class="w-1/2 px-5 py-3 text-base font-semibold btn-secondary rounded-lg">Day View</button></div>
                     <div class="flex items-center justify-between w-full"><button id="prev-btn" class="btn-primary rounded-full flex items-center justify-center w-12 h-12"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg></button><h2 id="current-period-display" class="text-xl font-bold text-gray-800 text-center mx-2 cursor-pointer"></h2><button id="next-btn" class="btn-primary rounded-full flex items-center justify-center w-12 h-12"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg></button></div>
