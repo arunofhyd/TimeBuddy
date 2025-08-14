@@ -33,7 +33,7 @@
         
         /* --- View Transitions --- */
         .view-container {
-            transition: opacity 0.3s ease-in-out;
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
         }
         
         /* --- Calendar Styles --- */
@@ -162,7 +162,7 @@
             <span id="message-text" class="block sm:inline font-medium"></span>
         </div>
 
-        <div id="login-view" class="view-container w-full max-w-md mx-auto hidden" style="opacity: 0;">
+        <div id="login-view" class="view-container w-full max-w-md mx-auto hidden">
             <div class="bg-white rounded-xl border border-gray-200 shadow-2xl p-8 text-center">
                 <h1 class="text-5xl font-extrabold text-gray-800 tracking-tight mb-4">TimeBuddy</h1>
                 <p class="text-gray-600 mb-6">Your Personal Time Tracker.</p>
@@ -207,7 +207,7 @@
             </div>
         </div>
 
-        <div id="app-view" class="view-container w-full max-w-4xl mx-auto hidden" style="opacity: 0;">
+        <div id="app-view" class="view-container w-full max-w-4xl mx-auto hidden">
              <div class="bg-white rounded-xl border border-gray-200 shadow-2xl p-6 md:p-8">
                 <div class="flex justify-between items-center mb-6">
                     <button id="theme-toggle-btn" class="icon-btn" title="Toggle Theme">
@@ -314,9 +314,7 @@
         isOnlineMode: false,
         unsubscribeFromFirestore: null,
         editingInlineTimeKey: null,
-        draggedItem: null,
         pickerYear: new Date().getFullYear(),
-        isInitialDataLoaded: false,
     };
 
     // --- State Management ---
@@ -327,6 +325,7 @@
     // --- DOM Element References ---
     let DOM = {};
 
+    // --- UI Functions ---
     function initUI() {
         DOM = {
             loginView: document.getElementById('login-view'),
@@ -346,8 +345,6 @@
             dailyNoteInput: document.getElementById('daily-note-input'),
             dailyActivityTableBody: document.getElementById('daily-activity-table-body'),
             noDailyActivitiesMessage: document.getElementById('no-daily-activities-message'),
-            hourlyPromptModal: document.getElementById('hourly-prompt-modal'),
-            hourlyActivityInput: document.getElementById('hourly-activity-input'),
             monthPickerModal: document.getElementById('month-picker-modal'),
             pickerYearDisplay: document.getElementById('picker-year-display'),
             monthGrid: document.getElementById('month-grid'),
@@ -355,27 +352,64 @@
             resetModalText: document.getElementById('reset-modal-text'),
         };
     }
-    
-    // --- Utility Functions ---
-    function getYYYYMMDD(date) {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
+
+    function setInputErrorState(inputElement, hasError) {
+        if (hasError) {
+            inputElement.classList.add('border-red-500', 'ring-red-500');
+            inputElement.classList.remove('border-gray-200');
+        } else {
+            inputElement.classList.remove('border-red-500', 'ring-red-500');
+            inputElement.classList.add('border-gray-200');
+        }
     }
 
-    function formatDateForDisplay(dateString) {
-        const date = new Date(dateString + 'T00:00:00');
-        return date.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' });
+    const faSpinner = '<i class="fas fa-spinner fa-spin text-xl"></i>';
+    function setButtonLoadingState(button, isLoading) {
+        if (isLoading) {
+            button.disabled = true;
+            button.dataset.originalContent = button.innerHTML;
+            const rect = button.getBoundingClientRect();
+            button.style.width = `${rect.width}px`;
+            button.style.height = `${rect.height}px`;
+            if (button.id === 'google-signin-btn') {
+                const googleIcon = button.querySelector('img').outerHTML;
+                button.innerHTML = `<div class="flex items-center justify-center w-full h-full">${googleIcon} ${faSpinner}</div>`;
+            } else {
+                 button.innerHTML = `<div class="flex items-center justify-center w-full h-full">${faSpinner}</div>`;
+            }
+        } else {
+            button.disabled = false;
+            if (button.dataset.originalContent) {
+                button.innerHTML = button.dataset.originalContent;
+            }
+            button.style.width = '';
+            button.style.height = '';
+        }
     }
 
-    function formatTextForDisplay(text) {
-        const tempDiv = document.createElement('div');
-        tempDiv.textContent = text || '';
-        return tempDiv.innerHTML.replace(/\n/g, '<br>');
+    function showLoginView() {
+        document.querySelector('.main-container').classList.remove('is-app-view');
+        DOM.appView.classList.add('hidden');
+        DOM.loginView.classList.remove('hidden');
     }
 
-    // --- Message Display ---
+    function showAppView() {
+        document.querySelector('.main-container').classList.add('is-app-view');
+        DOM.loginView.classList.add('hidden');
+        DOM.appView.classList.remove('hidden');
+    }
+
+    function handleUserLogin(user) {
+        localStorage.setItem('sessionMode', 'online');
+        if (state.unsubscribeFromFirestore) {
+            state.unsubscribeFromFirestore();
+        }
+        setState({ userId: user.uid, isOnlineMode: true });
+        DOM.userIdDisplay.textContent = `User ID: ${user.uid}`;
+        subscribeToData(user.uid);
+        showAppView();
+    }
+
     function showMessage(msg, type = 'info') {
         DOM.messageText.textContent = msg;
         DOM.messageDisplay.className = 'fixed bottom-5 right-5 z-50 px-4 py-3 rounded-lg shadow-md transition-opacity duration-300';
@@ -392,86 +426,8 @@
         DOM.messageDisplay.dataset.timeoutId = timeoutId;
     }
 
-    // --- Button Loading State ---
-    const faSpinner = '<i class="fas fa-spinner fa-spin text-xl"></i>';
-
-    function setButtonLoadingState(button, isLoading) {
-        if (isLoading) {
-            button.disabled = true;
-            if (!button.dataset.originalContent) {
-                button.dataset.originalContent = button.innerHTML;
-            }
-            
-            const rect = button.getBoundingClientRect();
-            button.style.width = `${rect.width}px`;
-            button.style.height = `${rect.height}px`;
-
-            if (button.id === 'google-signin-btn') {
-                const googleIcon = button.querySelector('img').outerHTML;
-                button.innerHTML = `<div class="flex items-center justify-center w-full h-full">${googleIcon} ${faSpinner}</div>`;
-            } else {
-                button.innerHTML = `<div class="flex items-center justify-center w-full h-full">${faSpinner}</div>`;
-            }
-        } else {
-            button.disabled = false;
-            if (button.dataset.originalContent) {
-                button.innerHTML = button.dataset.originalContent;
-                delete button.dataset.originalContent;
-            }
-            button.style.width = '';
-            button.style.height = '';
-        }
-    }
-    
-    // --- Input Error State ---
-    function setInputErrorState(inputElement, hasError) {
-        if (hasError) {
-            inputElement.classList.add('border-red-500', 'ring-red-500');
-            inputElement.classList.remove('border-gray-200');
-        } else {
-            inputElement.classList.remove('border-red-500', 'ring-red-500');
-            inputElement.classList.add('border-gray-200');
-        }
-    }
-
-    // --- View Management with Fading Transitions ---
-    function showLoginView() {
-        const mainContainer = document.querySelector('.main-container');
-        
-        DOM.appView.style.opacity = '0';
-
-        setTimeout(() => {
-            DOM.appView.classList.add('hidden');
-            mainContainer.classList.remove('is-app-view');
-            
-            DOM.loginView.classList.remove('hidden');
-            
-            setTimeout(() => {
-                DOM.loginView.style.opacity = '1';
-            }, 20);
-        }, 300);
-    }
-
-    function showAppView() {
-        const mainContainer = document.querySelector('.main-container');
-        
-        DOM.loginView.style.opacity = '0';
-
-        setTimeout(() => {
-            DOM.loginView.classList.add('hidden');
-            mainContainer.classList.add('is-app-view');
-            
-            DOM.appView.classList.remove('hidden');
-
-            setTimeout(() => {
-                DOM.appView.style.opacity = '1';
-            }, 20);
-        }, 300);
-    }
-    
-    // --- Main View Rendering ---
     function updateView() {
-        if (!DOM.appView || !state.isInitialDataLoaded) return;
+        if (!DOM.appView || (DOM.appView.classList.contains('hidden') && DOM.loginView.classList.contains('hidden'))) return;
 
         const isMonthView = state.currentView === 'month';
         DOM.monthViewBtn.classList.toggle('btn-primary', isMonthView);
@@ -490,8 +446,7 @@
             renderDailyActivities();
         }
     }
-    
-    // --- Calendar Rendering ---
+
     function renderCalendar() {
         while (DOM.calendarView.children.length > 7) DOM.calendarView.removeChild(DOM.calendarView.lastChild);
         
@@ -545,7 +500,6 @@
         }
     }
 
-    // --- Daily Activities Rendering ---
     function renderDailyActivities() {
         DOM.dailyActivityTableBody.innerHTML = '';
         const dateKey = getYYYYMMDD(state.selectedDate);
@@ -598,69 +552,7 @@
 
         attachDailyActivityEventListeners();
     }
-    
-    // --- Daily Activity Event Handlers ---
-    function attachDailyActivityEventListeners() {
-        DOM.dailyActivityTableBody.querySelectorAll('.activity-text-editable, .time-editable').forEach(el => {
-            el.addEventListener('click', handleInlineEditClick);
-            el.addEventListener('blur', handleInlineEditBlur);
-            el.addEventListener('keydown', handleInlineEditKeydown);
-        });
-        DOM.dailyActivityTableBody.querySelectorAll('.move-up-btn').forEach(btn => btn.addEventListener('click', handleMoveUpClick));
-        DOM.dailyActivityTableBody.querySelectorAll('.move-down-btn').forEach(btn => btn.addEventListener('click', handleMoveDownClick));
-        DOM.dailyActivityTableBody.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', handleDeleteButtonClick));
-    }
 
-    function handleMoveUpClick(event) {
-        const currentRow = event.currentTarget.closest('tr');
-        if (currentRow.previousElementSibling) {
-            DOM.dailyActivityTableBody.insertBefore(currentRow, currentRow.previousElementSibling);
-            updateActivityOrder();
-        }
-    }
-
-    function handleMoveDownClick(event) {
-        const currentRow = event.currentTarget.closest('tr');
-        if (currentRow.nextElementSibling) {
-            DOM.dailyActivityTableBody.insertBefore(currentRow.nextElementSibling, currentRow);
-            updateActivityOrder();
-        }
-    }
-
-    function handleInlineEditClick(event) {
-        const target = event.currentTarget;
-        if (state.editingInlineTimeKey && state.editingInlineTimeKey !== target.dataset.time) {
-            DOM.dailyActivityTableBody.querySelector(`[data-time="${state.editingInlineTimeKey}"]`)?.blur();
-        }
-        target.classList.add('editing');
-        setState({ editingInlineTimeKey: target.dataset.time });
-    }
-
-    function handleInlineEditBlur(event) {
-        const target = event.currentTarget;
-        if (state.editingInlineTimeKey === target.dataset.time) {
-            if (target.classList.contains('time-editable')) {
-                saveData({ type: 'UPDATE_TIME', payload: { oldTimeKey: target.dataset.time, newTimeKey: target.innerText.trim() } });
-            } else {
-                saveData({ type: 'UPDATE_ACTIVITY_TEXT', payload: { timeKey: target.dataset.time, newText: target.innerText.trim() } });
-            }
-        }
-        target.classList.remove('editing');
-    }
-
-    function handleInlineEditKeydown(event) {
-        if (event.key === 'Enter' && !event.shiftKey) {
-            event.preventDefault();
-            event.currentTarget.blur();
-        }
-    }
-
-    function handleDeleteButtonClick(event) {
-        const timeKey = event.currentTarget.closest('tr').dataset.time;
-        deleteActivity(getYYYYMMDD(state.selectedDate), timeKey);
-    }
-    
-    // --- Month Picker ---
     function renderMonthPicker() {
         DOM.monthGrid.innerHTML = '';
         DOM.pickerYearDisplay.textContent = state.pickerYear;
@@ -692,22 +584,35 @@
         });
     }
 
-    // --- Data Subscription ---
+    function getYYYYMMDD(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    function formatDateForDisplay(dateString) {
+        const date = new Date(dateString + 'T00:00:00');
+        return date.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    function formatTextForDisplay(text) {
+        const tempDiv = document.createElement('div');
+        tempDiv.textContent = text || '';
+        return tempDiv.innerHTML.replace(/\n/g, '<br>');
+    }
+
+    // --- Data Functions ---
     function subscribeToData(userId) {
         const userDocRef = doc(db, "users", userId);
         const unsubscribe = onSnapshot(userDocRef, (doc) => {
             const data = doc.exists() ? doc.data() : {};
             setState({ allStoredData: data });
-            
-            if (!state.isInitialDataLoaded) {
-                setState({ isInitialDataLoaded: true });
-                updateView(); // Render the view for the first time after data is loaded
-            }
+            updateView();
         });
         setState({ unsubscribeFromFirestore: unsubscribe });
     }
 
-    // --- Unified Save Function ---
     async function saveData(action) {
         let dataCopy = JSON.parse(JSON.stringify(state.allStoredData));
         const dateKey = getYYYYMMDD(state.selectedDate);
@@ -795,7 +700,6 @@
         }
     }
 
-    // --- Local & Firestore Helper Operations ---
     function loadDataFromLocalStorage() {
         try {
             const storedData = localStorage.getItem('activityTrackerData');
@@ -826,11 +730,10 @@
         }
     }
 
-    // --- Standalone Data Functions ---
     function loadOfflineData() {
         localStorage.setItem('sessionMode', 'offline');
         const data = loadDataFromLocalStorage();
-        setState({ allStoredData: data, isOnlineMode: false, userId: null, isInitialDataLoaded: true });
+        setState({ allStoredData: data, isOnlineMode: false, userId: null });
         showAppView();
         setTimeout(updateView, 0);
     }
@@ -897,7 +800,6 @@
         }
     }
 
-    // --- CSV Helper Functions ---
     function parseCsvLine(line) {
         const result = [];
         let inQuote = false, field = '';
@@ -925,7 +827,6 @@
         return isNaN(date.getTime()) ? null : getYYYYMMDD(date);
     }
 
-    // --- Main CSV Export Function ---
     function downloadCSV() {
         let activitiesToExport = [];
         Object.keys(state.allStoredData).forEach(dateKey => {
@@ -959,7 +860,6 @@
         document.body.removeChild(link);
     }
 
-    // --- Main CSV Import Function ---
     function handleFileUpload(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -1017,17 +917,6 @@
     }
     
     // --- Auth Functions ---
-    function handleUserLogin(user) {
-        localStorage.setItem('sessionMode', 'online');
-        if (state.unsubscribeFromFirestore) {
-            state.unsubscribeFromFirestore();
-        }
-        setState({ userId: user.uid, isOnlineMode: true, isInitialDataLoaded: false });
-        DOM.userIdDisplay.textContent = `User ID: ${user.uid}`;
-        subscribeToData(user.uid);
-        showAppView();
-    }
-
     function handleUserLogout() {
         if (state.unsubscribeFromFirestore) {
             state.unsubscribeFromFirestore();
@@ -1038,15 +927,15 @@
             allStoredData: {},
             userId: null,
             isOnlineMode: false,
-            unsubscribeFromFirestore: null,
-            isInitialDataLoaded: false,
+            unsubscribeFromFirestore: null
         });
 
         showLoginView();
     }
 
     function initAuth() {
-        onAuthStateChanged(auth, (user) => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            unsubscribe(); 
             if (user) {
                 handleUserLogin(user);
             } else {
@@ -1077,7 +966,8 @@
 
         setButtonLoadingState(button, true);
         try {
-            await createUserWithEmailAndPassword(auth, email, password);
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            handleUserLogin(userCredential.user);
         } catch (error) {
             if (error.code === 'auth/email-already-in-use') {
                 showMessage("An account already exists with this email. Please sign in instead.", 'error');
@@ -1106,7 +996,8 @@
 
         setButtonLoadingState(button, true);
         try {
-            await signInWithEmailAndPassword(auth, email, password);
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            handleUserLogin(userCredential.user);
         } catch (error) {
             if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
                 showMessage("Incorrect email or password. Please try again.", 'error');
@@ -1140,19 +1031,25 @@
         const button = DOM.googleSigninBtn;
         setButtonLoadingState(button, true);
         try {
-            await signInWithPopup(auth, provider);
+            const result = await signInWithPopup(auth, provider);
+            handleUserLogin(result.user);
         } catch (error) {
             showMessage(`Google sign-in failed: ${error.message}`, 'error');
         } finally {
-            setButtonLoadingState(button, false);
+             setButtonLoadingState(button, false);
         }
     }
 
     async function appSignOut() {
-        try {
-            await signOut(auth);
-        } catch (error) {
-            showMessage(`Sign-out failed: ${error.message}`, 'error');
+        if (state.isOnlineMode) {
+            try {
+                await signOut(auth);
+                handleUserLogout();
+            } catch (error) {
+                showMessage(`Sign-out failed: ${error.message}`, 'error');
+            }
+        } else {
+            handleUserLogout();
         }
     }
 
@@ -1189,6 +1086,67 @@
         } else {
             applyTheme('light');
         }
+    }
+
+    // --- Daily Activity Event Handlers ---
+    function attachDailyActivityEventListeners() {
+        DOM.dailyActivityTableBody.querySelectorAll('.activity-text-editable, .time-editable').forEach(el => {
+            el.addEventListener('click', handleInlineEditClick);
+            el.addEventListener('blur', handleInlineEditBlur);
+            el.addEventListener('keydown', handleInlineEditKeydown);
+        });
+        DOM.dailyActivityTableBody.querySelectorAll('.move-up-btn').forEach(btn => btn.addEventListener('click', handleMoveUpClick));
+        DOM.dailyActivityTableBody.querySelectorAll('.move-down-btn').forEach(btn => btn.addEventListener('click', handleMoveDownClick));
+        DOM.dailyActivityTableBody.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', handleDeleteButtonClick));
+    }
+
+    function handleMoveUpClick(event) {
+        const currentRow = event.currentTarget.closest('tr');
+        if (currentRow.previousElementSibling) {
+            DOM.dailyActivityTableBody.insertBefore(currentRow, currentRow.previousElementSibling);
+            updateActivityOrder();
+        }
+    }
+
+    function handleMoveDownClick(event) {
+        const currentRow = event.currentTarget.closest('tr');
+        if (currentRow.nextElementSibling) {
+            DOM.dailyActivityTableBody.insertBefore(currentRow.nextElementSibling, currentRow);
+            updateActivityOrder();
+        }
+    }
+
+    function handleInlineEditClick(event) {
+        const target = event.currentTarget;
+        if (state.editingInlineTimeKey && state.editingInlineTimeKey !== target.dataset.time) {
+            DOM.dailyActivityTableBody.querySelector(`[data-time="${state.editingInlineTimeKey}"]`)?.blur();
+        }
+        target.classList.add('editing');
+        setState({ editingInlineTimeKey: target.dataset.time });
+    }
+
+    function handleInlineEditBlur(event) {
+        const target = event.currentTarget;
+        if (state.editingInlineTimeKey === target.dataset.time) {
+            if (target.classList.contains('time-editable')) {
+                saveData({ type: 'UPDATE_TIME', payload: { oldTimeKey: target.dataset.time, newTimeKey: target.innerText.trim() } });
+            } else {
+                saveData({ type: 'UPDATE_ACTIVITY_TEXT', payload: { timeKey: target.dataset.time, newText: target.innerText.trim() } });
+            }
+        }
+        target.classList.remove('editing');
+    }
+
+    function handleInlineEditKeydown(event) {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            event.currentTarget.blur();
+        }
+    }
+
+    function handleDeleteButtonClick(event) {
+        const timeKey = event.currentTarget.closest('tr').dataset.time;
+        deleteActivity(getYYYYMMDD(state.selectedDate), timeKey);
     }
 
     // --- Event Listener Setup ---
