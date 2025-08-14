@@ -1,7 +1,7 @@
 import { auth } from './firebase-config.js';
 import { initAuth, signUpWithEmail, signInWithEmail, resetPassword, signInWithGoogle, appSignOut } from './auth.js';
 import { saveData, loadOfflineData, resetAllData, downloadCSV, handleFileUpload } from './data.js';
-import { DOM, initUI, updateView, renderMonthPicker, setInputErrorState, setButtonLoadingState as uiSetButtonLoadingState, showMessage } from './ui.js';
+import { DOM, initUI, updateView, renderMonthPicker, setInputErrorState, setButtonLoadingState, showMessage } from './ui.js';
 
 // --- Global App State ---
 export let state = {
@@ -57,7 +57,7 @@ function loadTheme() {
     }
 }
 
-// --- Event Listeners ---
+// --- Event Listener Setup ---
 function setupEventListeners() {
     // Auth Buttons
     const emailInput = document.getElementById('email-input');
@@ -69,16 +69,21 @@ function setupEventListeners() {
     document.getElementById('anon-continue-btn').addEventListener('click', loadOfflineData);
     document.getElementById('sign-out-btn').addEventListener('click', appSignOut);
 
-    // Password Visibility Toggle
+    // --- CORRECTED Password Visibility Toggle ---
     const passwordToggleBtn = document.getElementById('password-toggle-btn');
     const passwordToggleIcon = document.getElementById('password-toggle-icon');
+
     passwordToggleBtn.addEventListener('click', () => {
+        // Check the current type of the input field
         const isPassword = passwordInput.type === 'password';
+
         if (isPassword) {
+            // Change to text and show the slashed eye
             passwordInput.type = 'text';
             passwordToggleIcon.classList.remove('fa-eye');
             passwordToggleIcon.classList.add('fa-eye-slash');
         } else {
+            // Change back to password and show the open eye
             passwordInput.type = 'password';
             passwordToggleIcon.classList.remove('fa-eye-slash');
             passwordToggleIcon.classList.add('fa-eye');
@@ -120,7 +125,7 @@ function setupEventListeners() {
 
     const todayBtn = document.getElementById('today-btn');
     todayBtn.addEventListener('click', async () => {
-        uiSetButtonLoadingState(todayBtn, true);
+        setButtonLoadingState(todayBtn, true);
         try {
             await new Promise(resolve => setTimeout(resolve, 50));
             
@@ -134,7 +139,7 @@ function setupEventListeners() {
             console.error("Error navigating to today:", error);
             showMessage("Could not navigate to today's date.", 'error');
         } finally {
-            uiSetButtonLoadingState(todayBtn, false);
+            setButtonLoadingState(todayBtn, false);
         }
     });
 
@@ -154,14 +159,14 @@ function setupEventListeners() {
     
     const addNewSlotBtn = document.getElementById('add-new-slot-btn');
     addNewSlotBtn.addEventListener('click', async () => {
-        uiSetButtonLoadingState(addNewSlotBtn, true);
+        setButtonLoadingState(addNewSlotBtn, true);
         try {
             await saveData({ type: 'ADD_SLOT' });
         } catch (error) {
             console.error("Error adding new slot:", error);
             showMessage("Could not add new slot.", 'error');
         } finally {
-            uiSetButtonLoadingState(addNewSlotBtn, false);
+            setButtonLoadingState(addNewSlotBtn, false);
         }
     });
     
