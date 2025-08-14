@@ -74,9 +74,15 @@ function setupEventListeners() {
     const passwordToggleIcon = document.getElementById('password-toggle-icon');
     passwordToggleBtn.addEventListener('click', () => {
         const isPassword = passwordInput.type === 'password';
-        passwordInput.type = isPassword ? 'text' : 'password';
-        passwordToggleIcon.classList.toggle('fa-eye-slash', !isPassword);
-        passwordToggleIcon.classList.toggle('fa-eye', isPassword);
+        if (isPassword) {
+            passwordInput.type = 'text';
+            passwordToggleIcon.classList.remove('fa-eye');
+            passwordToggleIcon.classList.add('fa-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            passwordToggleIcon.classList.remove('fa-eye-slash');
+            passwordToggleIcon.classList.add('fa-eye');
+        }
     });
 
     // Add input listeners to remove error state on typing
